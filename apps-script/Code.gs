@@ -87,6 +87,7 @@ var SPREADSHEET_ID = '1bkeTv7isOVdy3TDpa7kkM2L2GDhJO73NaLdKwvXlw64';
 var SHEET_NAME = '시트1';
 var HEADERS = ['name', 'ID', 'password', 'permission', 'activate'];
 var PERMISSIONS = ['Admin', 'Editor', 'Viewer'];
+var REGISTER_PERMISSIONS = ['Editor', 'Viewer']; // 가입 신청 시 선택 가능한 권한 (Admin 은 시트에서만 지정)
 
 /**
  * true 로 바꾸면 비밀번호를 SHA-256 해시로 저장합니다.
@@ -155,7 +156,7 @@ function registerUser(p) {
   if (!name || name.length > 16) invalid.push('name');
   if (!id || !/^[A-Za-z0-9!-\/:-@\[-`{-~]+$/.test(id)) invalid.push('id'); // 길이 제한 없음
   if (!password || !/^[A-Za-z0-9!-\/:-@\[-`{-~]{8,}$/.test(password)) invalid.push('password');
-  if (PERMISSIONS.indexOf(permission) === -1) invalid.push('permission');
+  if (REGISTER_PERMISSIONS.indexOf(permission) === -1) invalid.push('permission');
   if (invalid.length) {
     return fail('필수 문항 작성이 필요합니다.', invalid);
   }
