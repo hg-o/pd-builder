@@ -131,6 +131,9 @@ function api(action, payload) {
       return login(payload.id, payload.password);
     case 'status':
       return checkStatus(payload.id);
+    case 'titles':
+    case 'logout':
+      return fail('IP 관리 기능은 Vercel 사이트(https://pd-builder.vercel.app)에서 사용할 수 있습니다.');
     default:
       return fail('알 수 없는 요청입니다: ' + action);
   }
