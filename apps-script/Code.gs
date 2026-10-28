@@ -153,7 +153,7 @@ function registerUser(p) {
 
   var invalid = [];
   if (!name || name.length > 16) invalid.push('name');
-  if (!id || !/^[A-Za-z0-9!-\/:-@\[-`{-~]{1,16}$/.test(id)) invalid.push('id');
+  if (!id || !/^[A-Za-z0-9!-\/:-@\[-`{-~]+$/.test(id)) invalid.push('id'); // 길이 제한 없음
   if (!password || !/^[A-Za-z0-9!-\/:-@\[-`{-~]{8,}$/.test(password)) invalid.push('password');
   if (PERMISSIONS.indexOf(permission) === -1) invalid.push('permission');
   if (invalid.length) {
