@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>byUs 각색 기획안 Builder</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root {
+    --sidebar-bg: #0d1117;
+    --sidebar-foot: #0b1a3a;
+    --sidebar-text: #c9d1d9;
+    --brand: #22e07c;
+    --accent: #00e676;
+    --accent-dark: #00c765;
+    --bg: #f3f4f6;
+    --surface: #ffffff;
+    --surface-2: #f5f6f8;
+    --border: #e5e7eb;
+    --text: #111827;
+    --text-2: #4b5563;
+    --text-3: #9ca3af;
+    --danger: #ef4444;
+    --danger-bg: #fef2f2;
+    --shadow: 0 6px 24px rgba(17, 24, 39, 0.06);
+    --radius: 16px;
+    --sidebar-w: 280px;
+  }
+  [data-theme="dark"] {
+    --bg: #0b0f14;
+    --surface: #141a22;
+    --surface-2: #1b232d;
+    --border: #273040;
+    --text: #e5e7eb;
+    --text-2: #aab2bf;
+    --text-3: #6b7280;
+    --danger-bg: #2a1518;
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background .2s, color .2s;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  .hidden { display: none !important; }
+
+  /* ───── 배경 블롭 (디자인의 파스텔 그라디언트) ───── */
+  .blobs { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: inherit; }
+  .blobs span { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; }
+  .blobs .b1 { width: 420px; height: 420px; left: -80px; top: -60px; background: #bdf5d6; }
+  .blobs .b2 { width: 380px; height: 380px; right: -60px; top: 40px; background: #e2d4fb; }
+  .blobs .b3 { width: 360px; height: 360px; left: 35%; bottom: -120px; background: #cfe3ff; }
+  [data-theme="dark"] .blobs span { opacity: .18; }
+
+  /* ───── 공용 버튼 ───── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    height: 56px; padding: 0 28px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    font-size: 18px; font-weight: 500; transition: all .15s;
+  }
+  .btn:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.12); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn-sm { height: 44px; padding: 0 18px; font-size: 15px; border-radius: 8px; }
+  .btn-block { width: 100%; }
+  .btn:disabled { opacity: .6; cursor: progress; }
+  .btn svg { width: 22px; height: 22px; }
+
+  /* ───── 폼 ───── */
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 14px; font-weight: 600; color: var(--text-2); margin-bottom: 8px; }
+  .field label .req { color: var(--danger); margin-left: 2px; }
+  .field .hint { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+  .input {
+    width: 100%; height: 48px; padding: 0 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface); outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.15); }
+  .input::placeholder { color: var(--text-3); }
+  select.input { appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+  .field.invalid .input { border-color: var(--danger); background: var(--danger-bg); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+  .field.invalid label { color: var(--danger); }
+  .form-error {
+    display: flex; align-items: center; gap: 8px; margin-top: 6px;
+    padding: 12px 14px; border-radius: 10px; background: var(--danger-bg); color: var(--danger);
+    font-size: 14px; font-weight: 500;
+  }
+  .form-success { padding: 12px 14px; border-radius: 10px; background: #ecfdf5; color: #047857; font-size: 14px; font-weight: 500; }
+  [data-theme="dark"] .form-success { background: #0f2a20; color: #34d399; }
+
+  /* ───── 로그인 화면 ───── */
+  #view-login {
+    position: relative; min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+  }
+  .login-card {
+    position: relative; width: 100%; max-width: 440px; background: var(--surface);
+    border-radius: var(--radius); box-shadow: var(--shadow); padding: 44px 40px 36px; border: 1px solid var(--border);
+  }
+  .brand-mark {
+    width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center;
+    background: var(--sidebar-bg); color: var(--brand); margin: 0 auto 18px;
+  }
+  .brand-mark svg { width: 28px; height: 28px; }
+  .login-card h1 { margin: 0; text-align: center; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+  .login-card h1 em { font-style: normal; color: var(--brand); }
+  .login-card .sub { text-align: center; color: var(--text-2); font-size: 14px; margin: 8px 0 30px; }
+  .login-card .divider { height: 1px; background: var(--border); margin: 22px 0 18px; }
+  .login-foot { text-align: center; color: var(--text-3); font-size: 12px; margin-top: 22px; }
+
+  /* ───── 모달 ───── */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(13, 17, 23, 0.55); backdrop-filter: blur(2px);
+    display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50;
+  }
+  .modal {
+    width: 100%; max-width: 480px; max-height: 100%; overflow: auto; background: var(--surface); border-radius: var(--radius);
+    box-shadow: 0 24px 64px rgba(0,0,0,.25); padding: 32px 32px 28px; position: relative;
+  }
+  .modal h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
+  .modal .desc { color: var(--text-2); font-size: 14px; margin: 0 0 24px; }
+  .modal-close {
+    position: absolute; top: 18px; right: 18px; width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-2); display: grid; place-items: center;
+  }
+  .modal-close:hover { border-color: var(--text-3); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
+  .modal-actions .btn { flex: 1; }
+
+  /* ───── 권한 대기 화면 ───── */
+  #view-pending {
+    min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
+    background: var(--surface);
+  }
+  #view-pending p { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-2); }
+  #view-pending .pending-actions { display: flex; gap: 8px; }
+  .link-btn { background: none; border: 0; color: var(--text-3); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+  .link-btn:hover { color: var(--text-2); }
+
+  /* ───── 메인 앱 레이아웃 ───── */
+  #view-app { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: var(--sidebar-w); flex: none; background: var(--sidebar-bg); color: var(--sidebar-text);
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  }
+  .sidebar .brand {
+    height: 90px; display: flex; align-items: center; justify-content: center;
+    color: var(--brand); font-size: 20px; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .sidebar .brand small { color: #e5e7eb; font-weight: 500; font-size: 13px; margin-left: 8px; opacity: .8; }
+  .nav { padding: 4px 6px; display: flex; flex-direction: column; gap: 4px; }
+  .nav a {
+    display: flex; align-items: center; gap: 16px; height: 60px; padding: 0 30px; border-radius: 10px;
+    color: var(--sidebar-text); text-decoration: none; font-size: 18px; font-weight: 500; transition: background .15s;
+  }
+  .nav a svg { width: 22px; height: 22px; flex: none; }
+  .nav a:hover { background: rgba(255,255,255,0.06); }
+  .nav a.active { background: var(--accent); color: #fff; }
+  .nav a .chev { margin-left: auto; width: 18px; height: 18px; opacity: .8; }
+  .sidebar .foot {
+    margin-top: auto; height: 58px; background: var(--sidebar-foot); display: grid; place-items: center; color: #fff;
+  }
+  .sidebar .foot svg { width: 20px; height: 20px; }
+
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar {
+    height: 90px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px 0 36px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+  }
+  .crumb { display: flex; align-items: center; gap: 14px; font-size: 24px; color: var(--text-3); }
+  .crumb .cur { color: var(--text-2); }
+  .crumb svg { width: 18px; height: 18px; }
+  .top-actions { display: flex; align-items: center; gap: 22px; }
+  .icon-btn { width: 40px; height: 40px; border: 0; background: transparent; color: var(--text-2); display: grid; place-items: center; border-radius: 10px; }
+  .icon-btn:hover { background: var(--surface-2); }
+  .icon-btn svg { width: 24px; height: 24px; }
+  .user-chip {
+    display: flex; align-items: center; gap: 12px; height: 70px; padding: 0 26px 0 20px; border-radius: 999px; background: var(--surface-2);
+  }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; }
+  .avatar svg { width: 18px; height: 18px; }
+  .user-chip .nm { font-size: 18px; font-weight: 500; }
+  .user-chip .uid { font-size: 14px; color: var(--text-3); margin-left: 4px; }
+  .user-chip .perm { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(0,230,118,.15); color: #059669; margin-left: 6px; }
+
+  .content { padding: 24px; }
+  .page-card {
+    position: relative; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 70px 24px 60px; overflow: hidden;
+  }
+  .hero { position: relative; text-align: center; }
+  .hero h1 {
+    margin: 0; font-size: 38px; font-weight: 800; letter-spacing: -0.02em;
+    background: linear-gradient(90deg, rgba(17,24,39,.08), rgba(17,24,39,.22), rgba(17,24,39,.08));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  [data-theme="dark"] .hero h1 { background: linear-gradient(90deg, rgba(229,231,235,.15), rgba(229,231,235,.4), rgba(229,231,235,.15)); -webkit-background-clip: text; background-clip: text; }
+  .hero p { margin: 18px 0 32px; font-size: 18px; color: var(--text-2); }
+  .hero .actions { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+
+  .section { position: relative; max-width: 1270px; margin: 72px auto 0; }
+  .section h2 { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; margin: 0 0 24px; }
+  .section h2 svg { width: 20px; height: 20px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .step {
+    position: relative; overflow: hidden; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+    border: 1px solid var(--border); padding: 34px 24px 28px; text-align: center;
+  }
+  .step::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 160px;
+    background: linear-gradient(135deg, #e3f8ff 0%, #f6f1ff 50%, #ffeef7 100%); opacity: .9;
+  }
+  .step:nth-child(2)::before { background: linear-gradient(135deg, #f3ecff 0%, #fdeff5 55%, #ebfbf1 100%); }
+  .step:nth-child(3)::before { background: linear-gradient(135deg, #e6fbf1 0%, #e4f3ff 60%, #f6f1ff 100%); }
+  [data-theme="dark"] .step::before { opacity: .12; }
+  .step > * { position: relative; }
+  .step .ico { width: 76px; height: 76px; border-radius: 18px; background: var(--surface-2); display: grid; place-items: center; margin: 0 auto 20px; color: var(--text); }
+  .step .ico svg { width: 34px; height: 34px; }
+  .step .no { font-size: 13px; color: var(--text-3); letter-spacing: .04em; }
+  .step h3 { margin: 6px 0 20px; font-size: 20px; font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip { font-size: 14px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); }
+
+  .labs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+  .lab {
+    position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 24px 30px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); text-align: left; width: 100%;
+  }
+  .lab::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #fff2f7 0%, transparent 60%); opacity: .7; }
+  .lab:nth-child(2)::before { background: linear-gradient(90deg, #efe9ff 0%, transparent 60%); }
+  [data-theme="dark"] .lab::before { opacity: .08; }
+  .lab > * { position: relative; }
+  .lab .ico { width: 56px; height: 56px; border-radius: 14px; background: var(--surface-2); display: grid; place-items: center; flex: none; }
+  .lab .ico svg { width: 26px; height: 26px; }
+  .lab .t { font-size: 20px; font-weight: 600; }
+  .lab .d { font-size: 15px; color: var(--text-3); margin-top: 4px; }
+  .lab .arrow { margin-left: auto; color: var(--text-3); }
+  .lab .arrow svg { width: 22px; height: 22px; }
+
+  .placeholder { text-align: center; padding: 60px 20px; color: var(--text-3); font-size: 16px; position: relative; }
+  .placeholder strong { display: block; color: var(--text-2); font-size: 22px; margin-bottom: 8px; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #111827; color: #fff;
+    padding: 12px 18px; border-radius: 10px; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); z-index: 60;
+  }
+
+  .preview-banner {
+    position: sticky; top: 0; z-index: 70; padding: 12px 20px; text-align: center; font-size: 14px; font-weight: 500;
+    background: #fff7d6; color: #7a5a00; border-bottom: 1px solid #f3dd8a;
+  }
+  .preview-banner a { color: #0b63ce; font-weight: 700; margin-left: 6px; }
+  body.has-banner #view-login { min-height: calc(100% - 45px); }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .topbar { padding: 0 20px; height: 72px; }
+    .crumb { font-size: 18px; }
+    .user-chip { height: 52px; padding: 0 16px 0 12px; }
+    .user-chip .nm { font-size: 15px; }
+    .hero h1 { font-size: 28px; }
+    .content { padding: 14px; }
+    .page-card { padding: 50px 16px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ Index: 로그인 화면 ═══════════════════ -->
+<section id="view-login">
+  <div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+  <div class="login-card">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </div>
+    <h1><em>byUs</em> 각색 기획안 Builder</h1>
+    <p class="sub">원작을 불러와 각색 방향을 설정하고 기획안을 만들어 보세요.</p>
+
+    <form id="login-form" novalidate>
+      <div class="field" data-field="login-id">
+        <label for="login-id">ID</label>
+        <input class="input" id="login-id" name="id" autocomplete="username" placeholder="아이디를 입력하세요">
+      </div>
+      <div class="field" data-field="login-pw">
+        <label for="login-pw">PW</label>
+        <input class="input" id="login-pw" name="password" type="password" autocomplete="current-password" placeholder="비밀번호를 입력하세요">
+      </div>
+      <div id="login-error" class="form-error hidden"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="login-submit" style="margin-top:8px">로그인</button>
+    </form>
+
+    <div class="divider"></div>
+    <button type="button" class="btn btn-block" id="open-register">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      ID 등록 및 권한 요청
+    </button>
+    <p class="login-foot">권한은 관리자 승인 후 부여됩니다.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ 모달: ID 등록 및 권한 요청 ═══════════════════ -->
+<div id="modal-register" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <button type="button" class="modal-close" id="close-register" aria-label="닫기">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <h2 id="modal-title">ID 등록 및 권한 요청</h2>
+    <p class="desc">신청 후 관리자가 승인하면 사이트를 이용할 수 있습니다.</p>
+
+    <form id="register-form" novalidate>
+      <div class="field" data-field="name">
+        <label for="reg-name">이름 <span class="req">*</span></label>
+        <input class="input" id="reg-name" name="name" maxlength="16" placeholder="16자 이내" autocomplete="name">
+      </div>
+      <div class="field" data-field="id">
+        <label for="reg-id">아이디 <span class="req">*</span></label>
+        <input class="input" id="reg-id" name="id" maxlength="16" placeholder="영문, 숫자, 기호 · 16자 이내" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="field" data-field="password">
+        <label for="reg-pw">비밀번호 <span class="req">*</span></label>
+        <input class="input" id="reg-pw" name="password" type="password" placeholder="영문, 숫자, 기호 · 8자 이상" autocomplete="new-password">
+      </div>
+      <div class="field" data-field="permission">
+        <label for="reg-perm">권한 <span class="req">*</span></label>
+        <select class="input" id="reg-perm" name="permission">
+          <option value="">권한을 선택하세요</option>
+          <option value="Admin">Admin</option>
+          <option value="Editor">Editor</option>
+          <option value="Viewer">Viewer</option>
+        </select>
+      </div>
+
+      <div id="register-error" class="form-error hidden"></div>
+      <div id="register-success" class="form-success hidden"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-sm" id="cancel-register">취소</button>
+        <button type="submit" class="btn btn-sm btn-primary" id="register-submit">권한 신청하기</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════ 권한 대기 화면 ═══════════════════ -->
+<section id="view-pending" class="hidden">
+  <p>권한 부여 대기 중입니다.</p>
+  <div class="pending-actions">
+    <button type="button" class="link-btn" id="pending-refresh">권한 상태 다시 확인</button>
+    <button type="button" class="link-btn" id="pending-logout">로그아웃</button>
+  </div>
+</section>
+
+<!-- ═══════════════════ 메인 앱 (권한 부여 후) ═══════════════════ -->
+<div id="view-app" class="hidden">
+  <aside class="sidebar">
+    <div class="brand">byUs Builder</div>
+    <nav class="nav" id="nav">
+      <a href="#home" data-page="home" class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>
+        Home
+      </a>
+      <a href="#plans" data-page="plans">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
+        기획안
+      </a>
+      <a href="#sources" data-page="sources">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        원작 라이브러리
+      </a>
+      <a href="#tasks" data-page="tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+        Tasks
+      </a>
+      <a href="#labs" data-page="labs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/></svg>
+        Labs
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+    </nav>
+    <div class="foot" title="사이드바 접기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">
+        <span>각색 기획안 Builder</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="cur" id="crumb-current">Home</span>
+      </div>
+      <div class="top-actions">
+        <button type="button" class="icon-btn" id="theme-toggle" title="다크 모드">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+        <div class="user-chip">
+          <span class="avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="nm" id="user-name">사용자</span>
+          <span class="uid" id="user-id"></span>
+          <span class="perm" id="user-perm"></span>
+        </div>
+        <button type="button" class="icon-btn" id="logout" title="로그아웃">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- Home -->
+      <div class="page-card" id="page-home">
+        <div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+        <div class="hero">
+          <h1>byUs 각색 기획안 Builder</h1>
+          <p>원작을 불러와 각색 방향을 설정하고 기획안을 자동으로 구성해 보세요.</p>
+          <div class="actions">
+            <button type="button" class="btn" data-page="sources">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></svg>
+              원작 불러오기
+            </button>
+            <button type="button" class="btn" data-page="plans">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              기획안 시작하기
+            </button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>워크플로우</h2>
+          <div class="steps">
+            <div class="step">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></svg></div>
+              <div class="no">STEP 01</div>
+              <h3>원작 수집 · 분석</h3>
+              <div class="chips"><span class="chip">원작 업로드</span><span class="chip">줄거리 요약</span><span class="chip">캐릭터 추출</span><span class="chip">세계관 정리</span></div>
+            </div>
+            <div class="step">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+              <div class="no">STEP 02</div>
+              <h3>각색 방향 설정</h3>
+              <div class="chips"><span class="chip">타깃 매체</span><span class="chip">톤앤매너</span><span class="chip">분량 · 회차</span><span class="chip">핵심 변경점</span></div>
+            </div>
+            <div class="step">
+              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+              <div class="no">STEP 03</div>
+              <h3>기획안 생성 · 검토</h3>
+              <div class="chips"><span class="chip">시놉시스</span><span class="chip">캐릭터 시트</span><span class="chip">회차 구성안</span><span class="chip">내보내기</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/></svg>
+            Labs
+          </h2>
+          <div class="labs">
+            <button type="button" class="lab" data-page="labs">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span>
+              <span><span class="t">로그라인 생성기</span><br><span class="d">한 줄 콘셉트 제안</span></span>
+              <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+            <button type="button" class="lab" data-page="labs">
+              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5v4"/><path d="M7 17l5-5.5 5 5.5"/></svg></span>
+              <span><span class="t">캐릭터 관계도</span><br><span class="d">인물 관계 · 갈등 구조</span></span>
+              <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 기타 페이지 (준비 중) -->
+      <div class="page-card hidden" id="page-generic">
+        <div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+        <div class="placeholder">
+          <strong id="generic-title"></strong>
+          해당 메뉴는 준비 중입니다.
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+ *  설정
+ *  - Vercel 배포: 같은 도메인의 서버리스 함수(/api/register, /api/login, /api/status)를 호출합니다.
+ *  - Apps Script 웹 앱으로 배포하면 google.script.run 을 자동으로 사용합니다.
+ *  - 정적 파일로만 열면(백엔드 없음) 상단에 안내 배너가 뜹니다.
+ * ═══════════════════════════════════════════════════════════════ */
+var API_BASE = '/api';
+/* 안내 배너에 표시할 실제 서비스 주소. Vercel 배포 후 그 주소로 바꾸세요. */
+var SERVICE_URL = 'https://script.google.com/a/macros/webtoonscorp.com/s/AKfycbxRjyLtiKvCX5lc_ikY_1xMuOjsuYotbLPIcvK__iAr2VqA5_mx6IvooagPEMGPTHomsg/exec';
+
+var SESSION_KEY = 'byus_builder_session';
+var THEME_KEY = 'byus_builder_theme';
+var PAGES = { home: 'Home', plans: '기획안', sources: '원작 라이브러리', tasks: 'Tasks', labs: 'Labs' };
+
+var RULES = {
+  name: function (v) { return v.length >= 1 && v.length <= 16; },
+  id: function (v) { return /^[A-Za-z0-9!-\/:-@\[-`{-~]{1,16}$/.test(v); },
+  password: function (v) { return /^[A-Za-z0-9!-\/:-@\[-`{-~]{8,}$/.test(v); },
+  permission: function (v) { return ['Admin', 'Editor', 'Viewer'].indexOf(v) !== -1; }
+};
+
+/* ───────────── API 어댑터 ───────────── */
+function callApi(action, payload) {
+  if (window.google && google.script && google.script.run) {
+    return new Promise(function (resolve, reject) {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(function (err) { reject(new Error(err && err.message ? err.message : String(err))); })
+        .api(action, payload);
+    });
+  }
+  if (location.protocol === 'file:') {
+    showPreviewBanner();
+    return Promise.reject(new Error('파일로 직접 연 화면에서는 백엔드에 연결할 수 없습니다. 배포된 주소로 접속해 주세요.'));
+  }
+  return fetch(API_BASE + '/' + action, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function (r) {
+    if (r.status === 404 || r.status === 405) {
+      showPreviewBanner();
+      throw new Error('이 화면은 미리보기라 백엔드(/api)가 없습니다. 배포된 주소로 접속해 주세요.');
+    }
+    return r.json().catch(function () { throw new Error('서버 응답을 해석하지 못했습니다. (HTTP ' + r.status + ')'); });
+  }, function () {
+    showPreviewBanner();
+    throw new Error('서버에 연결하지 못했습니다. 네트워크 상태를 확인하거나 배포된 주소로 접속해 주세요.');
+  });
+}
+
+/* ───────────── 헬퍼 ───────────── */
+function $(sel, root) { return (root || document).querySelector(sel); }
+function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+function show(el) { el.classList.remove('hidden'); }
+function hide(el) { el.classList.add('hidden'); }
+function setError(el, msg) { if (msg) { el.textContent = msg; show(el); } else { el.textContent = ''; hide(el); } }
+function getSession() { try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { return null; } }
+function setSession(s) { if (s) sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); else sessionStorage.removeItem(SESSION_KEY); }
+function toast(msg) {
+  var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2600);
+}
+function busy(btn, on, label) {
+  btn.disabled = on;
+  if (on) { btn.dataset.label = btn.textContent; btn.textContent = label || '처리 중…'; }
+  else if (btn.dataset.label) { btn.textContent = btn.dataset.label; }
+}
+
+/* ───────────── 화면 전환 ───────────── */
+var views = { login: $('#view-login'), pending: $('#view-pending'), app: $('#view-app') };
+function route() {
+  var s = getSession();
+  Object.keys(views).forEach(function (k) { hide(views[k]); });
+  if (!s) { show(views.login); return; }
+  if (!s.activate) { show(views.pending); return; }
+  $('#user-name').textContent = s.name || s.id;
+  $('#user-id').textContent = s.id;
+  $('#user-perm').textContent = s.permission || '';
+  show(views.app);
+  goPage(location.hash.replace('#', '') || 'home');
+}
+
+function goPage(key) {
+  if (!PAGES[key]) key = 'home';
+  $all('#nav a').forEach(function (a) { a.classList.toggle('active', a.dataset.page === key); });
+  $('#crumb-current').textContent = PAGES[key];
+  if (key === 'home') { show($('#page-home')); hide($('#page-generic')); }
+  else { hide($('#page-home')); show($('#page-generic')); $('#generic-title').textContent = PAGES[key]; }
+  if (location.hash !== '#' + key) history.replaceState(null, '', '#' + key);
+}
+
+/* ───────────── 로그인 ───────────── */
+$('#login-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var id = $('#login-id').value.trim();
+  var pw = $('#login-pw').value;
+  var err = $('#login-error');
+  setError(err, '');
+  $all('#login-form .field').forEach(function (f) { f.classList.remove('invalid'); });
+  var missing = false;
+  if (!id) { $('[data-field="login-id"]').classList.add('invalid'); missing = true; }
+  if (!pw) { $('[data-field="login-pw"]').classList.add('invalid'); missing = true; }
+  if (missing) { setError(err, '아이디와 비밀번호를 입력해 주세요.'); return; }
+
+  var btn = $('#login-submit');
+  busy(btn, true, '로그인 중…');
+  callApi('login', { id: id, password: pw }).then(function (res) {
+    busy(btn, false);
+    if (!res || !res.ok) { setError(err, (res && res.error) || '로그인에 실패했습니다.'); return; }
+    setSession({ id: res.data.id, name: res.data.name, permission: res.data.permission, activate: !!res.data.activate });
+    $('#login-pw').value = '';
+    route();
+  }).catch(function (ex) { busy(btn, false); setError(err, ex.message); });
+});
+
+/* ───────────── 권한 대기 ───────────── */
+$('#pending-logout').addEventListener('click', function () { setSession(null); route(); });
+$('#pending-refresh').addEventListener('click', function () {
+  var s = getSession(); if (!s) return route();
+  var btn = this; btn.disabled = true;
+  callApi('status', { id: s.id }).then(function (res) {
+    btn.disabled = false;
+    if (res && res.ok && res.data.activate) {
+      s.activate = true; s.permission = res.data.permission || s.permission; setSession(s); route(); toast('권한이 부여되었습니다.');
+    } else { toast('아직 권한이 부여되지 않았습니다.'); }
+  }).catch(function (ex) { btn.disabled = false; toast(ex.message); });
+});
+
+/* ───────────── 회원가입 모달 ───────────── */
+var modal = $('#modal-register');
+function openModal() {
+  $('#register-form').reset();
+  clearInvalid();
+  setError($('#register-error'), '');
+  hide($('#register-success'));
+  show($('#register-submit').parentElement);
+  show(modal);
+  setTimeout(function () { $('#reg-name').focus(); }, 30);
+}
+function closeModal() { hide(modal); }
+function clearInvalid() { $all('#register-form .field').forEach(function (f) { f.classList.remove('invalid'); }); }
+function markInvalid(fields) { fields.forEach(function (k) { var f = $('[data-field="' + k + '"]'); if (f) f.classList.add('invalid'); }); }
+
+$('#open-register').addEventListener('click', openModal);
+$('#close-register').addEventListener('click', closeModal);
+$('#cancel-register').addEventListener('click', closeModal);
+modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+$all('#register-form .input').forEach(function (inp) {
+  inp.addEventListener('input', function () { inp.closest('.field').classList.remove('invalid'); });
+});
+
+$('#register-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var data = {
+    name: $('#reg-name').value.trim(),
+    id: $('#reg-id').value.trim(),
+    password: $('#reg-pw').value,
+    permission: $('#reg-perm').value
+  };
+  var err = $('#register-error');
+  clearInvalid();
+  setError(err, '');
+
+  var invalid = Object.keys(RULES).filter(function (k) { return !RULES[k](data[k]); });
+  if (invalid.length) {
+    markInvalid(invalid);
+    setError(err, '필수 문항 작성이 필요합니다.');
+    return;
+  }
+
+  var btn = $('#register-submit');
+  busy(btn, true, '신청 중…');
+  callApi('register', data).then(function (res) {
+    busy(btn, false);
+    if (!res || !res.ok) {
+      if (res && res.fields && res.fields.length) markInvalid(res.fields);
+      setError(err, (res && res.error) || '신청에 실패했습니다.');
+      return;
+    }
+    var ok = $('#register-success');
+    ok.textContent = '권한 신청이 접수되었습니다. 관리자 승인 후 이용할 수 있습니다.';
+    show(ok);
+    hide(btn.parentElement);
+    $('#login-id').value = data.id;
+    setTimeout(closeModal, 1800);
+  }).catch(function (ex) { busy(btn, false); setError(err, ex.message); });
+});
+
+/* ───────────── 메인 앱 ───────────── */
+$('#nav').addEventListener('click', function (e) {
+  var a = e.target.closest('a[data-page]'); if (!a) return;
+  e.preventDefault(); goPage(a.dataset.page);
+});
+$all('.content [data-page]').forEach(function (b) { b.addEventListener('click', function () { goPage(b.dataset.page); }); });
+$('#logout').addEventListener('click', function () { setSession(null); location.hash = ''; route(); });
+window.addEventListener('hashchange', function () { var s = getSession(); if (s && s.activate) goPage(location.hash.replace('#', '')); });
+
+/* ───────────── 미리보기(백엔드 없음) 안내 ───────────── */
+function showPreviewBanner() {
+  if (document.querySelector('.preview-banner')) return;
+  var bar = document.createElement('div');
+  bar.className = 'preview-banner';
+  bar.innerHTML = '미리보기 모드입니다. 로그인·권한 신청은 배포된 사이트에서만 동작합니다.' +
+    (SERVICE_URL ? ' <a href="' + SERVICE_URL + '" target="_blank" rel="noopener">실제 사이트 열기 →</a>' : '');
+  document.body.insertBefore(bar, document.body.firstChild);
+  document.body.classList.add('has-banner');
+}
+if (location.protocol === 'file:') showPreviewBanner();
+
+/* ───────────── 테마 ───────────── */
+function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem(THEME_KEY, t); }
+applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+$('#theme-toggle').addEventListener('click', function () {
+  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+route();
+</script>
+</body>
+</html>
