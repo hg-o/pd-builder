@@ -64,20 +64,25 @@
     display: inline-flex; align-items: center; justify-content: center; gap: 10px;
     height: 56px; padding: 0 28px; border-radius: 10px;
     border: 1px solid var(--border); background: var(--surface); color: var(--text);
-    font-size: 18px; font-weight: 500; transition: all .15s;
+    font-size: 18px; font-weight: 500; transition: all .15s; white-space: nowrap;
   }
   .btn:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.12); }
   .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
   .btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn-danger { color: var(--danger); }
+  .btn-danger:hover { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12); }
   .btn-sm { height: 44px; padding: 0 18px; font-size: 15px; border-radius: 8px; }
+  .btn-xs { height: 36px; padding: 0 14px; font-size: 13px; border-radius: 8px; gap: 6px; }
   .btn-block { width: 100%; }
   .btn:disabled { opacity: .6; cursor: progress; }
   .btn svg { width: 22px; height: 22px; }
+  .btn-sm svg { width: 18px; height: 18px; }
+  .btn-xs svg { width: 16px; height: 16px; }
 
   /* ───── 폼 ───── */
   .field { margin-bottom: 18px; }
-  .field label { display: block; font-size: 14px; font-weight: 600; color: var(--text-2); margin-bottom: 8px; }
-  .field label .req { color: var(--danger); margin-left: 2px; }
+  .field label, .field .label { display: block; font-size: 14px; font-weight: 600; color: var(--text-2); margin-bottom: 8px; }
+  .field .req { color: var(--danger); margin-left: 2px; }
   .field .hint { font-size: 12px; color: var(--text-3); margin-top: 6px; }
   .input {
     width: 100%; height: 48px; padding: 0 14px; border-radius: 10px;
@@ -89,8 +94,8 @@
   select.input { appearance: none; -webkit-appearance: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
     background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
-  .field.invalid .input { border-color: var(--danger); background: var(--danger-bg); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
-  .field.invalid label { color: var(--danger); }
+  .field.invalid .input, .field.invalid .picker, .field.invalid .thumb-box { border-color: var(--danger); background: var(--danger-bg); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+  .field.invalid label, .field.invalid .label { color: var(--danger); }
   .form-error {
     display: flex; align-items: center; gap: 8px; margin-top: 6px;
     padding: 12px 14px; border-radius: 10px; background: var(--danger-bg); color: var(--danger);
@@ -98,6 +103,7 @@
   }
   .form-success { padding: 12px 14px; border-radius: 10px; background: #ecfdf5; color: #047857; font-size: 14px; font-weight: 500; }
   [data-theme="dark"] .form-success { background: #0f2a20; color: #34d399; }
+  .counter { float: right; font-weight: 400; color: var(--text-3); }
 
   /* ───── 로그인 화면 ───── */
   #view-login {
@@ -127,6 +133,7 @@
     width: 100%; max-width: 480px; max-height: 100%; overflow: auto; background: var(--surface); border-radius: var(--radius);
     box-shadow: 0 24px 64px rgba(0,0,0,.25); padding: 32px 32px 28px; position: relative;
   }
+  .modal-lg { max-width: 560px; }
   .modal h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
   .modal .desc { color: var(--text-2); font-size: 14px; margin: 0 0 24px; }
   .modal-close {
@@ -136,6 +143,35 @@
   .modal-close:hover { border-color: var(--text-3); }
   .modal-actions { display: flex; gap: 10px; margin-top: 24px; }
   .modal-actions .btn { flex: 1; }
+  .modal-actions .btn.btn-danger { flex: 0 0 auto; }
+
+  /* 썸네일 업로드 */
+  .thumb-row { display: flex; gap: 18px; align-items: flex-start; }
+  .thumb-box {
+    width: 128px; height: 128px; flex: none; border-radius: 14px; border: 1px dashed var(--border); background: var(--surface-2);
+    display: grid; place-items: center; overflow: hidden; color: var(--text-3); position: relative;
+  }
+  .thumb-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb-box svg { width: 30px; height: 30px; }
+  .thumb-box.has-img { border-style: solid; }
+  .thumb-actions { display: flex; flex-direction: column; gap: 8px; }
+  .thumb-actions .hint { margin-top: 2px; }
+
+  /* 담당자 선택 */
+  .picker {
+    display: flex; flex-wrap: wrap; gap: 8px; min-height: 48px; padding: 8px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface);
+  }
+  .picker .empty { color: var(--text-3); font-size: 14px; padding: 6px 6px; }
+  .pick {
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 14px; cursor: pointer; user-select: none;
+  }
+  .pick:hover { border-color: var(--accent); }
+  .pick input { display: none; }
+  .pick.on { background: rgba(0, 230, 118, .14); border-color: var(--accent); color: #047857; font-weight: 600; }
+  [data-theme="dark"] .pick.on { color: #34d399; }
+  .pick .me { font-size: 11px; color: var(--text-3); font-weight: 500; }
 
   /* ───── 권한 대기 화면 ───── */
   #view-pending {
@@ -157,7 +193,6 @@
     height: 90px; display: flex; align-items: center; justify-content: center;
     color: var(--brand); font-size: 20px; font-weight: 700; letter-spacing: -0.01em;
   }
-  .sidebar .brand small { color: #e5e7eb; font-weight: 500; font-size: 13px; margin-left: 8px; opacity: .8; }
   .nav { padding: 4px 6px; display: flex; flex-direction: column; gap: 4px; }
   .nav a {
     display: flex; align-items: center; gap: 16px; height: 60px; padding: 0 30px; border-radius: 10px;
@@ -196,56 +231,46 @@
   .content { padding: 24px; }
   .page-card {
     position: relative; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 70px 24px 60px; overflow: hidden;
+    padding: 36px 32px 40px; overflow: hidden; min-height: calc(100vh - 90px - 48px);
   }
-  .hero { position: relative; text-align: center; }
-  .hero h1 {
-    margin: 0; font-size: 38px; font-weight: 800; letter-spacing: -0.02em;
-    background: linear-gradient(90deg, rgba(17,24,39,.08), rgba(17,24,39,.22), rgba(17,24,39,.08));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  [data-theme="dark"] .hero h1 { background: linear-gradient(90deg, rgba(229,231,235,.15), rgba(229,231,235,.4), rgba(229,231,235,.15)); -webkit-background-clip: text; background-clip: text; }
-  .hero p { margin: 18px 0 32px; font-size: 18px; color: var(--text-2); }
-  .hero .actions { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+  .page-head { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; }
+  .page-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+  .page-head .count { font-size: 14px; color: var(--text-3); font-weight: 500; margin-left: 8px; }
 
-  .section { position: relative; max-width: 1270px; margin: 72px auto 0; }
-  .section h2 { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; margin: 0 0 24px; }
-  .section h2 svg { width: 20px; height: 20px; }
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-  .step {
-    position: relative; overflow: hidden; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-    border: 1px solid var(--border); padding: 34px 24px 28px; text-align: center;
+  /* IP 카드 (가로형) */
+  .title-grid { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 16px; }
+  .title-card {
+    display: flex; align-items: center; gap: 18px; padding: 16px 20px 16px 16px; text-align: left; width: 100%;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+    transition: border-color .15s, transform .15s;
   }
-  .step::before {
-    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 160px;
-    background: linear-gradient(135deg, #e3f8ff 0%, #f6f1ff 50%, #ffeef7 100%); opacity: .9;
+  .title-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .title-card .thumb {
+    width: 96px; height: 96px; flex: none; border-radius: 14px; overflow: hidden; background: var(--surface-2);
+    display: grid; place-items: center; color: var(--text-3); font-size: 28px; font-weight: 700;
   }
-  .step:nth-child(2)::before { background: linear-gradient(135deg, #f3ecff 0%, #fdeff5 55%, #ebfbf1 100%); }
-  .step:nth-child(3)::before { background: linear-gradient(135deg, #e6fbf1 0%, #e4f3ff 60%, #f6f1ff 100%); }
-  [data-theme="dark"] .step::before { opacity: .12; }
-  .step > * { position: relative; }
-  .step .ico { width: 76px; height: 76px; border-radius: 18px; background: var(--surface-2); display: grid; place-items: center; margin: 0 auto 20px; color: var(--text); }
-  .step .ico svg { width: 34px; height: 34px; }
-  .step .no { font-size: 13px; color: var(--text-3); letter-spacing: .04em; }
-  .step h3 { margin: 6px 0 20px; font-size: 20px; font-weight: 700; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-  .chip { font-size: 14px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); }
+  .title-card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .title-card .thumb.ph { background: linear-gradient(135deg, #e3f8ff, #f6f1ff 55%, #ffeef7); color: #6b7280; }
+  [data-theme="dark"] .title-card .thumb.ph { background: linear-gradient(135deg, #1b2a33, #241f33 55%, #2f1e2a); color: #9ca3af; }
+  .title-card .body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .title-card .name { font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .title-card .owners { display: flex; flex-wrap: wrap; gap: 6px; }
+  .owner-chip { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-size: 12px; color: var(--text-2); }
+  .owner-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .owner-chip.none { color: var(--text-3); }
+  .owner-chip.none::before { background: var(--text-3); }
+  .status { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 8px; font-size: 12px; font-weight: 700; white-space: nowrap; align-self: flex-start; }
+  .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .status[data-s="시작 전"] { background: #f3f4f6; color: #6b7280; }
+  .status[data-s="전략 기획"] { background: #e0f2fe; color: #0369a1; }
+  .status[data-s="각색 기획"] { background: #ede9fe; color: #6d28d9; }
+  .status[data-s="프롬프트 작성"] { background: #fef3c7; color: #b45309; }
+  .status[data-s="QA"] { background: #fce7f3; color: #be185d; }
+  .status[data-s="byUs 정식 론칭"] { background: #d1fae5; color: #047857; }
+  [data-theme="dark"] .status { filter: brightness(.9); }
 
-  .labs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-  .lab {
-    position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px; padding: 24px 30px;
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); text-align: left; width: 100%;
-  }
-  .lab::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #fff2f7 0%, transparent 60%); opacity: .7; }
-  .lab:nth-child(2)::before { background: linear-gradient(90deg, #efe9ff 0%, transparent 60%); }
-  [data-theme="dark"] .lab::before { opacity: .08; }
-  .lab > * { position: relative; }
-  .lab .ico { width: 56px; height: 56px; border-radius: 14px; background: var(--surface-2); display: grid; place-items: center; flex: none; }
-  .lab .ico svg { width: 26px; height: 26px; }
-  .lab .t { font-size: 20px; font-weight: 600; }
-  .lab .d { font-size: 15px; color: var(--text-3); margin-top: 4px; }
-  .lab .arrow { margin-left: auto; color: var(--text-3); }
-  .lab .arrow svg { width: 22px; height: 22px; }
+  .empty-state { position: relative; display: grid; place-items: center; min-height: 320px; color: var(--text-3); font-size: 16px; }
+  .loading { position: relative; display: grid; place-items: center; min-height: 200px; color: var(--text-3); font-size: 14px; }
 
   .placeholder { text-align: center; padding: 60px 20px; color: var(--text-3); font-size: 16px; position: relative; }
   .placeholder strong { display: block; color: var(--text-2); font-size: 22px; margin-bottom: 8px; }
@@ -254,7 +279,6 @@
     position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #111827; color: #fff;
     padding: 12px 18px; border-radius: 10px; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.25); z-index: 60;
   }
-
   .preview-banner {
     position: sticky; top: 0; z-index: 70; padding: 12px 20px; text-align: center; font-size: 14px; font-weight: 500;
     background: #fff7d6; color: #7a5a00; border-bottom: 1px solid #f3dd8a;
@@ -268,9 +292,11 @@
     .crumb { font-size: 18px; }
     .user-chip { height: 52px; padding: 0 16px 0 12px; }
     .user-chip .nm { font-size: 15px; }
-    .hero h1 { font-size: 28px; }
+    .user-chip .uid { display: none; }
     .content { padding: 14px; }
-    .page-card { padding: 50px 16px 40px; }
+    .page-card { padding: 24px 16px 30px; min-height: auto; }
+    .title-grid { grid-template-columns: 1fr; }
+    .page-head { flex-wrap: wrap; }
   }
 </style>
 </head>
@@ -351,6 +377,65 @@
   </div>
 </div>
 
+<!-- ═══════════════════ 모달: 새 IP 추가 / 수정 ═══════════════════ -->
+<div id="modal-ip" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="ip-modal-title">
+  <div class="modal modal-lg">
+    <button type="button" class="modal-close" id="close-ip" aria-label="닫기">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <h2 id="ip-modal-title">새 IP 추가</h2>
+    <p class="desc">썸네일, IP명, 담당자, 진행 사항을 입력하세요.</p>
+
+    <form id="ip-form" novalidate>
+      <input type="hidden" id="ip-id">
+
+      <div class="field" data-field="thumbnail">
+        <span class="label">썸네일 이미지 <span class="hint" style="display:inline;margin:0 0 0 6px;font-weight:400">1:1 로 잘려 저장됩니다</span></span>
+        <div class="thumb-row">
+          <div class="thumb-box" id="ip-thumb-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
+          <div class="thumb-actions">
+            <input type="file" id="ip-thumb-file" accept="image/*" class="hidden">
+            <button type="button" class="btn btn-xs" id="ip-thumb-upload">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></svg>
+              <span id="ip-thumb-upload-label">이미지 업로드</span>
+            </button>
+            <button type="button" class="btn btn-xs btn-danger hidden" id="ip-thumb-remove">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              이미지 삭제
+            </button>
+            <div class="hint">JPG · PNG · WEBP, 10MB 이하</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" data-field="name">
+        <label for="ip-name">IP명 <span class="req">*</span> <span class="counter"><span id="ip-name-count">0</span>/24</span></label>
+        <input class="input" id="ip-name" maxlength="24" placeholder="24자 이내" autocomplete="off">
+      </div>
+
+      <div class="field" data-field="owners">
+        <span class="label">담당자 <span class="hint" style="display:inline;margin:0 0 0 6px;font-weight:400">Admin · Editor 권한 사용자 중 여러 명 선택 가능</span></span>
+        <div class="picker" id="ip-owners"></div>
+      </div>
+
+      <div class="field" data-field="status">
+        <label for="ip-status">진행 사항 <span class="req">*</span></label>
+        <select class="input" id="ip-status"></select>
+      </div>
+
+      <div id="ip-error" class="form-error hidden"></div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-sm btn-danger hidden" id="ip-delete">삭제</button>
+        <button type="button" class="btn btn-sm" id="cancel-ip">취소</button>
+        <button type="submit" class="btn btn-sm btn-primary" id="ip-submit">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- ═══════════════════ 권한 대기 화면 ═══════════════════ -->
 <section id="view-pending" class="hidden">
   <p>권한 부여 대기 중입니다.</p>
@@ -369,17 +454,9 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>
         Home
       </a>
-      <a href="#plans" data-page="plans">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>
-        기획안
-      </a>
-      <a href="#sources" data-page="sources">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        원작 라이브러리
-      </a>
-      <a href="#tasks" data-page="tasks">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-        Tasks
+      <a href="#titles" data-page="titles">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Title
       </a>
       <a href="#labs" data-page="labs">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/></svg>
@@ -416,66 +493,30 @@
     </header>
 
     <main class="content">
-      <!-- Home -->
+      <!-- Home: 나의 담당 작품 -->
       <div class="page-card" id="page-home">
         <div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
-        <div class="hero">
-          <h1>byUs 각색 기획안 Builder</h1>
-          <p>원작을 불러와 각색 방향을 설정하고 기획안을 자동으로 구성해 보세요.</p>
-          <div class="actions">
-            <button type="button" class="btn" data-page="sources">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></svg>
-              원작 불러오기
-            </button>
-            <button type="button" class="btn" data-page="plans">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-              기획안 시작하기
-            </button>
-          </div>
+        <div class="page-head">
+          <h2>나의 담당 작품 <span class="count" id="home-count"></span></h2>
+          <button type="button" class="btn btn-sm btn-primary" data-add-ip="home">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            새 IP 추가
+          </button>
         </div>
+        <div id="home-list"></div>
+      </div>
 
-        <div class="section">
-          <h2>워크플로우</h2>
-          <div class="steps">
-            <div class="step">
-              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></svg></div>
-              <div class="no">STEP 01</div>
-              <h3>원작 수집 · 분석</h3>
-              <div class="chips"><span class="chip">원작 업로드</span><span class="chip">줄거리 요약</span><span class="chip">캐릭터 추출</span><span class="chip">세계관 정리</span></div>
-            </div>
-            <div class="step">
-              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
-              <div class="no">STEP 02</div>
-              <h3>각색 방향 설정</h3>
-              <div class="chips"><span class="chip">타깃 매체</span><span class="chip">톤앤매너</span><span class="chip">분량 · 회차</span><span class="chip">핵심 변경점</span></div>
-            </div>
-            <div class="step">
-              <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-              <div class="no">STEP 03</div>
-              <h3>기획안 생성 · 검토</h3>
-              <div class="chips"><span class="chip">시놉시스</span><span class="chip">캐릭터 시트</span><span class="chip">회차 구성안</span><span class="chip">내보내기</span></div>
-            </div>
-          </div>
+      <!-- Title: 전체 IP -->
+      <div class="page-card hidden" id="page-titles">
+        <div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+        <div class="page-head">
+          <h2>Title <span class="count" id="titles-count"></span></h2>
+          <button type="button" class="btn btn-sm btn-primary" data-add-ip="titles">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            새 IP 추가
+          </button>
         </div>
-
-        <div class="section">
-          <h2>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2.2h12.4a1.5 1.5 0 0 0 1.3-2.2L14 9V3"/></svg>
-            Labs
-          </h2>
-          <div class="labs">
-            <button type="button" class="lab" data-page="labs">
-              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span>
-              <span><span class="t">로그라인 생성기</span><br><span class="d">한 줄 콘셉트 제안</span></span>
-              <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-            </button>
-            <button type="button" class="lab" data-page="labs">
-              <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5v4"/><path d="M7 17l5-5.5 5 5.5"/></svg></span>
-              <span><span class="t">캐릭터 관계도</span><br><span class="d">인물 관계 · 갈등 구조</span></span>
-              <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-            </button>
-          </div>
-        </div>
+        <div id="titles-list"></div>
       </div>
 
       <!-- 기타 페이지 (준비 중) -->
@@ -493,17 +534,19 @@
 <script>
 /* ═══════════════════════════════════════════════════════════════
  *  설정
- *  - Vercel 배포: 같은 도메인의 서버리스 함수(/api/register, /api/login, /api/status)를 호출합니다.
- *  - Apps Script 웹 앱으로 배포하면 google.script.run 을 자동으로 사용합니다.
+ *  - Vercel 배포: 같은 도메인의 서버리스 함수(/api/*)를 호출합니다.
+ *  - Apps Script 웹 앱으로 배포하면 google.script.run 을 자동으로 사용합니다. (로그인/가입만 지원)
  *  - 정적 파일로만 열면(백엔드 없음) 상단에 안내 배너가 뜹니다.
  * ═══════════════════════════════════════════════════════════════ */
 var API_BASE = '/api';
-/* 안내 배너에 표시할 실제 서비스 주소. Vercel 배포 후 그 주소로 바꾸세요. */
-var SERVICE_URL = 'https://script.google.com/a/macros/webtoonscorp.com/s/AKfycbxRjyLtiKvCX5lc_ikY_1xMuOjsuYotbLPIcvK__iAr2VqA5_mx6IvooagPEMGPTHomsg/exec';
+/* 안내 배너에 표시할 실제 서비스 주소 */
+var SERVICE_URL = 'https://pd-builder.vercel.app';
 
 var SESSION_KEY = 'byus_builder_session';
 var THEME_KEY = 'byus_builder_theme';
-var PAGES = { home: 'Home', plans: '기획안', sources: '원작 라이브러리', tasks: 'Tasks', labs: 'Labs' };
+var PAGES = { home: 'Home', titles: 'Title', labs: 'Labs' };
+var TITLE_STATUSES = ['시작 전', '전략 기획', '각색 기획', '프롬프트 작성', 'QA', 'byUs 정식 론칭'];
+var THUMB_SIZE = 320;
 
 var RULES = {
   name: function (v) { return v.length >= 1 && v.length <= 16; },
@@ -513,8 +556,10 @@ var RULES = {
 };
 
 /* ───────────── API 어댑터 ───────────── */
+function isAppsScript() { return !!(window.google && google.script && google.script.run); }
+
 function callApi(action, payload) {
-  if (window.google && google.script && google.script.run) {
+  if (isAppsScript()) {
     return new Promise(function (resolve, reject) {
       google.script.run
         .withSuccessHandler(resolve)
@@ -526,16 +571,25 @@ function callApi(action, payload) {
     showPreviewBanner();
     return Promise.reject(new Error('파일로 직접 연 화면에서는 백엔드에 연결할 수 없습니다. 배포된 주소로 접속해 주세요.'));
   }
+  var s = getSession();
+  var headers = { 'Content-Type': 'application/json' };
+  if (s && s.token) headers['Authorization'] = 'Bearer ' + s.token;
   return fetch(API_BASE + '/' + action, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    headers: headers,
+    body: JSON.stringify(payload || {})
   }).then(function (r) {
     if (r.status === 404 || r.status === 405) {
       showPreviewBanner();
       throw new Error('이 화면은 미리보기라 백엔드(/api)가 없습니다. 배포된 주소로 접속해 주세요.');
     }
-    return r.json().catch(function () { throw new Error('서버 응답을 해석하지 못했습니다. (HTTP ' + r.status + ')'); });
+    return r.json().then(function (json) {
+      if (r.status === 401 && getSession()) {
+        // 세션 만료 → 로그인 화면으로
+        setSession(null); route(); toast('세션이 만료되었습니다. 다시 로그인해 주세요.');
+      }
+      return json;
+    }, function () { throw new Error('서버 응답을 해석하지 못했습니다. (HTTP ' + r.status + ')'); });
   }, function () {
     showPreviewBanner();
     throw new Error('서버에 연결하지 못했습니다. 네트워크 상태를 확인하거나 배포된 주소로 접속해 주세요.');
@@ -548,8 +602,10 @@ function $all(sel, root) { return Array.prototype.slice.call((root || document).
 function show(el) { el.classList.remove('hidden'); }
 function hide(el) { el.classList.add('hidden'); }
 function setError(el, msg) { if (msg) { el.textContent = msg; show(el); } else { el.textContent = ''; hide(el); } }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function getSession() { try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch (e) { return null; } }
 function setSession(s) { if (s) sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); else sessionStorage.removeItem(SESSION_KEY); }
+function sameId(a, b) { return String(a || '').toLowerCase() === String(b || '').toLowerCase(); }
 function toast(msg) {
   var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2600);
@@ -562,6 +618,8 @@ function busy(btn, on, label) {
 
 /* ───────────── 화면 전환 ───────────── */
 var views = { login: $('#view-login'), pending: $('#view-pending'), app: $('#view-app') };
+var state = { titles: [], candidates: [], loaded: false, loading: null };
+
 function route() {
   var s = getSession();
   Object.keys(views).forEach(function (k) { hide(views[k]); });
@@ -572,14 +630,17 @@ function route() {
   $('#user-perm').textContent = s.permission || '';
   show(views.app);
   goPage(location.hash.replace('#', '') || 'home');
+  if (!state.loaded) loadTitles();
 }
 
 function goPage(key) {
   if (!PAGES[key]) key = 'home';
   $all('#nav a').forEach(function (a) { a.classList.toggle('active', a.dataset.page === key); });
   $('#crumb-current').textContent = PAGES[key];
-  if (key === 'home') { show($('#page-home')); hide($('#page-generic')); }
-  else { hide($('#page-home')); show($('#page-generic')); $('#generic-title').textContent = PAGES[key]; }
+  hide($('#page-home')); hide($('#page-titles')); hide($('#page-generic'));
+  if (key === 'home') show($('#page-home'));
+  else if (key === 'titles') show($('#page-titles'));
+  else { show($('#page-generic')); $('#generic-title').textContent = PAGES[key]; }
   if (location.hash !== '#' + key) history.replaceState(null, '', '#' + key);
 }
 
@@ -601,21 +662,30 @@ $('#login-form').addEventListener('submit', function (e) {
   callApi('login', { id: id, password: pw }).then(function (res) {
     busy(btn, false);
     if (!res || !res.ok) { setError(err, (res && res.error) || '로그인에 실패했습니다.'); return; }
-    setSession({ id: res.data.id, name: res.data.name, permission: res.data.permission, activate: !!res.data.activate });
+    setSession({ id: res.data.id, name: res.data.name, permission: res.data.permission, activate: !!res.data.activate, token: res.data.token || '' });
     $('#login-pw').value = '';
+    state.loaded = false;
     route();
   }).catch(function (ex) { busy(btn, false); setError(err, ex.message); });
 });
 
+function logout() {
+  var s = getSession();
+  if (s && s.token && !isAppsScript()) { callApi('logout', {}).catch(function () {}); }
+  setSession(null); state = { titles: [], candidates: [], loaded: false, loading: null };
+  location.hash = ''; route();
+}
+
 /* ───────────── 권한 대기 ───────────── */
-$('#pending-logout').addEventListener('click', function () { setSession(null); route(); });
+$('#pending-logout').addEventListener('click', logout);
 $('#pending-refresh').addEventListener('click', function () {
   var s = getSession(); if (!s) return route();
   var btn = this; btn.disabled = true;
   callApi('status', { id: s.id }).then(function (res) {
     btn.disabled = false;
     if (res && res.ok && res.data.activate) {
-      s.activate = true; s.permission = res.data.permission || s.permission; setSession(s); route(); toast('권한이 부여되었습니다.');
+      // 승인됨 → 토큰이 필요하므로 다시 로그인 유도
+      setSession(null); route(); toast('권한이 부여되었습니다. 다시 로그인해 주세요.');
     } else { toast('아직 권한이 부여되지 않았습니다.'); }
   }).catch(function (ex) { btn.disabled = false; toast(ex.message); });
 });
@@ -624,7 +694,7 @@ $('#pending-refresh').addEventListener('click', function () {
 var modal = $('#modal-register');
 function openModal() {
   $('#register-form').reset();
-  clearInvalid();
+  clearInvalid('#register-form');
   setError($('#register-error'), '');
   hide($('#register-success'));
   show($('#register-submit').parentElement);
@@ -632,14 +702,13 @@ function openModal() {
   setTimeout(function () { $('#reg-name').focus(); }, 30);
 }
 function closeModal() { hide(modal); }
-function clearInvalid() { $all('#register-form .field').forEach(function (f) { f.classList.remove('invalid'); }); }
-function markInvalid(fields) { fields.forEach(function (k) { var f = $('[data-field="' + k + '"]'); if (f) f.classList.add('invalid'); }); }
+function clearInvalid(formSel) { $all(formSel + ' .field').forEach(function (f) { f.classList.remove('invalid'); }); }
+function markInvalid(formSel, fields) { fields.forEach(function (k) { var f = $(formSel + ' [data-field="' + k + '"]'); if (f) f.classList.add('invalid'); }); }
 
 $('#open-register').addEventListener('click', openModal);
 $('#close-register').addEventListener('click', closeModal);
 $('#cancel-register').addEventListener('click', closeModal);
 modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
-document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
 $all('#register-form .input').forEach(function (inp) {
   inp.addEventListener('input', function () { inp.closest('.field').classList.remove('invalid'); });
 });
@@ -653,12 +722,12 @@ $('#register-form').addEventListener('submit', function (e) {
     permission: $('#reg-perm').value
   };
   var err = $('#register-error');
-  clearInvalid();
+  clearInvalid('#register-form');
   setError(err, '');
 
   var invalid = Object.keys(RULES).filter(function (k) { return !RULES[k](data[k]); });
   if (invalid.length) {
-    markInvalid(invalid);
+    markInvalid('#register-form', invalid);
     setError(err, '필수 문항 작성이 필요합니다.');
     return;
   }
@@ -668,7 +737,7 @@ $('#register-form').addEventListener('submit', function (e) {
   callApi('register', data).then(function (res) {
     busy(btn, false);
     if (!res || !res.ok) {
-      if (res && res.fields && res.fields.length) markInvalid(res.fields);
+      if (res && res.fields && res.fields.length) markInvalid('#register-form', res.fields);
       setError(err, (res && res.error) || '신청에 실패했습니다.');
       return;
     }
@@ -681,13 +750,259 @@ $('#register-form').addEventListener('submit', function (e) {
   }).catch(function (ex) { busy(btn, false); setError(err, ex.message); });
 });
 
+/* ───────────── IP 목록 ───────────── */
+function loadTitles() {
+  if (state.loading) return state.loading;
+  var s = getSession();
+  if (!s || !s.activate) return Promise.resolve();
+  $('#home-list').innerHTML = '<div class="loading">불러오는 중…</div>';
+  $('#titles-list').innerHTML = '<div class="loading">불러오는 중…</div>';
+  state.loading = callApi('titles', { action: 'list' }).then(function (res) {
+    state.loading = null;
+    if (!res || !res.ok) {
+      var msg = (res && res.error) || 'IP 목록을 불러오지 못했습니다.';
+      $('#home-list').innerHTML = '<div class="empty-state">' + esc(msg) + '</div>';
+      $('#titles-list').innerHTML = '<div class="empty-state">' + esc(msg) + '</div>';
+      return;
+    }
+    state.titles = res.data.titles || [];
+    state.candidates = res.data.candidates || [];
+    state.loaded = true;
+    renderLists();
+  }).catch(function (ex) {
+    state.loading = null;
+    $('#home-list').innerHTML = '<div class="empty-state">' + esc(ex.message) + '</div>';
+    $('#titles-list').innerHTML = '<div class="empty-state">' + esc(ex.message) + '</div>';
+  });
+  return state.loading;
+}
+
+function renderLists() {
+  var s = getSession() || {};
+  var mine = state.titles.filter(function (t) {
+    return (t.owners || []).some(function (o) { return sameId(o.id, s.id); });
+  });
+  renderList($('#home-list'), mine);
+  renderList($('#titles-list'), state.titles);
+  $('#home-count').textContent = mine.length ? mine.length + '개' : '';
+  $('#titles-count').textContent = state.titles.length ? state.titles.length + '개' : '';
+}
+
+function renderList(container, items) {
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-state">아직 등록된 IP가 없어요.</div>';
+    return;
+  }
+  container.innerHTML = '<div class="title-grid">' + items.map(titleCard).join('') + '</div>';
+}
+
+function titleCard(t) {
+  var thumb = t.thumbnail
+    ? '<div class="thumb"><img src="' + t.thumbnail + '" alt=""></div>'
+    : '<div class="thumb ph">' + esc((t.name || '?').charAt(0)) + '</div>';
+  var owners = (t.owners && t.owners.length)
+    ? t.owners.map(function (o) { return '<span class="owner-chip">' + esc(o.name || o.id) + '</span>'; }).join('')
+    : '<span class="owner-chip none">담당자 미지정</span>';
+  return '<button type="button" class="title-card" data-title-id="' + esc(t.id) + '" title="클릭하여 수정">' +
+    thumb +
+    '<div class="body">' +
+      '<div class="name">' + esc(t.name) + '</div>' +
+      '<div class="owners">' + owners + '</div>' +
+      '<span class="status" data-s="' + esc(t.status) + '">' + esc(t.status) + '</span>' +
+    '</div>' +
+  '</button>';
+}
+
+document.addEventListener('click', function (e) {
+  var card = e.target.closest('.title-card');
+  if (card) {
+    var t = state.titles.filter(function (x) { return x.id === card.dataset.titleId; })[0];
+    if (t) openIpModal(t, null);
+    return;
+  }
+  var add = e.target.closest('[data-add-ip]');
+  if (add) openIpModal(null, add.dataset.addIp);
+});
+
+/* ───────────── IP 모달 ───────────── */
+var ipModal = $('#modal-ip');
+var ipThumb = ''; // data URL 또는 ''
+
+function openIpModal(title, from) {
+  var s = getSession() || {};
+  var canWrite = ['Admin', 'Editor'].indexOf(s.permission) !== -1;
+  if (!canWrite) { toast('IP 추가/수정은 Admin · Editor 권한에서만 가능합니다.'); return; }
+
+  $('#ip-form').reset();
+  clearInvalid('#ip-form');
+  setError($('#ip-error'), '');
+  $('#ip-id').value = title ? title.id : '';
+  $('#ip-modal-title').textContent = title ? 'IP 수정' : '새 IP 추가';
+  $('#ip-submit').textContent = title ? '저장' : '추가';
+  $('#ip-delete').classList.toggle('hidden', !title);
+
+  // 진행 사항
+  var sel = $('#ip-status');
+  sel.innerHTML = TITLE_STATUSES.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('');
+  sel.value = title ? title.status : TITLE_STATUSES[0];
+
+  // IP명
+  $('#ip-name').value = title ? title.name : '';
+  $('#ip-name-count').textContent = $('#ip-name').value.length;
+
+  // 담당자: 홈에서 열면 기본으로 '나' 선택
+  var selected = title ? (title.owners || []).map(function (o) { return o.id; })
+                       : (from === 'home' ? [s.id] : []);
+  renderOwnerPicker(selected, s);
+
+  // 썸네일
+  setThumb(title ? title.thumbnail : '');
+
+  show(ipModal);
+  setTimeout(function () { $('#ip-name').focus(); }, 30);
+}
+function closeIpModal() { hide(ipModal); }
+
+function renderOwnerPicker(selectedIds, me) {
+  var box = $('#ip-owners');
+  var list = state.candidates.slice();
+  // 후보에 내가 없더라도(권한 캐시 지연 등) 선택된 경우에는 표시
+  selectedIds.forEach(function (id) {
+    if (!list.some(function (u) { return sameId(u.id, id); })) {
+      var known = state.titles.reduce(function (acc, t) { return acc || (t.owners || []).filter(function (o) { return sameId(o.id, id); })[0]; }, null);
+      list.push({ id: id, name: (known && known.name) || (sameId(id, me.id) ? me.name : id), permission: '' });
+    }
+  });
+  if (!list.length) { box.innerHTML = '<span class="empty">선택할 수 있는 담당자가 없습니다. (Admin · Editor 권한 사용자가 승인되면 표시됩니다)</span>'; return; }
+  box.innerHTML = list.map(function (u) {
+    var on = selectedIds.some(function (id) { return sameId(id, u.id); });
+    return '<label class="pick' + (on ? ' on' : '') + '">' +
+      '<input type="checkbox" value="' + esc(u.id) + '"' + (on ? ' checked' : '') + '>' +
+      esc(u.name) + (sameId(u.id, me.id) ? ' <span class="me">(나)</span>' : '') +
+    '</label>';
+  }).join('');
+}
+$('#ip-owners').addEventListener('change', function (e) {
+  var lab = e.target.closest('.pick'); if (lab) lab.classList.toggle('on', e.target.checked);
+  $('[data-field="owners"]').classList.remove('invalid');
+});
+function selectedOwners() {
+  return $all('#ip-owners input:checked').map(function (i) { return i.value; });
+}
+
+$('#ip-name').addEventListener('input', function () {
+  $('#ip-name-count').textContent = this.value.length;
+  this.closest('.field').classList.remove('invalid');
+});
+
+/* 썸네일: 파일 → 1:1 중앙 크롭 → 320px JPEG data URL */
+function setThumb(dataUrl) {
+  ipThumb = dataUrl || '';
+  var box = $('#ip-thumb-box');
+  if (ipThumb) {
+    box.innerHTML = '<img src="' + ipThumb + '" alt="썸네일 미리보기">';
+    box.classList.add('has-img');
+    $('#ip-thumb-upload-label').textContent = '이미지 바꾸기';
+    show($('#ip-thumb-remove'));
+  } else {
+    box.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+    box.classList.remove('has-img');
+    $('#ip-thumb-upload-label').textContent = '이미지 업로드';
+    hide($('#ip-thumb-remove'));
+  }
+  $('[data-field="thumbnail"]').classList.remove('invalid');
+}
+$('#ip-thumb-upload').addEventListener('click', function () { $('#ip-thumb-file').value = ''; $('#ip-thumb-file').click(); });
+$('#ip-thumb-box').addEventListener('click', function () { $('#ip-thumb-file').value = ''; $('#ip-thumb-file').click(); });
+$('#ip-thumb-remove').addEventListener('click', function () { setThumb(''); });
+$('#ip-thumb-file').addEventListener('change', function () {
+  var file = this.files && this.files[0];
+  if (!file) return;
+  if (!/^image\//.test(file.type)) { setError($('#ip-error'), '이미지 파일만 업로드할 수 있습니다.'); return; }
+  if (file.size > 10 * 1024 * 1024) { setError($('#ip-error'), '10MB 이하의 이미지를 선택해 주세요.'); return; }
+  setError($('#ip-error'), '');
+  var url = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function () {
+    try {
+      var side = Math.min(img.naturalWidth, img.naturalHeight);
+      var sx = (img.naturalWidth - side) / 2, sy = (img.naturalHeight - side) / 2;
+      var c = document.createElement('canvas'); c.width = THUMB_SIZE; c.height = THUMB_SIZE;
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, THUMB_SIZE, THUMB_SIZE);
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, THUMB_SIZE, THUMB_SIZE);
+      var q = 0.86, out = c.toDataURL('image/jpeg', q);
+      while (out.length > 300 * 1024 && q > 0.5) { q -= 0.1; out = c.toDataURL('image/jpeg', q); }
+      setThumb(out);
+    } catch (e) { setError($('#ip-error'), '이미지를 처리하지 못했습니다. 다른 파일을 시도해 주세요.'); }
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); setError($('#ip-error'), '이미지를 읽지 못했습니다. 다른 파일을 시도해 주세요.'); };
+  img.src = url;
+});
+
+$('#close-ip').addEventListener('click', closeIpModal);
+$('#cancel-ip').addEventListener('click', closeIpModal);
+ipModal.addEventListener('click', function (e) { if (e.target === ipModal) closeIpModal(); });
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape') return;
+  if (!modal.classList.contains('hidden')) closeModal();
+  if (!ipModal.classList.contains('hidden')) closeIpModal();
+});
+
+$('#ip-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var data = {
+    action: 'save',
+    id: $('#ip-id').value || undefined,
+    name: $('#ip-name').value.trim(),
+    owners: selectedOwners(),
+    status: $('#ip-status').value,
+    thumbnail: ipThumb
+  };
+  var err = $('#ip-error');
+  clearInvalid('#ip-form');
+  setError(err, '');
+  var invalid = [];
+  if (!data.name || data.name.length > 24) invalid.push('name');
+  if (TITLE_STATUSES.indexOf(data.status) === -1) invalid.push('status');
+  if (invalid.length) { markInvalid('#ip-form', invalid); setError(err, '필수 문항 작성이 필요합니다.'); return; }
+
+  var btn = $('#ip-submit');
+  busy(btn, true, '저장 중…');
+  callApi('titles', data).then(function (res) {
+    busy(btn, false);
+    if (!res || !res.ok) {
+      if (res && res.fields && res.fields.length) markInvalid('#ip-form', res.fields);
+      setError(err, (res && res.error) || '저장에 실패했습니다.');
+      return;
+    }
+    closeIpModal();
+    toast(data.id ? 'IP 정보를 수정했습니다.' : '새 IP를 추가했습니다.');
+    state.loaded = false;
+    loadTitles();
+  }).catch(function (ex) { busy(btn, false); setError(err, ex.message); });
+});
+
+$('#ip-delete').addEventListener('click', function () {
+  var id = $('#ip-id').value; if (!id) return;
+  var name = $('#ip-name').value || '이 IP';
+  if (!confirm('"' + name + '" 을(를) 삭제할까요? 되돌릴 수 없습니다.')) return;
+  var btn = this; busy(btn, true, '삭제 중…');
+  callApi('titles', { action: 'delete', id: id }).then(function (res) {
+    busy(btn, false);
+    if (!res || !res.ok) { setError($('#ip-error'), (res && res.error) || '삭제에 실패했습니다.'); return; }
+    closeIpModal(); toast('IP를 삭제했습니다.');
+    state.loaded = false; loadTitles();
+  }).catch(function (ex) { busy(btn, false); setError($('#ip-error'), ex.message); });
+});
+
 /* ───────────── 메인 앱 ───────────── */
 $('#nav').addEventListener('click', function (e) {
   var a = e.target.closest('a[data-page]'); if (!a) return;
   e.preventDefault(); goPage(a.dataset.page);
 });
-$all('.content [data-page]').forEach(function (b) { b.addEventListener('click', function () { goPage(b.dataset.page); }); });
-$('#logout').addEventListener('click', function () { setSession(null); location.hash = ''; route(); });
+$('#logout').addEventListener('click', logout);
 window.addEventListener('hashchange', function () { var s = getSession(); if (s && s.activate) goPage(location.hash.replace('#', '')); });
 
 /* ───────────── 미리보기(백엔드 없음) 안내 ───────────── */
