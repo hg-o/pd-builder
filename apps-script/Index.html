@@ -246,15 +246,15 @@
   .page-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
   .page-head .count { font-size: 14px; color: var(--text-3); font-weight: 500; margin-left: 8px; }
 
-  /* IP 카드 (가로형) */
-  .title-grid { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 16px; }
+  /* IP 카드: 상단 전체 폭 1:1 썸네일 + 하단 정보 */
+  .title-grid { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
   .title-card {
-    display: flex; align-items: center; gap: 18px; padding: 16px 20px 16px 16px; text-align: left; width: 100%;
+    display: flex; flex-direction: column; padding: 0; text-align: left; width: 100%; overflow: hidden;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
     transition: border-color .15s, transform .15s;
   }
   .title-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .title-card { position: relative; cursor: default; padding-right: 56px; }
+  .title-card { position: relative; cursor: default; }
   .title-card .edit-btn {
     position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px;
     border: 1px solid var(--border); background: var(--surface); color: var(--text-2); display: grid; place-items: center;
@@ -262,38 +262,39 @@
   }
   .title-card .edit-btn:hover { border-color: var(--accent); color: #047857; background: rgba(0, 230, 118, .08); }
   .title-card .edit-btn svg { width: 16px; height: 16px; }
-  .title-card .dates { font-size: 12px; color: var(--text-3); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .title-card .dates { font-size: 13px; color: var(--text-3); display: flex; flex-wrap: wrap; gap: 4px 12px; }
   .title-card .dates b { font-weight: 600; color: var(--text-3); margin-right: 4px; }
   .title-card .meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .ext-link {
     display: inline-flex; align-items: center; gap: 5px; max-width: 100%; height: 26px; padding: 0 10px; border-radius: 8px;
-    border: 1px solid var(--border); background: var(--surface); color: #0b63ce; font-size: 12px; font-weight: 600; text-decoration: none;
+    border: 1px solid var(--border); background: var(--surface); color: #0b63ce; font-size: 13px; font-weight: 600; text-decoration: none;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .ext-link:hover { border-color: #0b63ce; background: rgba(11, 99, 206, .06); text-decoration: underline; text-underline-offset: 2px; }
   .ext-link svg { width: 14px; height: 14px; flex: none; }
   [data-theme="dark"] .ext-link { color: #7cb3ff; }
   .thumb-link {
-    position: absolute; right: 6px; bottom: 6px; width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center;
+    position: absolute; right: 10px; bottom: 10px; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
     background: rgba(17, 24, 39, .72); color: #fff;
   }
-  .thumb-link svg { width: 13px; height: 13px; }
+  .thumb-link:hover { background: rgba(17, 24, 39, .9); }
+  .thumb-link svg { width: 15px; height: 15px; }
   .title-card .thumb { position: relative; }
   .title-card .thumb {
-    width: 96px; height: 96px; flex: none; border-radius: 14px; overflow: hidden; background: var(--surface-2);
-    display: grid; place-items: center; color: var(--text-3); font-size: 28px; font-weight: 700;
+    width: 100%; aspect-ratio: 1 / 1; flex: none; border-radius: 0; overflow: hidden; background: var(--surface-2);
+    display: grid; place-items: center; color: var(--text-3); font-size: 64px; font-weight: 700;
   }
-  .title-card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .title-card .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .title-card .thumb.ph { background: linear-gradient(135deg, #e3f8ff, #f6f1ff 55%, #ffeef7); color: #6b7280; }
   [data-theme="dark"] .title-card .thumb.ph { background: linear-gradient(135deg, #1b2a33, #241f33 55%, #2f1e2a); color: #9ca3af; }
-  .title-card .body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .title-card .body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; }
   .title-card .name { font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .title-card .owners { display: flex; flex-wrap: wrap; gap: 6px; }
-  .owner-chip { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-size: 12px; color: var(--text-2); }
+  .owner-chip { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-size: 13px; color: var(--text-2); }
   .owner-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
   .owner-chip.none { color: var(--text-3); }
   .owner-chip.none::before { background: var(--text-3); }
-  .status { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 8px; font-size: 12px; font-weight: 700; white-space: nowrap; align-self: flex-start; }
+  .status { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 8px; font-size: 13px; font-weight: 700; white-space: nowrap; align-self: flex-start; }
   .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .status[data-s="시작 전"] { background: #f3f4f6; color: #6b7280; }
   .status[data-s="전략 기획"] { background: #e0f2fe; color: #0369a1; }
