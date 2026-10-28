@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# vercel
+.vercel/
+
+# secrets
+.env
+.env.*
+!.env.example
+*.json.key
+service-account*.json
+
+# local tooling
+.claude/
+.DS_Store
+Thumbs.db

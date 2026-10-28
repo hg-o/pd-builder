@@ -1,0 +1,16 @@
+{
+  "name": "byus-adaptation-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "byUs 각색 기획안 Builder — 로그인/권한 신청 프론트엔드 + Google Sheets 연동 서버리스 API",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "google-auth-library": "^9.14.0"
+  }
+}
