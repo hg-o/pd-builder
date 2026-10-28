@@ -29,7 +29,8 @@ module.exports = authHandler(async (req, res, b, user) => {
       name: b.name,
       owners: b.owners,
       status: b.status,
-      thumbnail: b.thumbnail
+      thumbnail: b.thumbnail,
+      link: b.link
     }, user.id);
     return ok(res, { id });
   }
