@@ -2,9 +2,10 @@
  * POST /api/status
  * body: { id }
  * 권한 대기 화면의 "권한 상태 다시 확인" 용. 활성 여부만 돌려줍니다.
+ * (시트에서 TRUE 로 바꾼 뒤 최대 1분 내에 반영됩니다)
  */
 const { postHandler, ok, fail } = require('../lib/http');
-const { findUserById, str } = require('../lib/sheets');
+const { findUserById, str } = require('../lib/store');
 
 module.exports = postHandler(async (req, res, b) => {
   const user = await findUserById(str(b.id));

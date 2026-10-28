@@ -1,10 +1,11 @@
 /**
  * POST /api/register
  * body: { name, id, password, permission }
- * [권한 신청하기] — 필수/형식 검증 후 시트에 한 행 추가 (activate 비움 = 권한 대기)
+ * [권한 신청하기] — 필수/형식 검증 후 Redis 에 저장 (activate 비움 = 권한 대기).
+ * 다음 동기화(최대 1분) 때 Apps Script 가 시트에 행을 추가합니다.
  */
 const { postHandler, ok, fail, validateRegistration } = require('../lib/http');
-const { findUserById, appendUser, str } = require('../lib/sheets');
+const { findUserById, createUser, str } = require('../lib/store');
 
 module.exports = postHandler(async (req, res, b) => {
   const payload = {
@@ -23,6 +24,6 @@ module.exports = postHandler(async (req, res, b) => {
     return fail(res, '이미 등록된 아이디입니다. 다른 아이디를 사용해 주세요.', ['id']);
   }
 
-  await appendUser(payload);
+  await createUser(payload);
   return ok(res, { name: payload.name, id: payload.id, permission: payload.permission });
 });

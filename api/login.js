@@ -5,7 +5,7 @@
  * activate 가 TRUE 가 아니면 프론트엔드가 '권한 부여 대기 중입니다.' 화면을 보여줍니다.
  */
 const { postHandler, ok, fail } = require('../lib/http');
-const { findUserById, verifyPassword, str } = require('../lib/sheets');
+const { findUserById, verifyPassword, str } = require('../lib/store');
 
 module.exports = postHandler(async (req, res, b) => {
   const id = str(b.id);
