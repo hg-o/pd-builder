@@ -80,6 +80,10 @@
   .btn svg { width: 1.375rem; height: 1.375rem; }
   .btn-sm svg { width: 1.125rem; height: 1.125rem; }
   .btn-xs svg { width: 1rem; height: 1rem; }
+  /* 로그인 이후 화면의 버튼 글자는 디자인 시스템 안에서 한 단계 크게 */
+  #view-app .btn, #modal-ip .btn { font-size: 1.25rem; }
+  #view-app .btn-sm, #modal-ip .btn-sm { font-size: 1.0625rem; height: 2.875rem; padding: 0 1.25rem; }
+  #view-app .btn-xs, #modal-ip .btn-xs { font-size: 0.9375rem; height: 2.375rem; }
 
   /* ───── 폼 ───── */
   .field { margin-bottom: 1.125rem; }
@@ -107,9 +111,12 @@
   [data-theme="dark"] .form-success { background: #0f2a20; color: #34d399; }
   .counter { float: right; font-weight: 400; color: var(--text-3); }
 
-  /* ───── 로그인 화면 ───── */
+  /* ───── 로그인 화면 ─────
+     로그인·가입·권한 대기 화면은 원래 크기를 유지합니다 (전체 75% 축소를 4/3 배로 되돌림) */
+  #view-login, #view-pending, #modal-register .modal { zoom: 1.3333; }
+  #view-login, #view-pending { min-height: calc(100% / 1.3333); }
   #view-login {
-    position: relative; min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 2.5rem 1.25rem;
+    position: relative; display: flex; align-items: center; justify-content: center; padding: 2.5rem 1.25rem;
   }
   .login-card {
     position: relative; width: 100%; max-width: 27.5rem; background: var(--surface);
@@ -177,7 +184,7 @@
 
   /* ───── 권한 대기 화면 ───── */
   #view-pending {
-    min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.75rem;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.75rem;
     background: var(--surface);
   }
   #view-pending p { margin: 0; font-size: 1.25rem; font-weight: 600; color: var(--text-2); }
@@ -247,6 +254,23 @@
     transition: border-color .15s, transform .15s;
   }
   .title-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .title-card { cursor: pointer; }
+  .title-card:focus-visible { outline: 0.1875rem solid rgba(0, 230, 118, .5); outline-offset: 0.125rem; }
+  .title-card .meta { display: flex; align-items: center; gap: 0.625rem; flex-wrap: wrap; }
+  .ext-link {
+    display: inline-flex; align-items: center; gap: 0.3125rem; max-width: 100%; height: 1.625rem; padding: 0 0.625rem; border-radius: 0.5rem;
+    border: 1px solid var(--border); background: var(--surface); color: #0b63ce; font-size: 0.75rem; font-weight: 600; text-decoration: none;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ext-link:hover { border-color: #0b63ce; background: rgba(11, 99, 206, .06); text-decoration: underline; text-underline-offset: 0.125rem; }
+  .ext-link svg { width: 0.875rem; height: 0.875rem; flex: none; }
+  [data-theme="dark"] .ext-link { color: #7cb3ff; }
+  .thumb-link {
+    position: absolute; right: 0.375rem; bottom: 0.375rem; width: 1.5rem; height: 1.5rem; border-radius: 0.5rem; display: grid; place-items: center;
+    background: rgba(17, 24, 39, .72); color: #fff;
+  }
+  .thumb-link svg { width: 0.8125rem; height: 0.8125rem; }
+  .title-card .thumb { position: relative; }
   .title-card .thumb {
     width: 6rem; height: 6rem; flex: none; border-radius: 0.875rem; overflow: hidden; background: var(--surface-2);
     display: grid; place-items: center; color: var(--text-3); font-size: 1.75rem; font-weight: 700;
@@ -421,13 +445,18 @@
       </div>
 
       <div class="field" data-field="owners">
-        <span class="label">담당자 <span class="hint" style="display:inline;margin:0 0 0 6px;font-weight:400">Admin · Editor 권한 사용자 중 여러 명 선택 가능</span></span>
+        <span class="label">담당자 <span class="req">*</span> <span class="hint" style="display:inline;margin:0 0 0 6px;font-weight:400">Admin · Editor 권한 사용자 중 여러 명 선택 가능</span></span>
         <div class="picker" id="ip-owners"></div>
       </div>
 
       <div class="field" data-field="status">
         <label for="ip-status">진행 사항 <span class="req">*</span></label>
         <select class="input" id="ip-status"></select>
+      </div>
+
+      <div class="field" data-field="link">
+        <label for="ip-link">링크 <span class="hint" style="display:inline;margin:0 0 0 6px;font-weight:400">선택 · 원작/참고 페이지 주소</span></label>
+        <input class="input" id="ip-link" type="url" placeholder="https://" autocomplete="off" spellcheck="false">
       </div>
 
       <div id="ip-error" class="form-error hidden"></div>
@@ -801,24 +830,41 @@ function renderList(container, items) {
   container.innerHTML = '<div class="title-grid">' + items.map(titleCard).join('') + '</div>';
 }
 
+var LINK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+
+function linkLabel(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return url; }
+}
+
 function titleCard(t) {
+  var link = t.link ? '<a class="thumb-link" href="' + esc(t.link) + '" target="_blank" rel="noopener noreferrer" title="' + esc(t.link) + '">' + LINK_ICON + '</a>' : '';
   var thumb = t.thumbnail
-    ? '<div class="thumb"><img src="' + t.thumbnail + '" alt=""></div>'
-    : '<div class="thumb ph">' + esc((t.name || '?').charAt(0)) + '</div>';
+    ? '<div class="thumb"><img src="' + t.thumbnail + '" alt="">' + link + '</div>'
+    : '<div class="thumb ph">' + esc((t.name || '?').charAt(0)) + link + '</div>';
   var owners = (t.owners && t.owners.length)
     ? t.owners.map(function (o) { return '<span class="owner-chip">' + esc(o.name || o.id) + '</span>'; }).join('')
     : '<span class="owner-chip none">담당자 미지정</span>';
-  return '<button type="button" class="title-card" data-title-id="' + esc(t.id) + '" title="클릭하여 수정">' +
+  var extLink = t.link
+    ? '<a class="ext-link" href="' + esc(t.link) + '" target="_blank" rel="noopener noreferrer" title="' + esc(t.link) + '">' + LINK_ICON + esc(linkLabel(t.link)) + '</a>'
+    : '';
+  return '<div class="title-card" role="button" tabindex="0" data-title-id="' + esc(t.id) + '" title="클릭하여 수정">' +
     thumb +
     '<div class="body">' +
       '<div class="name">' + esc(t.name) + '</div>' +
       '<div class="owners">' + owners + '</div>' +
-      '<span class="status" data-s="' + esc(t.status) + '">' + esc(t.status) + '</span>' +
+      '<div class="meta"><span class="status" data-s="' + esc(t.status) + '">' + esc(t.status) + '</span>' + extLink + '</div>' +
     '</div>' +
-  '</button>';
+  '</div>';
 }
 
+document.addEventListener('keydown', function (e) {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('title-card')) {
+    e.preventDefault(); e.target.click();
+  }
+});
+
 document.addEventListener('click', function (e) {
+  if (e.target.closest('a.ext-link, a.thumb-link')) return; // 외부 링크는 수정 모달을 열지 않음
   var card = e.target.closest('.title-card');
   if (card) {
     var t = state.titles.filter(function (x) { return x.id === card.dataset.titleId; })[0];
@@ -851,9 +897,10 @@ function openIpModal(title, from) {
   sel.innerHTML = TITLE_STATUSES.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('');
   sel.value = title ? title.status : TITLE_STATUSES[0];
 
-  // IP명
+  // IP명 · 링크
   $('#ip-name').value = title ? title.name : '';
   $('#ip-name-count').textContent = $('#ip-name').value.length;
+  $('#ip-link').value = title ? (title.link || '') : '';
 
   // 담당자: 홈에서 열면 기본으로 '나' 선택
   var selected = title ? (title.owners || []).map(function (o) { return o.id; })
@@ -899,6 +946,21 @@ $('#ip-name').addEventListener('input', function () {
   $('#ip-name-count').textContent = this.value.length;
   this.closest('.field').classList.remove('invalid');
 });
+$('#ip-link').addEventListener('input', function () { this.closest('.field').classList.remove('invalid'); });
+
+/* 링크 정규화: 스킴이 없으면 https:// 를 붙이고, http(s) URL 이 아니면 null */
+function normalizeLink(v) {
+  v = String(v || '').trim();
+  if (!v) return '';
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) v = 'https://' + v;
+  try {
+    var u = new URL(v);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    // 브라우저가 공백 등을 %20 으로 관대하게 받아들이므로 호스트명을 따로 확인
+    if (!/^[a-z0-9.-]+$/i.test(u.hostname) || u.hostname.indexOf('.') === -1) return null;
+    return u.href;
+  } catch (e) { return null; }
+}
 
 /* 썸네일: 파일 → 1:1 중앙 크롭 → 320px JPEG data URL */
 function setThumb(dataUrl) {
@@ -957,21 +1019,25 @@ document.addEventListener('keydown', function (e) {
 
 $('#ip-form').addEventListener('submit', function (e) {
   e.preventDefault();
+  var link = normalizeLink($('#ip-link').value);
   var data = {
     action: 'save',
     id: $('#ip-id').value || undefined,
     name: $('#ip-name').value.trim(),
     owners: selectedOwners(),
     status: $('#ip-status').value,
-    thumbnail: ipThumb
+    thumbnail: ipThumb,
+    link: link || ''
   };
   var err = $('#ip-error');
   clearInvalid('#ip-form');
   setError(err, '');
   var invalid = [];
   if (!data.name || data.name.length > 24) invalid.push('name');
+  if (!data.owners.length) invalid.push('owners');
   if (TITLE_STATUSES.indexOf(data.status) === -1) invalid.push('status');
   if (invalid.length) { markInvalid('#ip-form', invalid); setError(err, '필수 문항 작성이 필요합니다.'); return; }
+  if (link === null) { markInvalid('#ip-form', ['link']); setError(err, '링크는 http:// 또는 https:// 로 시작하는 주소여야 합니다.'); return; }
 
   var btn = $('#ip-submit');
   busy(btn, true, '저장 중…');
