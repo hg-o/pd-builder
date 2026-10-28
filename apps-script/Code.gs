@@ -99,7 +99,7 @@ var HASH_PASSWORDS = false;
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('byUs 각색 기획안 Builder')
+    .setTitle('byUs Story Builder')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
