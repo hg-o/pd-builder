@@ -1,4 +1,4 @@
-# byUs 각색 기획안 Builder
+# byUs Story Builder
 
 로그인 · ID 등록/권한 신청 · 권한 대기 · 메인 화면으로 구성된 웹 앱입니다.
 관리자는 지금처럼 **Google 스프레드시트**에서 사용자를 관리합니다(`activate` 를 `TRUE` 로 바꾸면 승인).

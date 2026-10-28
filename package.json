@@ -2,7 +2,7 @@
   "name": "byus-adaptation-builder",
   "version": "1.1.0",
   "private": true,
-  "description": "byUs 각색 기획안 Builder — 로그인/권한 신청 프론트엔드 + Upstash Redis 서버리스 API + Apps Script 시트 동기화",
+  "description": "byUs Story Builder —로그인/권한 신청 프론트엔드 + Upstash Redis 서버리스 API + Apps Script 시트 동기화",
   "engines": {
     "node": ">=18"
   },
