@@ -40,8 +40,10 @@
 
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; }
-  /* 로그인 이후 화면(앱 셸, IP 모달)만 초안의 90% 배율. 로그인·가입·대기 화면은 원래 크기 */
-  #view-app, #modal-ip { zoom: 0.9; }
+  /* 로그인 이후 화면(앱 셸, IP 모달)만 초안의 90% 배율. 로그인·가입·대기 화면은 원래 크기
+     zoom 안에서는 vh 가 배율만큼 줄어들므로, 화면을 꽉 채우도록 vh 를 배율로 나눠 보정합니다 */
+  :root { --app-zoom: 0.9; }
+  #view-app, #modal-ip { zoom: var(--app-zoom); }
   body {
     font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Apple SD Gothic Neo", Roboto, sans-serif;
     background: var(--bg);
@@ -193,10 +195,10 @@
   .link-btn:hover { color: var(--text-2); }
 
   /* ───── 메인 앱 레이아웃 ───── */
-  #view-app { display: flex; min-height: 100vh; }
+  #view-app { display: flex; min-height: calc(100vh / var(--app-zoom)); }
   .sidebar {
     width: var(--sidebar-w); flex: none; background: var(--sidebar-bg); color: var(--sidebar-text);
-    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+    display: flex; flex-direction: column; position: sticky; top: 0; height: calc(100vh / var(--app-zoom));
   }
   .sidebar .brand {
     height: 90px; display: flex; align-items: center; justify-content: center;
@@ -240,21 +242,21 @@
   .content { padding: 24px; }
   .page-card {
     position: relative; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 36px 32px 40px; overflow: hidden; min-height: calc(100vh - 90px - 48px);
+    padding: 36px 32px 40px; overflow: hidden; min-height: calc(100vh / var(--app-zoom) - 90px - 48px);
   }
   .page-head { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 26px; }
   .page-head h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
   .page-head .count { font-size: 14px; color: var(--text-3); font-weight: 500; margin-left: 8px; }
 
-  /* IP 카드: 상단 전체 폭 1:1 썸네일 + 하단 정보 */
-  .title-grid { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  /* IP 카드 (가로형): 좌측 1:1 썸네일(상하좌우 동일 여백) + 우측 정보 */
+  .title-grid { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 16px; }
   .title-card {
-    display: flex; flex-direction: column; padding: 0; text-align: left; width: 100%; overflow: hidden;
+    display: flex; align-items: flex-start; gap: 18px; padding: 16px; text-align: left; width: 100%; overflow: hidden;
     background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
     transition: border-color .15s, transform .15s;
   }
   .title-card:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .title-card { position: relative; cursor: default; }
+  .title-card { position: relative; cursor: default; padding-right: 60px; }
   .title-card .edit-btn {
     position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px;
     border: 1px solid var(--border); background: var(--surface); color: var(--text-2); display: grid; place-items: center;
@@ -274,20 +276,20 @@
   .ext-link svg { width: 14px; height: 14px; flex: none; }
   [data-theme="dark"] .ext-link { color: #7cb3ff; }
   .thumb-link {
-    position: absolute; right: 10px; bottom: 10px; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+    position: absolute; right: 8px; bottom: 8px; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center;
     background: rgba(17, 24, 39, .72); color: #fff;
   }
   .thumb-link:hover { background: rgba(17, 24, 39, .9); }
-  .thumb-link svg { width: 15px; height: 15px; }
+  .thumb-link svg { width: 14px; height: 14px; }
   .title-card .thumb { position: relative; }
   .title-card .thumb {
-    width: 100%; aspect-ratio: 1 / 1; flex: none; border-radius: 0; overflow: hidden; background: var(--surface-2);
-    display: grid; place-items: center; color: var(--text-3); font-size: 64px; font-weight: 700;
+    width: 132px; height: 132px; flex: none; border-radius: 14px; overflow: hidden; background: var(--surface-2);
+    display: grid; place-items: center; color: var(--text-3); font-size: 40px; font-weight: 700;
   }
   .title-card .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .title-card .thumb.ph { background: linear-gradient(135deg, #e3f8ff, #f6f1ff 55%, #ffeef7); color: #6b7280; }
   [data-theme="dark"] .title-card .thumb.ph { background: linear-gradient(135deg, #1b2a33, #241f33 55%, #2f1e2a); color: #9ca3af; }
-  .title-card .body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 14px 16px 16px; }
+  .title-card .body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 2px 0 0; min-height: 132px; }
   .title-card .name { font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .title-card .owners { display: flex; flex-wrap: wrap; gap: 6px; }
   .owner-chip { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-size: 13px; color: var(--text-2); }
@@ -388,7 +390,7 @@
       </div>
       <div class="field" data-field="id">
         <label for="reg-id">아이디 <span class="req">*</span></label>
-        <input class="input" id="reg-id" name="id" placeholder="영문, 숫자, 기호" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <input class="input" id="reg-id" name="id" placeholder="회사 이메일 주소 작성" autocomplete="off" autocapitalize="off" spellcheck="false">
       </div>
       <div class="field" data-field="password">
         <label for="reg-pw">비밀번호 <span class="req">*</span></label>
@@ -497,6 +499,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>
         Home
       </a>
+      <a href="#schedule" data-page="schedule">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+        Schedule Simulator
+      </a>
       <a href="#titles" data-page="titles">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
         Title
@@ -587,7 +593,7 @@ var SERVICE_URL = 'https://pd-builder.vercel.app';
 
 var SESSION_KEY = 'byus_builder_session';
 var THEME_KEY = 'byus_builder_theme';
-var PAGES = { home: 'Home', titles: 'Title', labs: 'Labs' };
+var PAGES = { home: 'Home', schedule: 'Schedule Simulator', titles: 'Title', labs: 'Labs' };
 var TITLE_STATUSES = ['시작 전', '전략 기획', '각색 기획', '프롬프트 작성', 'QA', 'byUs 정식 론칭'];
 var THUMB_SIZE = 320;
 
