@@ -350,7 +350,7 @@
       </div>
       <div class="field" data-field="id">
         <label for="reg-id">아이디 <span class="req">*</span></label>
-        <input class="input" id="reg-id" name="id" maxlength="16" placeholder="영문, 숫자, 기호 · 16자 이내" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <input class="input" id="reg-id" name="id" placeholder="영문, 숫자, 기호" autocomplete="off" autocapitalize="off" spellcheck="false">
       </div>
       <div class="field" data-field="password">
         <label for="reg-pw">비밀번호 <span class="req">*</span></label>
@@ -550,7 +550,7 @@ var THUMB_SIZE = 320;
 
 var RULES = {
   name: function (v) { return v.length >= 1 && v.length <= 16; },
-  id: function (v) { return /^[A-Za-z0-9!-\/:-@\[-`{-~]{1,16}$/.test(v); },
+  id: function (v) { return /^[A-Za-z0-9!-\/:-@\[-`{-~]+$/.test(v); },
   password: function (v) { return /^[A-Za-z0-9!-\/:-@\[-`{-~]{8,}$/.test(v); },
   permission: function (v) { return ['Admin', 'Editor', 'Viewer'].indexOf(v) !== -1; }
 };
