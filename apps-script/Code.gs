@@ -2,14 +2,86 @@
  * byUs 각색 기획안 Builder — Back-end (Google Apps Script)
  *
  * 역할
- *  - doGet  : Index.html(로그인/권한 신청/메인 화면)을 웹 앱으로 서빙
- *  - api()  : 프론트엔드(google.script.run)에서 호출하는 단일 진입점
- *  - doPost : 외부 호스팅 프론트엔드에서 fetch 로 호출할 때 쓰는 JSON API
+ *  1. Vercel 동기화 (운영 경로)
+ *     - syncWithVercel() : 1분마다 시간 트리거로 실행. 시트 전체 행을 Vercel /api/sync 로 보내고,
+ *                          Vercel(Upstash Redis)에만 있는 신규 가입자를 시트에 추가합니다.
+ *     - installSyncTrigger() : 트리거 설치 (편집기에서 한 번 실행)
+ *     - 스크립트 속성(프로젝트 설정 → 스크립트 속성)에 VERCEL_SYNC_URL, SYNC_SECRET 필요
+ *  2. 웹 앱 (백업 경로, 회사 계정 사용자 전용)
+ *     - doGet / api() / doPost : Index.html 서빙 + 가입/로그인 API
  *
  * 시트 컬럼 (1행 헤더)
  *  A: name | B: ID | C: password | D: permission | E: activate
- *  - activate 는 관리자가 TRUE 로 바꾸는 순간부터 사이트 권한이 부여됩니다.
+ *  - activate 는 관리자가 TRUE 로 바꾸는 순간부터 사이트 권한이 부여됩니다. (Vercel 사이트는 최대 1분 내 반영)
  */
+
+// ───────────────────────────── Vercel 동기화 ─────────────────────────────
+
+var SYNC_INTERVAL_MINUTES = 1;
+
+/** 시간 트리거가 호출. 편집기에서 직접 실행해도 됩니다. */
+function syncWithVercel() {
+  var props = PropertiesService.getScriptProperties();
+  var url = str(props.getProperty('VERCEL_SYNC_URL'));
+  var secret = str(props.getProperty('SYNC_SECRET'));
+  if (!url || !secret) {
+    throw new Error('스크립트 속성 VERCEL_SYNC_URL, SYNC_SECRET 을 먼저 설정하세요. (프로젝트 설정 → 스크립트 속성)');
+  }
+
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return; // 이전 동기화가 아직 실행 중
+  try {
+    var sheet = getSheet();
+    var last = sheet.getLastRow();
+    var rows = [];
+    if (last >= 2) {
+      sheet.getRange(2, 1, last - 1, HEADERS.length).getValues().forEach(function (r) {
+        if (!str(r[1])) return; // ID 없는 빈 행 제외
+        rows.push({ name: str(r[0]), id: str(r[1]), password: str(r[2]), permission: str(r[3]), activate: isTrue(r[4]) });
+      });
+    }
+
+    var res = UrlFetchApp.fetch(url, {
+      method: 'post',
+      contentType: 'application/json',
+      headers: { 'x-sync-secret': secret },
+      payload: JSON.stringify({ rows: rows }),
+      muteHttpExceptions: true
+    });
+    var code = res.getResponseCode();
+    var body;
+    try { body = JSON.parse(res.getContentText()); } catch (e) { body = null; }
+    if (code !== 200 || !body || !body.ok) {
+      throw new Error('동기화 실패 (HTTP ' + code + '): ' + (body && body.error ? body.error : res.getContentText().slice(0, 200)));
+    }
+
+    var append = body.data.append || [];
+    if (append.length) {
+      var values = append.map(function (u) { return [u.name, u.id, u.password, u.permission, '']; });
+      sheet.getRange(sheet.getLastRow() + 1, 1, values.length, HEADERS.length).setValues(values);
+    }
+    Logger.log('sync ok: 시트 ' + rows.length + '행, 신규 추가 ' + append.length + '명, 가져옴 ' + (body.data.imported || 0) + ', 제거 ' + (body.data.removed || 0));
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** 편집기에서 한 번 실행: 기존 트리거를 정리하고 1분 주기 트리거를 설치합니다. */
+function installSyncTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'syncWithVercel') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('syncWithVercel').timeBased().everyMinutes(SYNC_INTERVAL_MINUTES).create();
+  Logger.log('트리거 설치 완료: syncWithVercel 매 ' + SYNC_INTERVAL_MINUTES + '분');
+}
+
+/** 트리거 제거 (동기화 중단) */
+function removeSyncTrigger() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'syncWithVercel') ScriptApp.deleteTrigger(t);
+  });
+  Logger.log('트리거 제거 완료');
+}
 
 var SPREADSHEET_ID = '1bkeTv7isOVdy3TDpa7kkM2L2GDhJO73NaLdKwvXlw64';
 var SHEET_NAME = '시트1';
