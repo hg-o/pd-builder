@@ -21,6 +21,16 @@
 - 시트가 기준입니다. 시트에서 `activate` 나 `permission` 을 바꾸면 다음 동기화(≤1분)에 반영되고, 행을 지우면 계정이 삭제됩니다.
 - 회사 Workspace 정책상 Google Cloud 프로젝트를 만들 수 없어 서비스 계정 대신 이 구조를 씁니다. Apps Script 웹 앱(회사 계정 전용)도 백업 경로로 그대로 동작합니다.
 
+## 로그인 이후 화면 (IP 관리)
+
+- **Home → 나의 담당 작품**: 등록된 IP 중 담당자에 로그인한 사용자가 포함된 것만 표시. 우측 상단 **[+ 새 IP 추가]** 를 누르면 담당자에 내 이름이 기본 선택된 모달이 열립니다.
+- **Title**: 전체 IP 를 가로형 카드(1:1 썸네일 · IP명 · 담당자 여러 명 · 진행 사항)로 표시. 카드를 누르면 수정/삭제 모달.
+- 등록된 IP 가 없으면 `아직 등록된 IP가 없어요.` 만 표시됩니다.
+- **IP 모달**: 썸네일 업로드 / 바꾸기 / 삭제 (브라우저에서 1:1 중앙 크롭 후 320px JPEG 로 축소해 저장), IP명(24자 이내, 필수), 담당자(승인된 Admin·Editor 중 다중 선택), 진행 사항(시작 전 · 전략 기획 · 각색 기획 · 프롬프트 작성 · QA · byUs 정식 론칭).
+- IP 추가/수정/삭제는 Admin·Editor 만 가능하고, Viewer 는 조회만 할 수 있습니다.
+- 로그인 시 발급되는 세션 토큰(12시간, Redis `session:*`)으로 IP API 를 보호합니다. 만료되면 로그인 화면으로 돌아갑니다.
+- IP 데이터는 Redis(`title:*`, `titles`)에만 저장되며 시트와 동기화되지 않습니다. Apps Script 웹 앱(백업 경로)에서는 IP 관리 기능을 쓸 수 없습니다.
+
 ## 폴더 구조
 
 ```
@@ -30,9 +40,11 @@
 │   ├── register.js         # POST /api/register  { name, id, password, permission }
 │   ├── login.js            # POST /api/login     { id, password }
 │   ├── status.js           # POST /api/status    { id }
+│   ├── logout.js           # POST /api/logout    세션 폐기
+│   ├── titles.js           # POST /api/titles    { action: list | save | delete } (Bearer 토큰 필요)
 │   └── sync.js             # POST /api/sync      Apps Script 전용 (x-sync-secret 헤더)
 ├── lib/
-│   ├── store.js            # Upstash Redis 저장소 + 시트 동기화 로직
+│   ├── store.js            # Upstash Redis 저장소: 사용자·세션·IP + 시트 동기화 로직
 │   └── http.js             # 응답 형식, 본문 파싱, 검증 규칙
 ├── apps-script/
 │   ├── Code.gs             # syncWithVercel / installSyncTrigger + 웹 앱 백업 API
