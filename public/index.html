@@ -303,15 +303,29 @@
   .owner-chip.none::before { background: var(--text-3); }
   .status { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 8px; font-size: 13px; font-weight: 700; white-space: nowrap; align-self: flex-start; }
   .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  /* IP 진행 사항 */
   .status[data-s="시작 전"] { background: #f3f4f6; color: #6b7280; }
   .status[data-s="전략 기획"] { background: #e0f2fe; color: #0369a1; }
-  .status[data-s="각색 기획"] { background: #ede9fe; color: #6d28d9; }
-  .status[data-s="프롬프트 작성"] { background: #fef3c7; color: #b45309; }
-  .status[data-s="시작 상황 작성"] { background: #ffedd5; color: #c2410c; }
-  .status[data-s="1차 QA"], .status[data-s="QA"] { background: #fce7f3; color: #be185d; }
-  .status[data-s="2차 QA"] { background: #fae8ff; color: #a21caf; }
+  .status[data-s="스토리 제작"] { background: #ede9fe; color: #6d28d9; }
   .status[data-s="byUs 정식 론칭"] { background: #d1fae5; color: #047857; }
+  /* 스토리 상태 */
+  .status[data-s="프롬프트 작성"] { background: #fef3c7; color: #b45309; }
+  .status[data-s="시작 설정"] { background: #ffedd5; color: #c2410c; }
+  .status[data-s="1차 QA"] { background: #fce7f3; color: #be185d; }
+  .status[data-s="2차 QA"] { background: #fae8ff; color: #a21caf; }
+  .status[data-s="배포"] { background: #dbeafe; color: #1d4ed8; }
+  .status[data-s="배포 완료"] { background: #d1fae5; color: #047857; }
   [data-theme="dark"] .status { filter: brightness(.9); }
+
+  /* 카드의 스토리 요약 칩 */
+  .title-card .stories { display: flex; flex-wrap: wrap; gap: 6px; }
+  .story-chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: 12px; color: var(--text-2); max-width: 100%; }
+  .story-chip b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .story-chip i { font-style: normal; color: var(--text-3); white-space: nowrap; }
+  .story-chip i::before { content: "·"; margin-right: 6px; }
+  .story-chip[data-story-status="배포 완료"] i { color: #047857; }
+  .story-chip.none, .story-chip.more { color: var(--text-3); }
+  .gender-chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-2); white-space: nowrap; }
 
   .empty-state { position: relative; display: grid; place-items: center; min-height: 320px; color: var(--text-3); font-size: 16px; }
   .loading { position: relative; display: grid; place-items: center; min-height: 200px; color: var(--text-3); font-size: 14px; }
@@ -348,7 +362,7 @@
 
   /* 스테퍼: 5단계가 순서대로 이어지는 진행 표시줄 */
   .stepper {
-    position: relative; display: grid; grid-template-columns: repeat(7, 1fr); margin: 0 0 24px; padding: 20px 8px 16px;
+    position: relative; display: grid; grid-template-columns: repeat(var(--steps, 5), 1fr); margin: 0 0 24px; padding: 20px 8px 16px;
     border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
   }
   .step {
@@ -439,6 +453,49 @@
     .detail-head { flex-wrap: wrap; }
     .detail-info h2 { font-size: 20px; }
   }
+
+  /* 스토리 목록 (IP 3단계) */
+  .stories-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stories-head .hint { font-size: 13px; color: var(--text-3); }
+  .story-grid { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .story-card {
+    display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
+    text-decoration: none; color: inherit; transition: border-color .15s, transform .15s;
+  }
+  .story-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .sc-avatar { width: 48px; height: 48px; flex: none; border-radius: 12px; display: grid; place-items: center; font-weight: 700; font-size: 20px; color: #6b7280; background: linear-gradient(135deg, #e3f8ff, #f6f1ff 55%, #ffeef7); }
+  [data-theme="dark"] .sc-avatar { background: linear-gradient(135deg, #1b2a33, #241f33 55%, #2f1e2a); color: #9ca3af; }
+  .sc-body { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .sc-name { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; }
+  .sc-name .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sc-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sc-progress { display: flex; gap: 4px; }
+  .sc-progress i { width: 20px; height: 5px; border-radius: 3px; background: var(--border); }
+  .sc-progress i.on { background: var(--accent); }
+  .sc-go { color: var(--text-3); font-size: 13px; white-space: nowrap; }
+  .story-head-crumb { font-size: 13px; color: var(--text-3); }
+  .sibling-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+  .sibling-row a { text-decoration: none; color: inherit; }
+  .sibling-row a.cur .story-chip { border-color: var(--accent); color: #047857; }
+  .readonly-note a { color: #0b63ce; }
+  .detail-info .readonly-note { margin-left: 0; }
+
+  /* 스토리 구성 편집기 (전략 기획 마지막 항목) */
+  .stories-editor { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .se-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--text-2); }
+  .se-head b { color: var(--text); }
+  .se-row { display: grid; grid-template-columns: 28px minmax(0, 1fr) 150px auto 36px; gap: 8px; align-items: center; }
+  .se-row .se-n { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font-size: 12px; font-weight: 700; color: var(--text-2); }
+  .se-row .input { height: 40px; }
+  .se-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: #d1fae5; color: #047857; font-size: 11px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .se-badge.new { background: var(--surface-2); color: var(--text-3); }
+  [data-theme="dark"] .se-badge:not(.new) { background: #0f2a20; color: #34d399; }
+  .se-del { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-3); display: grid; place-items: center; }
+  .se-del:hover { border-color: var(--danger); color: var(--danger); }
+  .se-del svg { width: 14px; height: 14px; }
+  .se-empty { font-size: 13px; color: var(--text-3); padding: 4px 2px; }
+  .field.invalid .stories-editor { border-color: var(--danger); background: var(--danger-bg); }
+  @media (max-width: 810px) { .se-row { grid-template-columns: 24px minmax(0, 1fr) 120px 36px; } .se-badge { display: none; } }
 
   .toast {
     position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #111827; color: #fff;
@@ -728,8 +785,10 @@ var SERVICE_URL = 'https://pd-builder.vercel.app';
 var SESSION_KEY = 'byus_builder_session';
 var THEME_KEY = 'byus_builder_theme';
 var PAGES = { home: 'Home', schedule: 'Schedule Simulator', titles: 'Title', labs: 'Labs' };
-var TITLE_STATUSES = ['시작 전', '전략 기획', '각색 기획', '프롬프트 작성', '시작 상황 작성', '1차 QA', '2차 QA', 'byUs 정식 론칭'];
-var LEGACY_STATUS = { 'QA': '1차 QA' }; // 예전 값 호환 (서버도 같은 변환을 하지만 캐시된 응답을 위해 한 번 더)
+var TITLE_STATUSES = ['시작 전', '전략 기획', '스토리 제작', 'byUs 정식 론칭'];
+var STORY_GENDERS = ['여성', '남성', '알 수 없음', '그 외'];
+// 예전 값 호환 (서버도 같은 변환을 하지만 캐시된 응답을 위해 한 번 더)
+var LEGACY_STATUS = { 'QA': '스토리 제작', '1차 QA': '스토리 제작', '2차 QA': '스토리 제작', '각색 기획': '스토리 제작', '프롬프트 작성': '스토리 제작', '시작 상황 작성': '스토리 제작' };
 function normalizeStatus(v) { return LEGACY_STATUS[v] || v || ''; }
 var THUMB_SIZE = 320;
 
@@ -822,14 +881,15 @@ function route() {
 
 function goPage(key) {
   // 작품 상세: #title/<id>[/<stage>]
-  var m = /^title\/([^/]+)(?:\/([a-z0-9]+))?$/.exec(key || '');
+  // 작품 상세: #title/<id>[/<IP 단계>]  ·  스토리 상세: #title/<id>/story/<storyId>[/<스토리 단계>]
+  var m = /^title\/([^/]+)(?:\/story\/([^/]+))?(?:\/([a-z0-9]+))?$/.exec(key || '');
   var navKey = m ? 'titles' : key;
   if (!m && !PAGES[key]) { key = 'home'; navKey = 'home'; }
   $all('#nav a').forEach(function (a) { a.classList.toggle('active', a.dataset.page === navKey); });
   $('#crumb-current').textContent = PAGES[navKey];
   setCrumbExtra(m ? '…' : '');
   hide($('#page-home')); hide($('#page-titles')); hide($('#page-detail')); hide($('#page-generic'));
-  if (m) { show($('#page-detail')); openDetail(m[1], m[2] || ''); }
+  if (m) { show($('#page-detail')); openDetail(m[1], m[2] || null, m[3] || ''); }
   else if (key === 'home') show($('#page-home'));
   else if (key === 'titles') show($('#page-titles'));
   else { show($('#page-generic')); $('#generic-title').textContent = PAGES[key]; }
@@ -1030,12 +1090,20 @@ function titleCard(t) {
   var extLink = t.link
     ? '<a class="ext-link" href="' + esc(t.link) + '" target="_blank" rel="noopener noreferrer" title="' + esc(t.link) + '">' + LINK_ICON + esc(linkLabel(t.link)) + '</a>'
     : '';
+  // 스토리(주인공) 요약 칩: 이름 · 상태. 많으면 3개까지 + 나머지 개수
+  var stories = t.stories || [];
+  var shown = stories.slice(0, 3).map(function (s) {
+    return '<span class="story-chip" data-story-status="' + esc(s.status) + '" title="' + esc(s.name) + ' · ' + esc(s.status) + '">' +
+      '<b>' + esc(s.name) + '</b><i>' + esc(s.status) + '</i></span>';
+  }).join('') + (stories.length > 3 ? '<span class="story-chip more">+' + (stories.length - 3) + '</span>' : '');
+  var storyRow = '<div class="stories">' + (stories.length ? shown : '<span class="story-chip none">스토리 미구성</span>') + '</div>';
   return '<div class="title-card" data-title-id="' + esc(t.id) + '">' +
     thumb +
     '<div class="body">' +
       '<div class="name">' + esc(t.name) + '</div>' +
       '<div class="owners">' + owners + '</div>' +
       '<div class="meta"><span class="status" data-s="' + esc(normalizeStatus(t.status)) + '">' + esc(normalizeStatus(t.status)) + '</span>' + extLink + '</div>' +
+      storyRow +
       dates +
     '</div>' +
     editBtn +
@@ -1252,32 +1320,20 @@ $('#ip-delete').addEventListener('click', function () {
   }).catch(function (ex) { busy(btn, false); setError($('#ip-error'), ex.message); });
 });
 
-/* ───────────── 작품 상세: 단계별 제작 ─────────────
- * PD 가 작품을 제작하는 5단계를 순서대로 밟습니다.
- *  - 앞 단계를 '완료'해야 다음 단계가 열립니다. (잠긴 단계는 안내만 표시)
- *  - 단계를 완료하면 카드의 진행 사항이 doneStatus 로 자동 전진합니다. (뒤로는 가지 않음)
- *  - 다음 단계를 처음 열면 seed 로 지정된 이전 단계 내용이 초안으로 채워지고,
- *    오른쪽 '이전 단계 참고' 패널에서 언제든 앞 단계 내용을 펼쳐 볼 수 있습니다.
- *  - 필드 키·필수 항목은 lib/store.js 의 STAGE_DEFS 와 맞춰야 합니다.
+/* ───────────── 작품 상세: IP 단계 + 스토리 단계 ─────────────
+ * 위계: IP ─┬─ IP 단계   : 1 작품 기본 정보 → 2 콘텐츠 전략 기획 (마지막 항목 '스토리 구성': 주인공 이름·성별, 1개 이상)
+ *           └─ 스토리(1개 이상, 각각 주인공 캐릭터) ─ 스토리 단계 : 프롬프트 → 시작 설정 → 1차 QA → 2차 QA → 배포
+ *  - 앞 단계를 '완료'해야 다음 단계가 열립니다. 스토리 단계는 전략 기획이 완료되어야 열립니다.
+ *  - 전략 기획을 완료(또는 완료 상태에서 저장)하면 '스토리 구성'대로 스토리가 생성·수정·삭제됩니다.
+ *  - 완료/완료 취소 때마다 IP 진행 사항과 스토리 상태가 다시 계산됩니다.
+ *  - 다음 단계를 처음 열면 seed 로 지정된 이전 단계(또는 IP 단계) 내용이 초안으로 채워집니다.
+ *  - 필드 키·필수 항목은 lib/store.js 의 STAGE_DEFS / STORY_STAGE_DEFS 와 맞춰야 합니다.
  */
-function stageVal(d, stage, k) { var s = d && d.stages && d.stages[stage]; return (s && s.fields && s.fields[k]) || ''; }
-function composePromptSheet(d) {
-  var t = (d && d.title) || {};
-  var genre = stageVal(d, 'basic', 'genre');
-  var parts = ['# ' + (t.name || '') + (genre ? ' · ' + genre : '')];
-  var cast = stageVal(d, 'adaptation', 'cast'), lore = stageVal(d, 'adaptation', 'lore'),
-      rule = stageVal(d, 'adaptation', 'rule'), tone = stageVal(d, 'adaptation', 'tone'), sc = stageVal(d, 'adaptation', 'scenario');
-  if (cast) parts.push('## 캐릭터\n' + cast);
-  if (lore) parts.push('## 세계관\n' + lore);
-  if (rule) parts.push('## 규칙\n' + rule);
-  if (tone) parts.push('## 말투 · 문체\n' + tone);
-  if (sc) parts.push('## 시나리오 흐름\n' + sc);
-  return parts.length > 1 ? parts.join('\n\n') : '';
-}
+function fieldOf(records, stage, k) { var s = records && records[stage]; return (s && s.fields && s.fields[k]) || ''; }
 
 var STAGES = [
-  { key: 'basic', label: '작품 기본 정보', short: '1단계', doneStatus: '전략 기획',
-    desc: '원작의 핵심 정보를 정리합니다. 여기 적은 내용은 이후 모든 단계의 참고 자료로 따라갑니다.',
+  { key: 'basic', label: '작품 기본 정보', short: '1단계',
+    desc: '원작의 핵심 정보를 정리합니다. 여기 적은 내용은 전략 기획과 모든 스토리의 프롬프트 초안에 참고 자료로 따라갑니다.',
     fields: [
       { k: 'genre', label: '장르', type: 'input', req: true, ph: '예: 로맨스 판타지, 현대 액션, 학원물' },
       { k: 'author', label: '원작 작가', type: 'input', ph: '글 · 그림 작가' },
@@ -1286,68 +1342,83 @@ var STAGES = [
       { k: 'characters', label: '주요 등장인물', type: 'text', req: true, rows: 7, ph: '인물별로 이름 · 역할 · 성격 · 말투 · 관계를 적습니다.\n예) 김독자 — 주인공. 소심하지만 결정적 순간엔 단호. 존댓말, 짧은 문장.' },
       { k: 'notes', label: '원작 특이사항 · 유의점', type: 'text', rows: 4, ph: '연재 상태, 민감 소재, 활용 가능한 저작권 범위, 작가 요청 사항 등' }
     ] },
-  { key: 'strategy', label: '콘텐츠 전략 기획', short: '2단계', doneStatus: '각색 기획',
-    desc: '누구에게, 어떤 매력으로, 어떤 형태의 콘텐츠를 만들지 결정합니다. 1단계 기본 정보를 참고 패널에서 확인하며 작성하세요.',
+  { key: 'strategy', label: '콘텐츠 전략 기획', short: '2단계',
+    desc: '누구에게, 어떤 매력으로, 어떤 형태의 콘텐츠를 만들지 결정하고, 마지막으로 이 IP 에 들어갈 스토리(주인공)를 구성합니다. 완료하면 구성한 스토리가 생성됩니다.',
     fields: [
       { k: 'target', label: '타깃 독자', type: 'text', req: true, rows: 4, ph: '핵심 팬층과 확장 타깃, 이용 동기와 기대하는 경험' },
       { k: 'appeal', label: '핵심 매력 포인트 (소구점)', type: 'text', req: true, rows: 5, ph: '원작에서 가져올 핵심 감정선 · 관계 · 장면. 캐릭터챗에서 어떻게 살릴지' },
       { k: 'direction', label: '콘텐츠 방향 · 포맷', type: 'text', req: true, rows: 5, ph: '1:1 캐릭터챗 / 상황극 / 멀티 캐릭터 등, 플레이 길이, 전체 톤' },
       { k: 'reference', label: '레퍼런스', type: 'text', rows: 4, ph: '참고할 기존 작품 · 콘텐츠와 참고 이유' },
-      { k: 'risk', label: '리스크 · 유의점', type: 'text', rows: 4, ph: '원작 훼손 우려, 민감 소재, 세계관 충돌, 운영 이슈 등' }
-    ] },
-  { key: 'adaptation', label: '각색 기획안 작성', short: '3단계', doneStatus: '프롬프트 작성',
-    desc: '전략을 바탕으로 캐릭터 · 세계관 · 규칙 · 시나리오를 구체화합니다. 여기서 쓴 내용이 4단계 프롬프트 초안의 재료가 됩니다.',
-    fields: [
-      { k: 'cast', label: '등장 캐릭터 선정 · 역할', type: 'text', req: true, rows: 7, ph: '콘텐츠에 등장시킬 캐릭터와 역할, 원작 대비 조정 사항',
-        seed: { from: 'basic', build: function (d) { return stageVal(d, 'basic', 'characters'); } } },
-      { k: 'lore', label: '세계관 · 배경 설정 (Lore)', type: 'text', req: true, rows: 6, ph: '시대 · 장소 · 핵심 설정, 원작에서 가져올 것과 새로 만들 것' },
-      { k: 'rule', label: '규칙 (Rule)', type: 'text', req: true, rows: 6, ph: '캐릭터가 지켜야 할 행동 규칙, 금지 사항, 관계 변화 조건' },
-      { k: 'scenario', label: '시나리오 구조 · 분기', type: 'text', req: true, rows: 6, ph: '도입 → 전개 → 분기 → 엔딩 흐름, 주요 이벤트' },
-      { k: 'tone', label: '톤앤매너 · 문체', type: 'text', rows: 4, ph: '말투, 문장 길이, 지문 · 이모지 사용 여부, 피해야 할 표현' }
-    ] },
-  { key: 'prompt', label: '프롬프트 작성', short: '4단계', doneStatus: '프롬프트 작성',
-    desc: '각색 기획안을 실제 캐릭터 프롬프트로 옮깁니다. 처음 열면 3단계 내용으로 초안이 자동 구성되며, 자유롭게 고쳐 쓰면 됩니다.',
+      { k: 'risk', label: '리스크 · 유의점', type: 'text', rows: 4, ph: '원작 훼손 우려, 민감 소재, 세계관 충돌, 운영 이슈 등' },
+      { k: 'stories', label: '스토리 구성', type: 'stories', req: true, hint: '이 IP 에 몇 개의 스토리를 만들지, 각 스토리의 주인공 이름과 성별을 정합니다. 1개 이상 필요하며, 완료하면 스토리별 제작 화면이 생성됩니다.' }
+    ] }
+];
+var STORIES_STEP = { key: 'stories', label: '스토리 제작', short: '3단계' };
+
+var STORY_STAGES = [
+  { key: 'prompt', label: '프롬프트 작성', short: '1단계',
+    desc: '이 스토리의 주인공 캐릭터 프롬프트를 작성합니다. 처음 열면 IP 의 기본 정보 · 전략 기획 내용으로 초안이 구성됩니다.',
     fields: [
       { k: 'sheet', label: '캐릭터 시트 · 시스템 프롬프트', type: 'text', req: true, mono: true, rows: 16, ph: '캐릭터 정의, 세계관, 규칙, 말투를 모델이 읽을 형태로 작성합니다.',
-        seed: { from: 'adaptation', build: composePromptSheet } },
+        seed: { from: 'IP', build: function (d) { return composeStoryPrompt(d); } } },
       { k: 'examples', label: '대화 예시', type: 'text', mono: true, rows: 8, ph: 'User / Character 턴 예시 3~5개' },
       { k: 'constraints', label: '금지 · 제약 사항', type: 'text', rows: 5, ph: '절대 하지 말아야 할 행동, 답변 형식 제약',
-        seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'rule'); } } }
+        seed: { from: 'IP', build: function (d) { return fieldOf(d.stages, 'strategy', 'risk'); } } }
     ] },
-  { key: 'opening', label: '시작 상황 작성', short: '5단계', doneStatus: '1차 QA',
-    desc: '유저가 처음 만나는 장면과 첫 메시지를 작성합니다. 이 단계를 완료하면 진행 사항이 1차 QA 로 넘어갑니다.',
+  { key: 'opening', label: '시작 설정', short: '2단계',
+    desc: '유저가 처음 만나는 장면과 첫 메시지를 설정합니다.',
     fields: [
-      { k: 'situation', label: '시작 상황 설명', type: 'text', req: true, rows: 6, ph: '장소 · 시점 · 분위기, 유저와 캐릭터가 놓인 상황',
-        seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'scenario'); } } },
+      { k: 'situation', label: '시작 상황 설명', type: 'text', req: true, rows: 6, ph: '장소 · 시점 · 분위기, 유저와 캐릭터가 놓인 상황' },
       { k: 'first', label: '첫 메시지 (오프닝)', type: 'text', req: true, mono: true, rows: 8, ph: '캐릭터가 유저에게 건네는 첫 대사 · 지문' },
       { k: 'userRole', label: '유저 역할 · 관계 설정', type: 'text', rows: 4, ph: '유저가 맡는 인물, 캐릭터와의 관계와 호칭' },
       { k: 'branches', label: '진입 선택지 · 분기 (선택)', type: 'text', rows: 4, ph: '시작 시 제시할 선택지나 복수의 오프닝' }
     ] },
-  { key: 'qa1', label: '1차 QA', short: '6단계', doneStatus: '2차 QA',
-    desc: '작성한 프롬프트와 시작 상황을 실제로 플레이하며 점검합니다. 발견한 이슈와 수정 내역을 남기고 판정을 내리면 2차 QA 로 넘어갑니다.',
+  { key: 'qa1', label: '1차 QA', short: '3단계',
+    desc: '프롬프트와 시작 설정을 실제로 플레이하며 점검합니다. 발견한 이슈와 수정 내역을 남기고 판정을 내리면 2차 QA 로 넘어갑니다.',
     fields: [
       { k: 'scope', label: 'QA 범위 · 테스트 시나리오', type: 'text', req: true, rows: 5, ph: '어떤 흐름 · 분기 · 상황을 몇 턴씩 점검했는지',
-        seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'scenario'); } } },
+        seed: { from: 'opening', build: function (d) { return fieldOf(d.storyStages, 'opening', 'situation'); } } },
       { k: 'issues', label: '발견된 이슈', type: 'text', req: true, rows: 7, ph: '캐릭터 붕괴, 규칙 위반, 말투 이탈, 시작 상황 어색함 등. 재현 조건과 함께 적습니다.' },
-      { k: 'fixes', label: '수정 내역', type: 'text', rows: 5, ph: '이슈별로 프롬프트 · 시작 상황을 어떻게 고쳤는지' },
+      { k: 'fixes', label: '수정 내역', type: 'text', rows: 5, ph: '이슈별로 프롬프트 · 시작 설정을 어떻게 고쳤는지' },
       { k: 'verdict', label: '판정', type: 'select', req: true, options: ['통과', '조건부 통과 (수정 후 2차 QA)', '재작업 필요'] },
       { k: 'memo', label: '비고', type: 'text', rows: 3, ph: 'QA 참여자, 테스트 환경, 기타 메모' }
     ] },
-  { key: 'qa2', label: '2차 QA', short: '7단계', doneStatus: 'byUs 정식 론칭',
-    desc: '1차 QA 에서 고친 부분을 다시 확인하고 최종 판정을 내립니다. 이 단계를 완료하면 진행 사항이 ‘byUs 정식 론칭’으로 바뀝니다.',
+  { key: 'qa2', label: '2차 QA', short: '4단계',
+    desc: '1차 QA 에서 고친 부분을 다시 확인하고 최종 판정을 내립니다.',
     fields: [
       { k: 'scope', label: 'QA 범위 · 재확인 항목', type: 'text', req: true, rows: 5, ph: '1차 QA 이슈가 해결됐는지 확인할 항목과 추가 점검 범위',
-        seed: { from: 'qa1', build: function (d) { var i = stageVal(d, 'qa1', 'issues'); return i ? '[1차 QA 이슈 재확인]\n' + i : ''; } } },
+        seed: { from: 'qa1', build: function (d) { var i = fieldOf(d.storyStages, 'qa1', 'issues'); return i ? '[1차 QA 이슈 재확인]\n' + i : ''; } } },
       { k: 'issues', label: '발견된 이슈', type: 'text', req: true, rows: 7, ph: '남아 있거나 새로 발견된 이슈. 없으면 “없음”으로 적습니다.' },
       { k: 'fixes', label: '수정 내역', type: 'text', rows: 5, ph: '2차 QA 후 수정한 내용' },
-      { k: 'verdict', label: '최종 판정', type: 'select', req: true, options: ['통과 (론칭 가능)', '조건부 통과', '재작업 필요'] },
-      { k: 'memo', label: '비고', type: 'text', rows: 3, ph: 'QA 참여자, 론칭 준비 메모' }
+      { k: 'verdict', label: '최종 판정', type: 'select', req: true, options: ['통과 (배포 가능)', '조건부 통과', '재작업 필요'] },
+      { k: 'memo', label: '비고', type: 'text', rows: 3, ph: 'QA 참여자, 배포 준비 메모' }
+    ] },
+  { key: 'release', label: '배포', short: '5단계',
+    desc: 'byUs 에 이 스토리를 배포하고 기록을 남깁니다. 완료하면 스토리 상태가 ‘배포 완료’가 되고, 모든 스토리가 배포되면 IP 진행 사항이 ‘byUs 정식 론칭’으로 바뀝니다.',
+    fields: [
+      { k: 'date', label: '배포일', type: 'input', req: true, ph: '예: 2026-03-15' },
+      { k: 'link', label: '배포 링크', type: 'input', ph: 'byUs 스토리 URL' },
+      { k: 'checklist', label: '배포 체크리스트', type: 'text', rows: 5, ph: '썸네일 · 소개 문구 · 태그 · 연령 등급 · 최종 프롬프트 반영 여부' },
+      { k: 'memo', label: '비고', type: 'text', rows: 3, ph: '배포 담당자, 특이사항' }
     ] }
 ];
-function stageIndex(key) { for (var i = 0; i < STAGES.length; i++) if (STAGES[i].key === key) return i; return -1; }
-function stageDef(key) { return STAGES[stageIndex(key)] || null; }
+var STORY_DONE_STATUS = '배포 완료';
 
-var detail = { id: null, data: null, stage: '', error: '', dirty: false };
+function composeStoryPrompt(d) {
+  var t = d.title || {}, st = d.story || {}, b = (d.stages.basic || {}).fields || {}, s = (d.stages.strategy || {}).fields || {};
+  var parts = ['# ' + (t.name || '') + ' · ' + (st.name || '') + (st.gender ? ' (' + st.gender + ')' : '') + (b.genre ? ' · ' + b.genre : '')];
+  if (b.synopsis) parts.push('## 원작 개요\n' + b.synopsis);
+  if (b.characters) parts.push('## 등장인물\n' + b.characters);
+  if (s.direction) parts.push('## 콘텐츠 방향\n' + s.direction);
+  if (s.appeal) parts.push('## 핵심 매력 · 감정선\n' + s.appeal);
+  if (b.notes) parts.push('## 유의점\n' + b.notes);
+  return parts.length > 1 ? parts.join('\n\n') : '';
+}
+function indexIn(defs, key) { for (var i = 0; i < defs.length; i++) if (defs[i].key === key) return i; return -1; }
+function defIn(defs, key) { return defs[indexIn(defs, key)] || null; }
+
+var detail = { id: null, data: null, stage: '', error: '', dirty: false, storyId: null, storyData: null, storyStage: '', storyError: '' };
+var panelCtx = null; // 현재 렌더된 단계 패널의 컨텍스트 (저장 핸들러가 참조)
 
 var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 var LOCK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
@@ -1355,22 +1426,52 @@ var BACK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 var ARROW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
 var FLOW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>';
 var BOOK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+var USERS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+var X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+var PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
 
-function isStageDone(key) { var s = detail.data && detail.data.stages[key]; return !!(s && s.done); }
-function isStageOpen(key) { var i = stageIndex(key); return i === 0 || (i > 0 && isStageDone(STAGES[i - 1].key)); }
-function defaultStage() {
-  for (var i = 0; i < STAGES.length; i++) if (!isStageDone(STAGES[i].key)) return STAGES[i].key;
-  return STAGES[STAGES.length - 1].key;
+/* ── 상태 계산 ── */
+function recDone(records, key) { var s = records && records[key]; return !!(s && s.done); }
+function ipStageDone(key) { return recDone(detail.data && detail.data.stages, key); }
+function ipStageOpen(key) { var i = indexIn(STAGES, key); return i === 0 || (i > 0 && ipStageDone(STAGES[i - 1].key)); }
+function strategyDone() { return ipStageDone('strategy'); }
+function allStoriesDone() { var st = (detail.data && detail.data.stories) || []; return st.length > 0 && st.every(function (s) { return s.status === STORY_DONE_STATUS; }); }
+function defaultIpStage() {
+  for (var i = 0; i < STAGES.length; i++) if (!ipStageDone(STAGES[i].key)) return STAGES[i].key;
+  return STORIES_STEP.key;
+}
+function storyStageDone(key) { return recDone(detail.storyData && detail.storyData.storyStages, key); }
+function storyStageOpen(key) { if (!strategyDone()) return false; var i = indexIn(STORY_STAGES, key); return i === 0 || (i > 0 && storyStageDone(STORY_STAGES[i - 1].key)); }
+function defaultStoryStage() {
+  for (var i = 0; i < STORY_STAGES.length; i++) if (!storyStageDone(STORY_STAGES[i].key)) return STORY_STAGES[i].key;
+  return STORY_STAGES[STORY_STAGES.length - 1].key;
+}
+function hashFor(id, storyId, stage) { return '#title/' + id + (storyId ? '/story/' + storyId : '') + (stage ? '/' + stage : ''); }
+function storySummary(list) { return (list || []).map(function (s) { return { id: s.id, name: s.name, gender: s.gender, status: s.status }; }); }
+function syncListCache(title, stories) {
+  if (!title) return;
+  var t = Object.assign({}, title, { stories: storySummary(stories) });
+  state.titles = state.titles.map(function (x) { return x.id === t.id ? t : x; });
+  if (state.loaded) renderLists();
 }
 
-function openDetail(id, stageKey) {
+/* ── 진입 · 로딩 ── */
+function openDetail(id, storyId, stageKey) {
   if (detail.id !== id) {
-    detail = { id: id, data: null, stage: stageKey || '', error: '', dirty: false };
-    renderDetail();
+    detail = { id: id, data: null, stage: '', error: '', dirty: false, storyId: null, storyData: null, storyStage: '', storyError: '' };
     loadDetail(id);
-    return;
   }
-  if (stageKey && detail.data && stageIndex(stageKey) >= 0) detail.stage = stageKey;
+  if (storyId) {
+    if (detail.storyId !== storyId) {
+      detail.storyId = storyId; detail.storyData = null; detail.storyStage = stageKey || ''; detail.storyError = ''; detail.dirty = false;
+      loadStory(id, storyId);
+    } else if (stageKey && indexIn(STORY_STAGES, stageKey) >= 0) {
+      detail.storyStage = stageKey;
+    }
+  } else {
+    detail.storyId = null; detail.storyData = null; detail.storyError = '';
+    if (stageKey && (indexIn(STAGES, stageKey) >= 0 || stageKey === STORIES_STEP.key)) detail.stage = stageKey;
+  }
   renderDetail();
 }
 
@@ -1378,90 +1479,236 @@ function loadDetail(id) {
   return callApi('titles', { action: 'detail', id: id }).then(function (res) {
     if (detail.id !== id) return;
     if (!res || !res.ok) { detail.error = (res && res.error) || '작품 정보를 불러오지 못했습니다.'; renderDetail(); return; }
-    detail.data = { title: res.data.title, stages: res.data.stages || {} };
+    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [] };
     detail.error = '';
-    if (stageIndex(detail.stage) < 0) detail.stage = defaultStage(); // 지정이 없으면 첫 미완료 단계로
+    if (!detail.stage) detail.stage = defaultIpStage();
     renderDetail();
   }).catch(function (ex) { if (detail.id === id) { detail.error = ex.message; renderDetail(); } });
 }
 
+function loadStory(id, storyId) {
+  return callApi('titles', { action: 'storyDetail', id: id, storyId: storyId }).then(function (res) {
+    if (detail.id !== id || detail.storyId !== storyId) return;
+    if (!res || !res.ok) { detail.storyError = (res && res.error) || '스토리 정보를 불러오지 못했습니다.'; renderDetail(); return; }
+    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [] };
+    detail.storyData = { story: res.data.story, storyStages: res.data.storyStages || {} };
+    detail.storyError = '';
+    if (!detail.stage) detail.stage = defaultIpStage();
+    if (indexIn(STORY_STAGES, detail.storyStage) < 0) detail.storyStage = defaultStoryStage();
+    renderDetail();
+  }).catch(function (ex) { if (detail.id === id && detail.storyId === storyId) { detail.storyError = ex.message; renderDetail(); } });
+}
+
+function confirmLeave() { return !detail.dirty || confirm('저장하지 않은 변경 사항이 있습니다. 이동할까요?'); }
+
+/* 스테퍼 · 참고 패널의 단계 이동 (IP 화면이면 IP 단계, 스토리 화면이면 스토리 단계) */
 function switchStage(key) {
-  if (!detail.data || key === detail.stage || stageIndex(key) < 0) return;
-  // 잠긴 단계도 선택은 가능 (어느 단계를 끝내야 열리는지 안내 패널을 보여줌)
-  if (detail.dirty && !confirm('저장하지 않은 변경 사항이 있습니다. 이동할까요?')) return;
-  detail.stage = key; detail.dirty = false;
-  history.replaceState(null, '', '#title/' + detail.id + '/' + key);
+  if (!detail.data) return;
+  if (detail.storyId) {
+    if (indexIn(STORY_STAGES, key) < 0 || key === detail.storyStage) return;
+    if (!confirmLeave()) return;
+    detail.storyStage = key; detail.dirty = false;
+    history.replaceState(null, '', hashFor(detail.id, detail.storyId, key));
+  } else {
+    if ((indexIn(STAGES, key) < 0 && key !== STORIES_STEP.key) || key === detail.stage) return;
+    if (!confirmLeave()) return;
+    detail.stage = key; detail.dirty = false;
+    history.replaceState(null, '', hashFor(detail.id, null, key));
+  }
   renderDetail();
   var card = $('#page-detail'); if (card) card.scrollIntoView({ block: 'start' });
 }
+function goStory(storyId) {
+  if (!confirmLeave()) return;
+  detail.dirty = false;
+  location.hash = hashFor(detail.id, storyId, '');
+}
 
+/* ── 렌더링 ── */
 function renderDetail() {
   var body = $('#detail-body');
-  var back = '<button type="button" class="back-btn" id="detail-back">' + BACK_ICON + 'Title 목록</button>';
-  if (detail.error) { body.innerHTML = back + '<div class="empty-state">' + esc(detail.error) + '</div>'; return; }
-  if (!detail.data) { body.innerHTML = back + '<div class="loading">불러오는 중…</div>'; return; }
+  var backTo = detail.storyId ? '스토리 목록' : 'Title 목록';
+  var back = '<button type="button" class="back-btn" id="detail-back">' + BACK_ICON + backTo + '</button>';
+  if (detail.error) { body.innerHTML = back + '<div class="empty-state">' + esc(detail.error) + '</div>'; bindBack(); return; }
+  if (!detail.data) { body.innerHTML = back + '<div class="loading">불러오는 중…</div>'; bindBack(); return; }
   var t = detail.data.title;
-  setCrumbExtra(t.name);
+  panelCtx = null;
 
-  // 머리글: 썸네일 · IP명 · 담당자 · 진행 사항 · 링크 · 날짜 (+ 수정 연필)
+  if (detail.storyId) { renderStoryView(body, back, t); return; }
+
+  setCrumbExtra(t.name);
   var thumb = t.thumbnail ? '<div class="detail-thumb"><img src="' + t.thumbnail + '" alt=""></div>'
                           : '<div class="detail-thumb">' + esc((t.name || '?').charAt(0)) + '</div>';
   var owners = (t.owners && t.owners.length)
     ? t.owners.map(function (o) { return '<span class="owner-chip">' + esc(o.name || o.id) + '</span>'; }).join('')
     : '<span class="owner-chip none">담당자 미지정</span>';
   var link = t.link ? '<a class="ext-link" href="' + esc(t.link) + '" target="_blank" rel="noopener noreferrer">' + LINK_ICON + esc(linkLabel(t.link)) + '</a>' : '';
+  var status = normalizeStatus(t.status);
   var head = '<div class="detail-head">' + thumb +
     '<div class="detail-info"><h2>' + esc(t.name) + '</h2>' +
       '<div class="row">' + owners + '</div>' +
-      '<div class="row"><span class="status" data-s="' + esc(normalizeStatus(t.status)) + '">' + esc(normalizeStatus(t.status)) + '</span>' + link + '</div>' +
+      '<div class="row"><span class="status" data-s="' + esc(status) + '">' + esc(status) + '</span>' + link +
+        '<span class="gender-chip">' + USERS_ICON.replace('<svg', '<svg style="width:13px;height:13px;margin-right:4px"') + '스토리 ' + detail.data.stories.length + '개</span></div>' +
       '<div class="dates"><span><b>생성일</b>' + fmtDate(t.createdAt) + '</span><span><b>최근 수정일</b>' + fmtDate(t.updatedAt) + '</span></div>' +
     '</div>' +
     (canEdit() ? '<button type="button" class="edit-btn" id="detail-edit" title="IP 정보 수정" aria-label="IP 정보 수정">' + EDIT_ICON + '</button>' : '') +
   '</div>';
 
-  // 스테퍼
-  var steps = STAGES.map(function (s, i) {
-    var done = isStageDone(s.key), open = isStageOpen(s.key);
-    var cls = 'step ' + (done ? 'done' : open ? 'open' : 'locked') + (s.key === detail.stage ? ' active' : '');
-    var dot = done ? CHECK_ICON : open ? String(i + 1) : LOCK_ICON;
-    var sub = done ? '완료' : open ? '진행 중' : '잠김';
-    return '<button type="button" class="' + cls + '" data-stage="' + s.key + '"' + (open ? '' : ' aria-disabled="true"') + '>' +
-      '<span class="dot">' + dot + '</span><span>' + esc(s.label) + '<span class="sub">' + sub + '</span></span></button>';
-  }).join('');
+  // IP 스테퍼: 1 기본 정보 · 2 전략 기획 · 3 스토리 제작(요약 노드)
+  var nodes = STAGES.map(function (s, i) {
+    return stepNode(s, i, ipStageDone(s.key), ipStageOpen(s.key), s.key === detail.stage, null);
+  });
+  var sCount = detail.data.stories.length;
+  nodes.push(stepNode(STORIES_STEP, STAGES.length, allStoriesDone(), strategyDone(), detail.stage === STORIES_STEP.key,
+    strategyDone() ? (sCount ? '스토리 ' + sCount + '개' : '구성 없음') : null));
 
-  body.innerHTML = back + head + '<div class="stepper">' + steps + '</div>' + renderStage();
-  $('#detail-back').addEventListener('click', function () { if (!detail.dirty || confirm('저장하지 않은 변경 사항이 있습니다. 이동할까요?')) { detail.dirty = false; goPage('titles'); } });
+  var panel = detail.stage === STORIES_STEP.key ? renderStoriesPanel() : renderStagePanel(ipPanelCtx(detail.stage));
+  body.innerHTML = back + head + '<div class="stepper" style="--steps:' + nodes.length + '">' + nodes.join('') + '</div>' + panel;
+  bindBack();
   var editBtn = $('#detail-edit'); if (editBtn) editBtn.addEventListener('click', function () { openIpModal(t, null); });
+  bindCommon();
+}
+
+function stepNode(s, i, done, open, active, subOverride) {
+  var cls = 'step ' + (done ? 'done' : open ? 'open' : 'locked') + (active ? ' active' : '');
+  var dot = done ? CHECK_ICON : open ? String(i + 1) : LOCK_ICON;
+  var sub = subOverride != null ? subOverride : (done ? '완료' : open ? '진행 중' : '잠김');
+  return '<button type="button" class="' + cls + '" data-stage="' + s.key + '"' + (open ? '' : ' aria-disabled="true"') + '>' +
+    '<span class="dot">' + dot + '</span><span>' + esc(s.label) + '<span class="sub">' + esc(sub) + '</span></span></button>';
+}
+
+function bindBack() {
+  var b = $('#detail-back'); if (!b) return;
+  b.addEventListener('click', function () {
+    if (!confirmLeave()) return;
+    detail.dirty = false;
+    if (detail.storyId) location.hash = hashFor(detail.id, null, STORIES_STEP.key);
+    else goPage('titles');
+  });
+}
+function bindCommon() {
   $all('.stepper .step').forEach(function (b) { b.addEventListener('click', function () { switchStage(b.dataset.stage); }); });
+  $all('[data-go-stage]').forEach(function (el) {
+    el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); switchStage(el.dataset.goStage); });
+  });
+  $all('[data-go-story]').forEach(function (el) {
+    el.addEventListener('click', function (e) { e.preventDefault(); goStory(el.dataset.goStory); });
+  });
   bindStageForm();
 }
 
-function renderStage() {
-  var idx = stageIndex(detail.stage), s = STAGES[idx];
-  var rec = detail.data.stages[s.key] || null;
-  var done = isStageDone(s.key), open = isStageOpen(s.key), write = canEdit();
+/* ── IP 단계 패널 컨텍스트 ── */
+function ipPanelCtx(key) {
+  var idx = indexIn(STAGES, key), s = STAGES[idx];
+  var refs = [];
+  for (var i = idx - 1; i >= 0; i--) refs.push(refItem(STAGES[i], i + 1, detail.data.stages[STAGES[i].key], i === idx - 1, STAGES[i].key));
+  var next = STAGES[idx + 1] || STORIES_STEP;
+  return {
+    kind: 'ip', defs: STAGES, def: s, idx: idx, records: detail.data.stages,
+    done: ipStageDone(s.key), open: ipStageOpen(s.key),
+    prevDef: STAGES[idx - 1] || null, nextDef: next,
+    seedData: { title: detail.data.title, stages: detail.data.stages },
+    refs: refs, write: canEdit(),
+    completeLabel: '단계 완료 · ' + next.label + '로'
+  };
+}
+
+/* ── 스토리 화면 ── */
+function renderStoryView(body, back, t) {
+  var sd = detail.storyData;
+  if (detail.storyError) { setCrumbExtra(t.name); body.innerHTML = back + '<div class="empty-state">' + esc(detail.storyError) + '</div>'; bindBack(); return; }
+  if (!sd) { setCrumbExtra(t.name); body.innerHTML = back + '<div class="loading">불러오는 중…</div>'; bindBack(); return; }
+  var st = sd.story;
+  setCrumbExtra(t.name + ' › ' + st.name);
+
+  var thumb = t.thumbnail ? '<div class="detail-thumb"><img src="' + t.thumbnail + '" alt=""></div>'
+                          : '<div class="detail-thumb">' + esc((st.name || '?').charAt(0)) + '</div>';
+  var siblings = detail.data.stories.map(function (x) {
+    var cur = x.id === st.id;
+    return '<a href="' + hashFor(detail.id, x.id, '') + '" class="' + (cur ? 'cur' : '') + '" data-go-story="' + esc(x.id) + '">' +
+      '<span class="story-chip" data-story-status="' + esc(x.status) + '"><b>' + esc(x.name) + '</b><i>' + esc(x.status) + '</i></span></a>';
+  }).join('');
+  var head = '<div class="detail-head">' + thumb +
+    '<div class="detail-info">' +
+      '<div class="story-head-crumb">' + esc(t.name) + ' › 스토리</div>' +
+      '<h2>' + esc(st.name) + '</h2>' +
+      '<div class="row"><span class="gender-chip">주인공 성별 · ' + esc(st.gender || '-') + '</span><span class="status" data-s="' + esc(st.status) + '">' + esc(st.status) + '</span>' +
+        '<span class="readonly-note">이름 · 성별은 IP 의 <a href="' + hashFor(detail.id, null, 'strategy') + '" data-go-ip-stage="strategy">콘텐츠 전략 기획</a>에서 수정합니다</span></div>' +
+      (detail.data.stories.length > 1 ? '<div class="sibling-row"><span class="readonly-note">다른 스토리</span>' + siblings + '</div>' : '') +
+    '</div>' +
+  '</div>';
+
+  var nodes = STORY_STAGES.map(function (s, i) { return stepNode(s, i, storyStageDone(s.key), storyStageOpen(s.key), s.key === detail.storyStage, null); });
+  var panel = renderStagePanel(storyPanelCtx(detail.storyStage));
+  body.innerHTML = back + head + '<div class="stepper" style="--steps:' + nodes.length + '">' + nodes.join('') + '</div>' + panel;
+  bindBack();
+  var ipLink = $('[data-go-ip-stage]'); if (ipLink) ipLink.addEventListener('click', function (e) { e.preventDefault(); if (!confirmLeave()) return; detail.dirty = false; location.hash = hashFor(detail.id, null, 'strategy'); });
+  bindCommon();
+}
+
+function storyPanelCtx(key) {
+  var idx = indexIn(STORY_STAGES, key), s = STORY_STAGES[idx];
+  var refs = [];
+  for (var i = idx - 1; i >= 0; i--) refs.push(refItem(STORY_STAGES[i], i + 1, detail.storyData.storyStages[STORY_STAGES[i].key], i === idx - 1, STORY_STAGES[i].key));
+  // IP 단계는 항상 참고로 (접힌 상태)
+  STAGES.forEach(function (d, i) { refs.push(refItem(d, 'IP' + (i + 1), detail.data.stages[d.key], false, null)); });
+  var open = storyStageOpen(s.key);
+  return {
+    kind: 'story', defs: STORY_STAGES, def: s, idx: idx, records: detail.storyData.storyStages,
+    done: storyStageDone(s.key), open: open,
+    prevDef: STORY_STAGES[idx - 1] || null, nextDef: STORY_STAGES[idx + 1] || null,
+    lockedByIp: !strategyDone(),
+    seedData: { title: detail.data.title, stages: detail.data.stages, story: detail.storyData.story, storyStages: detail.storyData.storyStages },
+    refs: refs, write: canEdit(),
+    completeLabel: STORY_STAGES[idx + 1] ? '단계 완료 · ' + STORY_STAGES[idx + 1].label + '로' : '배포 완료'
+  };
+}
+
+function refItem(def, n, rec, open, goKey) {
+  var fields = def.fields.filter(function (f) { return f.type !== 'stories'; }).map(function (f) {
+    var v = rec && rec.fields ? (rec.fields[f.k] || '') : '';
+    return '<div class="ref-field"><b>' + esc(f.label) + '</b>' + (v ? '<div>' + esc(v) + '</div>' : '<div class="none">비어 있음</div>') + '</div>';
+  }).join('');
+  if (def.key === 'strategy' && rec && rec.fields && rec.fields.stories) {
+    var plan = []; try { plan = JSON.parse(rec.fields.stories) || []; } catch (e) { plan = []; }
+    if (plan.length) fields += '<div class="ref-field"><b>스토리 구성</b><div>' + esc(plan.map(function (p, i) { return (i + 1) + '. ' + p.name + ' (' + p.gender + ')'; }).join('\n')) + '</div></div>';
+  }
+  return '<details class="ref-item"' + (open ? ' open' : '') + '><summary><span class="n">' + esc(String(n)) + '</span>' + esc(def.label) +
+    (goKey ? '<span class="go" data-go-stage="' + goKey + '">열기 ›</span>' : '') + '</summary><div class="ref-body">' + fields + '</div></details>';
+}
+
+/* ── 공용 단계 패널 (IP 단계 · 스토리 단계 공통) ── */
+function renderStagePanel(ctx) {
+  panelCtx = ctx;
+  var s = ctx.def, rec = ctx.records[s.key] || null, done = ctx.done, open = ctx.open, write = ctx.write;
   var badge = done ? '<span class="stage-badge done">완료</span>' : open ? '<span class="stage-badge open">진행 중</span>' : '<span class="stage-badge locked">잠김</span>';
   var doneNote = done && write ? '<p class="done-note">' + CHECK_ICON + '완료된 단계입니다. 내용을 고친 뒤 [저장]하면 덮어쓰고, [완료 취소]로 다시 진행 중 상태로 되돌릴 수 있습니다.</p>' : '';
   var headHtml = '<div class="stage-head"><div><h3>' + esc(s.short) + ' · ' + esc(s.label) + badge + '</h3><p>' + esc(s.desc) + '</p>' + doneNote + '</div></div>';
 
   if (!open) {
-    var prev = STAGES[idx - 1];
+    var lockText, lockBtn;
+    if (ctx.lockedByIp) {
+      lockText = 'IP 의 ‘콘텐츠 전략 기획’을 완료해야 스토리 제작을 시작할 수 있습니다.';
+      lockBtn = '<a class="btn btn-sm" href="' + hashFor(detail.id, null, 'strategy') + '">콘텐츠 전략 기획으로 이동</a>';
+    } else {
+      lockText = '‘' + ctx.prevDef.label + '’ 단계를 완료하면 이 단계가 열립니다.';
+      lockBtn = '<button type="button" class="btn btn-sm" data-go-stage="' + ctx.prevDef.key + '">' + esc(ctx.prevDef.short) + ' · ' + esc(ctx.prevDef.label) + '로 이동</button>';
+    }
     return '<div class="stage no-ref"><div class="stage-main">' + headHtml +
-      '<div class="locked-state">' + LOCK_ICON + '<strong>아직 열리지 않은 단계입니다</strong>' +
-      '<span>‘' + esc(prev.label) + '’ 단계를 완료하면 이 단계가 열립니다.</span>' +
-      '<button type="button" class="btn btn-sm" data-go-stage="' + prev.key + '">' + esc(prev.short) + ' · ' + esc(prev.label) + '로 이동</button></div></div></div>';
+      '<div class="locked-state">' + LOCK_ICON + '<strong>아직 열리지 않은 단계입니다</strong><span>' + esc(lockText) + '</span>' + lockBtn + '</div></div></div>';
   }
 
-  // 폼: 저장 기록이 없으면 seed 로 이전 단계 내용을 초안으로 채움
   var fieldsHtml = s.fields.map(function (f) {
     var val = rec && rec.fields ? (rec.fields[f.k] || '') : '';
     var seeded = '';
-    if (!rec && f.seed && write) { var sv = f.seed.build(detail.data); if (sv) { val = sv; seeded = STAGES[stageIndex(f.seed.from)].short; } }
+    if (!rec && f.seed && write) { var sv = f.seed.build(ctx.seedData); if (sv) { val = sv; seeded = f.seed.from === 'IP' ? 'IP 단계' : (defIn(ctx.defs, f.seed.from) || {}).short || ''; } }
     var id = 'sf-' + f.k, dis = write ? '' : ' disabled';
     var label = '<label for="' + id + '">' + esc(f.label) + (f.req ? ' <span class="req">*</span>' : '') +
       (seeded ? '<span class="seed-hint">' + FLOW_ICON + esc(seeded) + '에서 가져옴 · 수정 가능</span>' : '') + '</label>';
     var ctl;
-    if (f.type === 'input') {
+    if (f.type === 'stories') {
+      ctl = renderStoriesEditor(val, write);
+    } else if (f.type === 'input') {
       ctl = '<input class="input" id="' + id + '" data-k="' + f.k + '" value="' + esc(val) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>';
     } else if (f.type === 'select') {
       ctl = '<select class="input" id="' + id + '" data-k="' + f.k + '"' + dis + '><option value=""' + (val ? '' : ' selected') + '>선택하세요</option>' +
@@ -1469,12 +1716,11 @@ function renderStage() {
     } else {
       ctl = '<textarea class="input' + (f.mono ? ' mono' : '') + '" id="' + id + '" data-k="' + f.k + '" rows="' + (f.rows || 5) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>' + esc(val) + '</textarea>';
     }
-    return '<div class="field" data-field="' + f.k + '">' + label + ctl + '</div>';
+    return '<div class="field" data-field="' + f.k + '">' + label + ctl + (f.hint ? '<div class="hint">' + esc(f.hint) + '</div>' : '') + '</div>';
   }).join('');
 
-  // 하단 동작: 임시 저장 / 단계 완료(→ 다음 단계) · 완료된 단계는 '저장'
   var meta = rec ? '최근 저장 ' + fmtDateTime(rec.updatedAt) + (rec.updatedBy && rec.updatedBy.name ? ' · ' + esc(rec.updatedBy.name) : '') : '아직 저장된 내용이 없습니다.';
-  var next = STAGES[idx + 1];
+  var next = ctx.nextDef;
   var actions;
   if (!write) {
     actions = '<span class="readonly-note">' + LOCK_ICON + 'Viewer 권한은 조회만 할 수 있습니다.</span>';
@@ -1484,36 +1730,82 @@ function renderStage() {
       (next ? '<button type="button" class="btn btn-sm" data-go-stage="' + next.key + '">' + esc(next.label) + ARROW_ICON + '</button>' : '') + '</div>';
   } else {
     actions = '<div class="btns"><button type="button" class="btn btn-sm" id="stage-save">임시 저장</button>' +
-      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete" title="진행 사항이 ‘' + esc(s.doneStatus) + '’(으)로 바뀝니다">' +
-        (next ? '단계 완료 · ' + esc(next.label) + '로' : '최종 완료 · ' + esc(s.doneStatus)) + ARROW_ICON + '</button></div>';
+      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete">' + esc(ctx.completeLabel) + ARROW_ICON + '</button></div>';
   }
   var form = '<form class="stage-form" id="stage-form" novalidate>' + fieldsHtml +
     '<div id="stage-error" class="form-error hidden"></div>' +
     '<div class="stage-actions"><span class="meta">' + meta + '</span>' + actions + '</div></form>';
 
-  var ref = idx > 0 ? renderRefPanel(idx) : '';
+  var ref = ctx.refs.length ? '<aside class="ref-panel"><h4>' + BOOK_ICON + '이전 단계 참고</h4><p class="ref-desc">앞 단계에서 작성한 내용입니다. 이 단계 작성에 이어서 활용하세요.</p>' + ctx.refs.join('') + '</aside>' : '';
   return '<div class="stage' + (ref ? '' : ' no-ref') + '"><div class="stage-main">' + headHtml + form + '</div>' + ref + '</div>';
 }
 
-/* 오른쪽 참고 패널: 바로 앞 단계는 펼치고, 그 앞 단계들은 접어서 보여줍니다 */
-function renderRefPanel(idx) {
-  var items = [];
-  for (var i = idx - 1; i >= 0; i--) {
-    var s = STAGES[i], rec = detail.data.stages[s.key];
-    var fields = s.fields.map(function (f) {
-      var v = rec && rec.fields ? (rec.fields[f.k] || '') : '';
-      return '<div class="ref-field"><b>' + esc(f.label) + '</b>' + (v ? '<div>' + esc(v) + '</div>' : '<div class="none">비어 있음</div>') + '</div>';
-    }).join('');
-    items.push('<details class="ref-item"' + (i === idx - 1 ? ' open' : '') + '><summary><span class="n">' + (i + 1) + '</span>' + esc(s.label) +
-      '<span class="go" data-go-stage="' + s.key + '">열기 ›</span></summary><div class="ref-body">' + fields + '</div></details>');
-  }
-  return '<aside class="ref-panel"><h4>' + BOOK_ICON + '이전 단계 참고</h4><p class="ref-desc">앞 단계에서 작성한 내용입니다. 이 단계 작성에 이어서 활용하세요.</p>' + items.join('') + '</aside>';
+/* ── 스토리 구성 편집기 (전략 기획의 마지막 항목) ── */
+function renderStoriesEditor(json, write) {
+  var plan = []; try { plan = JSON.parse(json || '[]') || []; } catch (e) { plan = []; }
+  if (!Array.isArray(plan)) plan = [];
+  var existing = {}; (detail.data.stories || []).forEach(function (s) { existing[s.id] = s; });
+  var rows = plan.map(function (p, i) { return storiesRow(p, i, write, existing); }).join('');
+  return '<div class="stories-editor" id="stories-editor" data-k="stories" data-stories>' +
+    '<div class="se-head"><span>스토리 <b id="se-count">' + plan.length + '</b>개' + (write ? ' · 주인공 이름과 성별을 정하세요' : '') + '</span>' +
+    (write ? '<button type="button" class="btn btn-xs" id="se-add">' + PLUS_ICON + '스토리 추가</button>' : '') + '</div>' +
+    '<div id="se-rows">' + rows + '</div>' +
+    (plan.length ? '' : '<div class="se-empty" id="se-empty">아직 구성한 스토리가 없습니다. [스토리 추가]로 1개 이상 추가하세요.</div>') +
+  '</div>';
+}
+function storiesRow(p, i, write, existing) {
+  var dis = write ? '' : ' disabled';
+  var ex = p.id && existing[p.id];
+  var badge = ex
+    ? '<a class="se-badge" href="' + hashFor(detail.id, p.id, '') + '" data-go-story="' + esc(p.id) + '" title="스토리 열기">' + esc(ex.status) + ' ›</a>'
+    : '<span class="se-badge new">' + (p.id ? '생성됨' : '완료 시 생성') + '</span>';
+  return '<div class="se-row" data-sid="' + esc(p.id || '') + '">' +
+    '<span class="se-n">' + (i + 1) + '</span>' +
+    '<input class="input se-name" maxlength="24" placeholder="주인공 이름" value="' + esc(p.name || '') + '"' + dis + '>' +
+    '<select class="input se-gender"' + dis + '><option value=""' + (p.gender ? '' : ' selected') + '>성별 선택</option>' +
+      STORY_GENDERS.map(function (g) { return '<option value="' + esc(g) + '"' + (g === p.gender ? ' selected' : '') + '>' + esc(g) + '</option>'; }).join('') + '</select>' +
+    badge +
+    (write ? '<button type="button" class="se-del" title="스토리 삭제" aria-label="스토리 삭제">' + X_ICON + '</button>' : '<span></span>') +
+  '</div>';
+}
+function collectStoriesPlan() {
+  return $all('#se-rows .se-row').map(function (row) {
+    return { id: row.dataset.sid || undefined, name: $('.se-name', row).value.trim(), gender: $('.se-gender', row).value };
+  });
+}
+function renumberStories() {
+  var rows = $all('#se-rows .se-row');
+  rows.forEach(function (r, i) { $('.se-n', r).textContent = i + 1; });
+  var c = $('#se-count'); if (c) c.textContent = rows.length;
+  var empty = $('#se-empty'); if (empty) empty.classList.toggle('hidden', rows.length > 0);
+}
+function bindStoriesEditor() {
+  var ed = $('#stories-editor'); if (!ed) return;
+  var add = $('#se-add');
+  if (add) add.addEventListener('click', function () {
+    var box = $('#se-rows');
+    var existing = {}; (detail.data.stories || []).forEach(function (s) { existing[s.id] = s; });
+    box.insertAdjacentHTML('beforeend', storiesRow({ name: '', gender: '' }, box.children.length, true, existing));
+    renumberStories(); detail.dirty = true;
+    ed.closest('.field').classList.remove('invalid');
+    var last = box.lastElementChild; if (last) $('.se-name', last).focus();
+  });
+  ed.addEventListener('click', function (e) {
+    var del = e.target.closest('.se-del'); if (!del) return;
+    var row = del.closest('.se-row');
+    if (row.dataset.sid) {
+      var ex = (detail.data.stories || []).filter(function (s) { return s.id === row.dataset.sid; })[0];
+      var name = ex ? ex.name : $('.se-name', row).value;
+      if (!confirm('‘' + name + '’ 스토리는 이미 생성된 스토리입니다.\n삭제 후 저장하면 이 스토리의 프롬프트 · QA 등 단계 데이터가 모두 삭제됩니다. 계속할까요?')) return;
+    }
+    row.remove(); renumberStories(); detail.dirty = true;
+  });
+  $all('[data-go-story]', ed).forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); goStory(a.dataset.goStory); }); });
 }
 
+/* ── 폼 바인딩 · 저장 ── */
 function bindStageForm() {
-  $all('[data-go-stage]').forEach(function (el) {
-    el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); switchStage(el.dataset.goStage); });
-  });
+  bindStoriesEditor();
   var form = $('#stage-form'); if (!form) return;
   form.addEventListener('input', function (e) {
     detail.dirty = true;
@@ -1525,63 +1817,118 @@ function bindStageForm() {
   var uncomplete = $('#stage-uncomplete'); if (uncomplete) uncomplete.addEventListener('click', function () { saveStage('uncomplete', uncomplete); });
 }
 
-/* 완료 취소 후 진행 사항이 어떻게 되는지 미리 계산 (서버 deriveStatus 와 같은 규칙) */
-function statusAfterUncomplete(key) {
-  var i = stageIndex(key);
-  return i === 0 ? TITLE_STATUSES[0] : STAGES[i - 1].doneStatus;
+function collectFields(def) {
+  var fields = {};
+  def.fields.forEach(function (f) {
+    if (f.type === 'stories') { fields[f.k] = JSON.stringify(collectStoriesPlan()); return; }
+    var el = $('#stage-form [data-k="' + f.k + '"]'); fields[f.k] = el ? el.value : '';
+  });
+  return fields;
 }
 
 /* mode: 'save' 내용만 덮어쓰기 · 'complete' 단계 완료 · 'uncomplete' 완료 취소 */
 function saveStage(mode, btn) {
-  var s = stageDef(detail.stage); if (!s || !detail.data) return;
+  var ctx = panelCtx; if (!ctx || !detail.data) return;
+  var s = ctx.def;
   var complete = mode === 'complete', uncomplete = mode === 'uncomplete';
-  var fields = {};
-  $all('#stage-form [data-k]').forEach(function (el) { fields[el.dataset.k] = el.value; });
+  var fields = collectFields(s);
   var err = $('#stage-error');
   clearInvalid('#stage-form'); setError(err, '');
+
   if (uncomplete) {
-    var laterDone = STAGES.slice(stageIndex(s.key) + 1).filter(function (x) { return isStageDone(x.key); });
-    var msg = '‘' + s.label + '’ 단계 완료를 취소할까요?\n진행 사항이 ‘' + statusAfterUncomplete(s.key) + '’(으)로 바뀝니다.';
+    var laterDone = ctx.defs.slice(ctx.idx + 1).filter(function (x) { return recDone(ctx.records, x.key); });
+    var msg = '‘' + s.label + '’ 단계 완료를 취소할까요?';
     if (laterDone.length) msg += '\n이후 단계(' + laterDone.map(function (x) { return x.label; }).join(', ') + ')의 완료 표시도 함께 취소됩니다. 작성한 내용은 유지됩니다.';
+    if (ctx.kind === 'ip' && s.key === 'strategy') msg += '\n스토리는 유지되지만, 전략 기획을 다시 완료할 때까지 스토리 단계는 잠깁니다.';
     if (!confirm(msg)) return;
   }
-  if (complete) {
-    var missing = s.fields.filter(function (f) { return f.req && !String(fields[f.k] || '').trim(); }).map(function (f) { return f.k; });
-    if (missing.length) {
+  if (complete || (ctx.done && !uncomplete)) {
+    var missing = s.fields.filter(function (f) {
+      if (!f.req) return false;
+      if (f.type === 'stories') { var plan = collectStoriesPlan(); return !plan.length || plan.some(function (p) { return !p.name || !p.gender; }); }
+      return !String(fields[f.k] || '').trim();
+    }).map(function (f) { return f.k; });
+    if (missing.length && (complete || missing.indexOf('stories') !== -1)) {
       markInvalid('#stage-form', missing);
-      setError(err, '필수 문항 작성이 필요합니다. (' + missing.map(function (k) { return s.fields.filter(function (f) { return f.k === k; })[0].label; }).join(', ') + ')');
+      setError(err, missing.indexOf('stories') !== -1 && missing.length === 1
+        ? '스토리를 1개 이상 구성하고, 각 스토리의 주인공 이름과 성별을 모두 채워 주세요.'
+        : '필수 문항 작성이 필요합니다. (' + missing.map(function (k) { return defField(s, k).label; }).join(', ') + ')');
       var first = $('#stage-form [data-field="' + missing[0] + '"] .input'); if (first) first.focus();
       return;
     }
   }
+  if (complete && ctx.kind === 'ip' && s.key === 'strategy') {
+    var created = collectStoriesPlan().filter(function (p) { return !p.id; }).length;
+    if (created && !confirm('콘텐츠 전략 기획을 완료하면 새 스토리 ' + created + '개가 생성됩니다. 진행할까요?')) return;
+  }
+
   busy(btn, true, complete ? '완료 처리 중…' : uncomplete ? '취소 중…' : '저장 중…');
-  var id = detail.id;
-  callApi('titles', { action: 'saveStage', id: id, stage: s.key, fields: fields, complete: complete, uncomplete: uncomplete }).then(function (res) {
+  var id = detail.id, storyId = detail.storyId;
+  var payload = ctx.kind === 'story'
+    ? { action: 'saveStoryStage', id: id, storyId: storyId, stage: s.key, fields: fields, complete: complete, uncomplete: uncomplete }
+    : { action: 'saveStage', id: id, stage: s.key, fields: fields, complete: complete, uncomplete: uncomplete };
+  callApi('titles', payload).then(function (res) {
     busy(btn, false);
-    if (detail.id !== id) return;
+    if (detail.id !== id || detail.storyId !== storyId) return;
     if (!res || !res.ok) {
       if (res && res.fields && res.fields.length) markInvalid('#stage-form', res.fields);
       setError(err, (res && res.error) || '저장에 실패했습니다.');
       return;
     }
-    detail.data = { title: res.data.title, stages: res.data.stages || {} };
+    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [] };
+    if (ctx.kind === 'story') detail.storyData = { story: res.data.story, storyStages: res.data.storyStages || {} };
     detail.dirty = false;
-    // 목록 캐시의 카드(진행 사항 · 수정일)도 갱신
-    state.titles = state.titles.map(function (t) { return t.id === id ? res.data.title : t; });
-    if (state.loaded) renderLists();
-    var next = STAGES[stageIndex(s.key) + 1];
+    syncListCache(res.data.title, res.data.stories);
+
+    var next = ctx.nextDef;
     var newStatus = normalizeStatus(res.data.title && res.data.title.status);
     if (complete) {
-      toast((next ? '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.' : '모든 단계를 완료했습니다.') + ' 진행 사항: ' + newStatus);
-      if (next) { detail.stage = next.key; history.replaceState(null, '', '#title/' + id + '/' + next.key); }
+      if (ctx.kind === 'story') {
+        toast(next ? '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.' : '‘' + res.data.story.name + '’ 스토리를 배포 완료했습니다. IP 진행 사항: ' + newStatus);
+        if (next) { detail.storyStage = next.key; history.replaceState(null, '', hashFor(id, storyId, next.key)); }
+      } else {
+        toast(s.key === 'strategy'
+          ? '전략 기획을 완료했습니다. 스토리 ' + detail.data.stories.length + '개가 준비되었습니다. 진행 사항: ' + newStatus
+          : '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.');
+        detail.stage = next.key; history.replaceState(null, '', hashFor(id, null, next.key));
+      }
     } else if (uncomplete) {
       toast('‘' + s.label + '’ 단계 완료를 취소했습니다. 진행 사항: ' + newStatus);
     } else {
-      toast('저장했습니다.');
+      toast(ctx.kind === 'ip' && s.key === 'strategy' && ctx.done ? '저장했습니다. 스토리 구성이 반영되었습니다.' : '저장했습니다.');
     }
     renderDetail();
     if (complete) { var card = $('#page-detail'); if (card) card.scrollIntoView({ block: 'start' }); }
   }).catch(function (ex) { busy(btn, false); setError($('#stage-error'), ex.message); });
+}
+function defField(def, k) { return def.fields.filter(function (f) { return f.k === k; })[0] || { label: k }; }
+
+/* ── 스토리 목록 패널 (IP 3단계) ── */
+function renderStoriesPanel() {
+  var head = '<div class="stage-head"><div><h3>' + esc(STORIES_STEP.short) + ' · ' + esc(STORIES_STEP.label) +
+    (allStoriesDone() ? '<span class="stage-badge done">완료</span>' : strategyDone() ? '<span class="stage-badge open">진행 중</span>' : '<span class="stage-badge locked">잠김</span>') + '</h3>' +
+    '<p>콘텐츠 전략 기획에서 구성한 스토리마다 주인공 캐릭터를 제작합니다. 각 스토리는 프롬프트 → 시작 설정 → 1차 QA → 2차 QA → 배포 단계를 따로 거칩니다.</p></div></div>';
+  if (!strategyDone()) {
+    return '<div class="stage no-ref"><div class="stage-main">' + head +
+      '<div class="locked-state">' + LOCK_ICON + '<strong>아직 스토리가 생성되지 않았습니다</strong><span>‘콘텐츠 전략 기획’ 단계에서 스토리를 구성하고 완료하면 여기에 스토리가 생성됩니다.</span>' +
+      '<button type="button" class="btn btn-sm" data-go-stage="strategy">2단계 · 콘텐츠 전략 기획으로 이동</button></div></div></div>';
+  }
+  var list = detail.data.stories;
+  var cards = list.map(function (s) {
+    var doneCount = STORY_STAGES.filter(function (d) { return s.done && s.done[d.key]; }).length;
+    var dots = STORY_STAGES.map(function (d) { return '<i class="' + (s.done && s.done[d.key] ? 'on' : '') + '" title="' + esc(d.label) + '"></i>'; }).join('');
+    return '<a class="story-card" href="' + hashFor(detail.id, s.id, '') + '" data-go-story="' + esc(s.id) + '">' +
+      '<div class="sc-avatar">' + esc((s.name || '?').charAt(0)) + '</div>' +
+      '<div class="sc-body"><div class="sc-name"><span class="nm">' + esc(s.name) + '</span><span class="gender-chip">' + esc(s.gender || '-') + '</span></div>' +
+        '<div class="sc-meta"><span class="status" data-s="' + esc(s.status) + '">' + esc(s.status) + '</span><span class="readonly-note">' + doneCount + '/' + STORY_STAGES.length + ' 단계</span></div>' +
+        '<div class="sc-progress">' + dots + '</div></div>' +
+      '<span class="sc-go">열기 ›</span></a>';
+  }).join('');
+  var toolbar = '<div class="stories-head"><span class="hint">스토리 ' + list.length + '개' + (allStoriesDone() ? ' · 모두 배포 완료' : '') + '</span>' +
+    (canEdit() ? '<button type="button" class="btn btn-xs" data-go-stage="strategy">' + PLUS_ICON + '스토리 구성 변경 (전략 기획)</button>' : '') + '</div>';
+  var body = list.length ? '<div class="story-grid">' + cards + '</div>'
+    : '<div class="empty-state">구성된 스토리가 없습니다. 전략 기획에서 스토리를 추가하고 저장하세요.</div>';
+  return '<div class="stage no-ref"><div class="stage-main">' + head + toolbar + body + '</div></div>';
 }
 
 function fmtDateTime(ms) {
