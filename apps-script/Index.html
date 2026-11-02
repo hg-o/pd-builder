@@ -677,6 +677,8 @@ function route() {
   $('#user-name').textContent = s.name || s.id;
   $('#user-id').textContent = s.id;
   $('#user-perm').textContent = s.permission || '';
+  // Viewer 에게는 추가/수정 버튼을 아예 표시하지 않음 (연필 아이콘은 titleCard 에서 동일하게 처리)
+  $all('[data-add-ip]').forEach(function (b) { b.classList.toggle('hidden', !canEdit()); });
   show(views.app);
   goPage(location.hash.replace('#', '') || 'home');
   if (!state.loaded) loadTitles();
