@@ -225,8 +225,11 @@
     height: 90px; display: flex; align-items: center; justify-content: space-between; padding: 0 40px 0 36px;
     background: var(--surface); border-bottom: 1px solid var(--border);
   }
-  .crumb { display: flex; align-items: center; gap: 14px; font-size: 24px; color: var(--text-3); }
+  .crumb { display: flex; align-items: center; gap: 14px; font-size: 24px; color: var(--text-3); min-width: 0; }
+  .crumb > span { white-space: nowrap; }
   .crumb .cur { color: var(--text-2); }
+  .crumb #crumb-extra { overflow: hidden; text-overflow: ellipsis; max-width: 360px; }
+  .top-actions { flex: none; }
   .crumb svg { width: 18px; height: 18px; }
   .top-actions { display: flex; align-items: center; gap: 22px; }
   .icon-btn { width: 40px; height: 40px; border: 0; background: transparent; color: var(--text-2); display: grid; place-items: center; border-radius: 10px; }
@@ -313,6 +316,124 @@
 
   .placeholder { text-align: center; padding: 60px 20px; color: var(--text-3); font-size: 16px; position: relative; }
   .placeholder strong { display: block; color: var(--text-2); font-size: 22px; margin-bottom: 8px; }
+
+  /* ───── 작품 상세: 단계별 제작 ───── */
+  .title-card { cursor: pointer; }
+  .back-btn {
+    position: relative; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 14px; font-weight: 500; margin-bottom: 18px;
+  }
+  .back-btn:hover { border-color: var(--accent); color: var(--text); }
+  .back-btn svg { width: 16px; height: 16px; }
+  .detail-head { position: relative; display: flex; align-items: flex-start; gap: 20px; padding-right: 60px; margin-bottom: 24px; }
+  .detail-thumb {
+    position: relative; width: 96px; height: 96px; flex: none; border-radius: 14px; overflow: hidden; display: grid; place-items: center;
+    font-size: 32px; font-weight: 700; color: #6b7280; background: linear-gradient(135deg, #e3f8ff, #f6f1ff 55%, #ffeef7);
+  }
+  .detail-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  [data-theme="dark"] .detail-thumb { background: linear-gradient(135deg, #1b2a33, #241f33 55%, #2f1e2a); color: #9ca3af; }
+  .detail-info { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 8px; padding-top: 2px; }
+  .detail-info h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .detail-info .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .detail-info .dates { font-size: 13px; color: var(--text-3); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .detail-info .dates b { font-weight: 600; margin-right: 4px; }
+  .detail-head .edit-btn {
+    position: absolute; top: 0; right: 0; width: 38px; height: 38px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-2); display: grid; place-items: center;
+  }
+  .detail-head .edit-btn:hover { border-color: var(--accent); color: #047857; background: rgba(0, 230, 118, .08); }
+  .detail-head .edit-btn svg { width: 17px; height: 17px; }
+
+  /* 스테퍼: 5단계가 순서대로 이어지는 진행 표시줄 */
+  .stepper {
+    position: relative; display: grid; grid-template-columns: repeat(5, 1fr); margin: 0 0 24px; padding: 20px 8px 16px;
+    border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
+  }
+  .step {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 0 8px;
+    background: none; border: 0; color: var(--text-3); font-size: 14px; font-weight: 600; text-align: center; line-height: 1.3;
+  }
+  .step:not(:last-child)::after {
+    content: ""; position: absolute; top: 18px; left: calc(50% + 24px); right: calc(-50% + 24px); height: 2px; background: var(--border);
+  }
+  .step.done:not(:last-child)::after { background: var(--accent); }
+  .step .dot {
+    width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--border);
+    background: var(--surface); color: var(--text-3); font-size: 14px; font-weight: 700; transition: all .15s;
+  }
+  .step .dot svg { width: 16px; height: 16px; }
+  .step .sub { display: block; font-size: 12px; font-weight: 500; color: var(--text-3); margin-top: 3px; }
+  .step.done { color: var(--text-2); }
+  .step.done .dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step.open { color: var(--text-2); }
+  .step.open .dot { border-color: var(--accent); color: #047857; }
+  [data-theme="dark"] .step.open .dot { color: #34d399; }
+  .step.locked { cursor: not-allowed; }
+  .step.locked .dot { background: var(--surface-2); }
+  .step.active { color: var(--text); }
+  .step.active .dot { box-shadow: 0 0 0 4px rgba(0, 230, 118, .2); border-color: var(--accent); }
+  .step.active .sub { color: #047857; font-weight: 600; }
+  [data-theme="dark"] .step.active .sub { color: #34d399; }
+  .step:not(.locked):hover .dot { border-color: var(--accent); }
+
+  /* 단계 패널: 왼쪽 작성 폼 + 오른쪽 이전 단계 참고 */
+  .stage { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+  .stage.no-ref { grid-template-columns: minmax(0, 1fr); }
+  .stage-main { min-width: 0; }
+  .stage-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+  .stage-head h3 { margin: 0 0 6px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .stage-head p { margin: 0; color: var(--text-2); font-size: 14px; line-height: 1.5; }
+  .stage-badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .stage-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .stage-badge.done { background: #d1fae5; color: #047857; }
+  .stage-badge.open { background: #e0f2fe; color: #0369a1; }
+  .stage-badge.locked { background: #f3f4f6; color: #6b7280; }
+  [data-theme="dark"] .stage-badge { filter: brightness(.9); }
+  .stage-form textarea.input { height: auto; min-height: 120px; padding: 12px 14px; resize: vertical; line-height: 1.55; }
+  .stage-form textarea.input.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; min-height: 300px; }
+  .stage-form .input:disabled { background: var(--surface-2); color: var(--text-2); cursor: default; }
+  .seed-hint {
+    display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+    background: #e0f2fe; color: #0369a1; font-size: 11px; font-weight: 600; vertical-align: middle;
+  }
+  .seed-hint svg { width: 11px; height: 11px; }
+  [data-theme="dark"] .seed-hint { background: #0c2a3d; color: #7cb3ff; }
+  .stage-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 6px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .stage-actions .meta { font-size: 13px; color: var(--text-3); }
+  .stage-actions .btns { display: flex; gap: 10px; margin-left: auto; }
+  .stage-actions .btn svg { width: 16px; height: 16px; }
+  .ref-panel { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-2); }
+  .ref-panel h4 { margin: 0 0 2px; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--text-2); }
+  .ref-panel h4 svg { width: 16px; height: 16px; }
+  .ref-panel .ref-desc { margin: -4px 0 4px; font-size: 12px; color: var(--text-3); }
+  .ref-item { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; }
+  .ref-item summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 10px 12px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text); }
+  .ref-item summary::-webkit-details-marker { display: none; }
+  .ref-item summary .n { width: 22px; height: 22px; flex: none; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; display: grid; place-items: center; }
+  .ref-item summary .go { margin-left: auto; font-size: 12px; font-weight: 500; color: var(--text-3); white-space: nowrap; }
+  .ref-item summary .go:hover { color: #047857; text-decoration: underline; text-underline-offset: 2px; }
+  .ref-item .ref-body { display: flex; flex-direction: column; gap: 10px; padding: 0 12px 12px; border-top: 1px solid var(--border); }
+  .ref-item .ref-body > :first-child { padding-top: 10px; }
+  .ref-field b { display: block; font-size: 12px; font-weight: 600; color: var(--text-3); margin-bottom: 3px; }
+  .ref-field div { font-size: 13px; line-height: 1.5; color: var(--text-2); white-space: pre-wrap; word-break: break-word; max-height: 150px; overflow: auto; }
+  .ref-field .none { color: var(--text-3); font-style: italic; }
+  .locked-state { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 280px; text-align: center; color: var(--text-3); font-size: 15px; }
+  .locked-state svg { width: 36px; height: 36px; opacity: .6; }
+  .locked-state strong { color: var(--text-2); font-size: 17px; }
+  .locked-state .btn { margin-top: 8px; }
+  .readonly-note { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-3); margin-left: auto; }
+  .readonly-note svg { width: 14px; height: 14px; }
+  @media (max-width: 1100px) { .stage { grid-template-columns: minmax(0, 1fr); } .ref-panel { position: static; } }
+  @media (max-width: 810px) {
+    .stepper { padding: 14px 4px 12px; }
+    .step { font-size: 11px; padding: 0 4px; }
+    .step .sub { display: none; }
+    .step .dot { width: 28px; height: 28px; font-size: 12px; }
+    .step .dot svg { width: 13px; height: 13px; }
+    .step:not(:last-child)::after { top: 14px; left: calc(50% + 18px); right: calc(-50% + 18px); }
+    .detail-head { flex-wrap: wrap; }
+    .detail-info h2 { font-size: 20px; }
+  }
 
   .toast {
     position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #111827; color: #fff;
@@ -524,6 +645,8 @@
         <span>Story Builder</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         <span class="cur" id="crumb-current">Home</span>
+        <svg class="hidden" id="crumb-extra-sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="cur hidden" id="crumb-extra"></span>
       </div>
       <div class="top-actions">
         <button type="button" class="icon-btn" id="theme-toggle" title="다크 모드">
@@ -566,6 +689,12 @@
           </button>
         </div>
         <div id="titles-list"></div>
+      </div>
+
+      <!-- 작품 상세: 기본 정보 → 전략 기획 → 각색 기획안 → 프롬프트 → 시작 상황 (순차 단계) -->
+      <div class="page-card hidden" id="page-detail">
+        <div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+        <div id="detail-body"></div>
       </div>
 
       <!-- 기타 페이지 (준비 중) -->
@@ -685,14 +814,25 @@ function route() {
 }
 
 function goPage(key) {
-  if (!PAGES[key]) key = 'home';
-  $all('#nav a').forEach(function (a) { a.classList.toggle('active', a.dataset.page === key); });
-  $('#crumb-current').textContent = PAGES[key];
-  hide($('#page-home')); hide($('#page-titles')); hide($('#page-generic'));
-  if (key === 'home') show($('#page-home'));
+  // 작품 상세: #title/<id>[/<stage>]
+  var m = /^title\/([^/]+)(?:\/([a-z]+))?$/.exec(key || '');
+  var navKey = m ? 'titles' : key;
+  if (!m && !PAGES[key]) { key = 'home'; navKey = 'home'; }
+  $all('#nav a').forEach(function (a) { a.classList.toggle('active', a.dataset.page === navKey); });
+  $('#crumb-current').textContent = PAGES[navKey];
+  setCrumbExtra(m ? '…' : '');
+  hide($('#page-home')); hide($('#page-titles')); hide($('#page-detail')); hide($('#page-generic'));
+  if (m) { show($('#page-detail')); openDetail(m[1], m[2] || ''); }
+  else if (key === 'home') show($('#page-home'));
   else if (key === 'titles') show($('#page-titles'));
   else { show($('#page-generic')); $('#generic-title').textContent = PAGES[key]; }
+  if (!m) detail.id = null; // 상세를 벗어나면 캐시 해제 (다시 들어오면 새로 불러옴)
   if (location.hash !== '#' + key) history.replaceState(null, '', '#' + key);
+}
+function setCrumbExtra(text) {
+  $('#crumb-extra').textContent = text || '';
+  $('#crumb-extra').classList.toggle('hidden', !text);
+  $('#crumb-extra-sep').classList.toggle('hidden', !text);
 }
 
 /* ───────────── 로그인 ───────────── */
@@ -903,7 +1043,10 @@ document.addEventListener('click', function (e) {
     return;
   }
   var add = e.target.closest('[data-add-ip]');
-  if (add) openIpModal(null, add.dataset.addIp);
+  if (add) { openIpModal(null, add.dataset.addIp); return; }
+  // 카드 본문 클릭 → 작품 상세 (링크·버튼 클릭은 제외)
+  var card = e.target.closest('.title-card[data-title-id]');
+  if (card && !e.target.closest('a, button')) location.hash = '#title/' + card.dataset.titleId;
 });
 
 /* ───────────── IP 모달 ───────────── */
@@ -1083,6 +1226,7 @@ $('#ip-form').addEventListener('submit', function (e) {
     toast(data.id ? 'IP 정보를 수정했습니다.' : '새 IP를 추가했습니다.');
     state.loaded = false;
     loadTitles();
+    if (data.id && detail.id === data.id) loadDetail(data.id); // 상세 화면 머리글 갱신
   }).catch(function (ex) { busy(btn, false); setError(err, ex.message); });
 });
 
@@ -1096,8 +1240,301 @@ $('#ip-delete').addEventListener('click', function () {
     if (!res || !res.ok) { setError($('#ip-error'), (res && res.error) || '삭제에 실패했습니다.'); return; }
     closeIpModal(); toast('IP를 삭제했습니다.');
     state.loaded = false; loadTitles();
+    if (detail.id === id) goPage('titles'); // 상세 화면에서 삭제했으면 목록으로
   }).catch(function (ex) { busy(btn, false); setError($('#ip-error'), ex.message); });
 });
+
+/* ───────────── 작품 상세: 단계별 제작 ─────────────
+ * PD 가 작품을 제작하는 5단계를 순서대로 밟습니다.
+ *  - 앞 단계를 '완료'해야 다음 단계가 열립니다. (잠긴 단계는 안내만 표시)
+ *  - 단계를 완료하면 카드의 진행 사항이 doneStatus 로 자동 전진합니다. (뒤로는 가지 않음)
+ *  - 다음 단계를 처음 열면 seed 로 지정된 이전 단계 내용이 초안으로 채워지고,
+ *    오른쪽 '이전 단계 참고' 패널에서 언제든 앞 단계 내용을 펼쳐 볼 수 있습니다.
+ *  - 필드 키·필수 항목은 lib/store.js 의 STAGE_DEFS 와 맞춰야 합니다.
+ */
+function stageVal(d, stage, k) { var s = d && d.stages && d.stages[stage]; return (s && s.fields && s.fields[k]) || ''; }
+function composePromptSheet(d) {
+  var t = (d && d.title) || {};
+  var genre = stageVal(d, 'basic', 'genre');
+  var parts = ['# ' + (t.name || '') + (genre ? ' · ' + genre : '')];
+  var cast = stageVal(d, 'adaptation', 'cast'), lore = stageVal(d, 'adaptation', 'lore'),
+      rule = stageVal(d, 'adaptation', 'rule'), tone = stageVal(d, 'adaptation', 'tone'), sc = stageVal(d, 'adaptation', 'scenario');
+  if (cast) parts.push('## 캐릭터\n' + cast);
+  if (lore) parts.push('## 세계관\n' + lore);
+  if (rule) parts.push('## 규칙\n' + rule);
+  if (tone) parts.push('## 말투 · 문체\n' + tone);
+  if (sc) parts.push('## 시나리오 흐름\n' + sc);
+  return parts.length > 1 ? parts.join('\n\n') : '';
+}
+
+var STAGES = [
+  { key: 'basic', label: '작품 기본 정보', short: '1단계', doneStatus: '전략 기획',
+    desc: '원작의 핵심 정보를 정리합니다. 여기 적은 내용은 이후 모든 단계의 참고 자료로 따라갑니다.',
+    fields: [
+      { k: 'genre', label: '장르', type: 'input', req: true, ph: '예: 로맨스 판타지, 현대 액션, 학원물' },
+      { k: 'author', label: '원작 작가', type: 'input', ph: '글 · 그림 작가' },
+      { k: 'source', label: '원작 연재처 · 링크', type: 'input', ph: '네이버웹툰, 시리즈 등 · 작품 URL' },
+      { k: 'synopsis', label: '줄거리 요약', type: 'text', req: true, rows: 6, ph: '원작 전체 줄거리를 5~10문장으로 요약합니다. 결말 포함 여부를 함께 적어 주세요.' },
+      { k: 'characters', label: '주요 등장인물', type: 'text', req: true, rows: 7, ph: '인물별로 이름 · 역할 · 성격 · 말투 · 관계를 적습니다.\n예) 김독자 — 주인공. 소심하지만 결정적 순간엔 단호. 존댓말, 짧은 문장.' },
+      { k: 'notes', label: '원작 특이사항 · 유의점', type: 'text', rows: 4, ph: '연재 상태, 민감 소재, 활용 가능한 저작권 범위, 작가 요청 사항 등' }
+    ] },
+  { key: 'strategy', label: '콘텐츠 전략 기획', short: '2단계', doneStatus: '각색 기획',
+    desc: '누구에게, 어떤 매력으로, 어떤 형태의 콘텐츠를 만들지 결정합니다. 1단계 기본 정보를 참고 패널에서 확인하며 작성하세요.',
+    fields: [
+      { k: 'target', label: '타깃 독자', type: 'text', req: true, rows: 4, ph: '핵심 팬층과 확장 타깃, 이용 동기와 기대하는 경험' },
+      { k: 'appeal', label: '핵심 매력 포인트 (소구점)', type: 'text', req: true, rows: 5, ph: '원작에서 가져올 핵심 감정선 · 관계 · 장면. 캐릭터챗에서 어떻게 살릴지' },
+      { k: 'direction', label: '콘텐츠 방향 · 포맷', type: 'text', req: true, rows: 5, ph: '1:1 캐릭터챗 / 상황극 / 멀티 캐릭터 등, 플레이 길이, 전체 톤' },
+      { k: 'reference', label: '레퍼런스', type: 'text', rows: 4, ph: '참고할 기존 작품 · 콘텐츠와 참고 이유' },
+      { k: 'risk', label: '리스크 · 유의점', type: 'text', rows: 4, ph: '원작 훼손 우려, 민감 소재, 세계관 충돌, 운영 이슈 등' }
+    ] },
+  { key: 'adaptation', label: '각색 기획안 작성', short: '3단계', doneStatus: '프롬프트 작성',
+    desc: '전략을 바탕으로 캐릭터 · 세계관 · 규칙 · 시나리오를 구체화합니다. 여기서 쓴 내용이 4단계 프롬프트 초안의 재료가 됩니다.',
+    fields: [
+      { k: 'cast', label: '등장 캐릭터 선정 · 역할', type: 'text', req: true, rows: 7, ph: '콘텐츠에 등장시킬 캐릭터와 역할, 원작 대비 조정 사항',
+        seed: { from: 'basic', build: function (d) { return stageVal(d, 'basic', 'characters'); } } },
+      { k: 'lore', label: '세계관 · 배경 설정 (Lore)', type: 'text', req: true, rows: 6, ph: '시대 · 장소 · 핵심 설정, 원작에서 가져올 것과 새로 만들 것' },
+      { k: 'rule', label: '규칙 (Rule)', type: 'text', req: true, rows: 6, ph: '캐릭터가 지켜야 할 행동 규칙, 금지 사항, 관계 변화 조건' },
+      { k: 'scenario', label: '시나리오 구조 · 분기', type: 'text', req: true, rows: 6, ph: '도입 → 전개 → 분기 → 엔딩 흐름, 주요 이벤트' },
+      { k: 'tone', label: '톤앤매너 · 문체', type: 'text', rows: 4, ph: '말투, 문장 길이, 지문 · 이모지 사용 여부, 피해야 할 표현' }
+    ] },
+  { key: 'prompt', label: '프롬프트 작성', short: '4단계', doneStatus: '프롬프트 작성',
+    desc: '각색 기획안을 실제 캐릭터 프롬프트로 옮깁니다. 처음 열면 3단계 내용으로 초안이 자동 구성되며, 자유롭게 고쳐 쓰면 됩니다.',
+    fields: [
+      { k: 'sheet', label: '캐릭터 시트 · 시스템 프롬프트', type: 'text', req: true, mono: true, rows: 16, ph: '캐릭터 정의, 세계관, 규칙, 말투를 모델이 읽을 형태로 작성합니다.',
+        seed: { from: 'adaptation', build: composePromptSheet } },
+      { k: 'examples', label: '대화 예시', type: 'text', mono: true, rows: 8, ph: 'User / Character 턴 예시 3~5개' },
+      { k: 'constraints', label: '금지 · 제약 사항', type: 'text', rows: 5, ph: '절대 하지 말아야 할 행동, 답변 형식 제약',
+        seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'rule'); } } }
+    ] },
+  { key: 'opening', label: '시작 상황 작성', short: '5단계', doneStatus: 'QA',
+    desc: '유저가 처음 만나는 장면과 첫 메시지를 작성합니다. 이 단계를 완료하면 진행 사항이 QA 로 넘어갑니다.',
+    fields: [
+      { k: 'situation', label: '시작 상황 설명', type: 'text', req: true, rows: 6, ph: '장소 · 시점 · 분위기, 유저와 캐릭터가 놓인 상황',
+        seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'scenario'); } } },
+      { k: 'first', label: '첫 메시지 (오프닝)', type: 'text', req: true, mono: true, rows: 8, ph: '캐릭터가 유저에게 건네는 첫 대사 · 지문' },
+      { k: 'userRole', label: '유저 역할 · 관계 설정', type: 'text', rows: 4, ph: '유저가 맡는 인물, 캐릭터와의 관계와 호칭' },
+      { k: 'branches', label: '진입 선택지 · 분기 (선택)', type: 'text', rows: 4, ph: '시작 시 제시할 선택지나 복수의 오프닝' }
+    ] }
+];
+function stageIndex(key) { for (var i = 0; i < STAGES.length; i++) if (STAGES[i].key === key) return i; return -1; }
+function stageDef(key) { return STAGES[stageIndex(key)] || null; }
+
+var detail = { id: null, data: null, stage: '', error: '', dirty: false };
+
+var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+var LOCK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+var BACK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+var ARROW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+var FLOW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>';
+var BOOK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+
+function isStageDone(key) { var s = detail.data && detail.data.stages[key]; return !!(s && s.done); }
+function isStageOpen(key) { var i = stageIndex(key); return i === 0 || (i > 0 && isStageDone(STAGES[i - 1].key)); }
+function defaultStage() {
+  for (var i = 0; i < STAGES.length; i++) if (!isStageDone(STAGES[i].key)) return STAGES[i].key;
+  return STAGES[STAGES.length - 1].key;
+}
+
+function openDetail(id, stageKey) {
+  if (detail.id !== id) {
+    detail = { id: id, data: null, stage: stageKey || '', error: '', dirty: false };
+    renderDetail();
+    loadDetail(id);
+    return;
+  }
+  if (stageKey && detail.data && stageIndex(stageKey) >= 0) detail.stage = stageKey;
+  renderDetail();
+}
+
+function loadDetail(id) {
+  return callApi('titles', { action: 'detail', id: id }).then(function (res) {
+    if (detail.id !== id) return;
+    if (!res || !res.ok) { detail.error = (res && res.error) || '작품 정보를 불러오지 못했습니다.'; renderDetail(); return; }
+    detail.data = { title: res.data.title, stages: res.data.stages || {} };
+    detail.error = '';
+    if (stageIndex(detail.stage) < 0) detail.stage = defaultStage(); // 지정이 없으면 첫 미완료 단계로
+    renderDetail();
+  }).catch(function (ex) { if (detail.id === id) { detail.error = ex.message; renderDetail(); } });
+}
+
+function switchStage(key) {
+  if (!detail.data || key === detail.stage || stageIndex(key) < 0) return;
+  // 잠긴 단계도 선택은 가능 (어느 단계를 끝내야 열리는지 안내 패널을 보여줌)
+  if (detail.dirty && !confirm('저장하지 않은 변경 사항이 있습니다. 이동할까요?')) return;
+  detail.stage = key; detail.dirty = false;
+  history.replaceState(null, '', '#title/' + detail.id + '/' + key);
+  renderDetail();
+  var card = $('#page-detail'); if (card) card.scrollIntoView({ block: 'start' });
+}
+
+function renderDetail() {
+  var body = $('#detail-body');
+  var back = '<button type="button" class="back-btn" id="detail-back">' + BACK_ICON + 'Title 목록</button>';
+  if (detail.error) { body.innerHTML = back + '<div class="empty-state">' + esc(detail.error) + '</div>'; return; }
+  if (!detail.data) { body.innerHTML = back + '<div class="loading">불러오는 중…</div>'; return; }
+  var t = detail.data.title;
+  setCrumbExtra(t.name);
+
+  // 머리글: 썸네일 · IP명 · 담당자 · 진행 사항 · 링크 · 날짜 (+ 수정 연필)
+  var thumb = t.thumbnail ? '<div class="detail-thumb"><img src="' + t.thumbnail + '" alt=""></div>'
+                          : '<div class="detail-thumb">' + esc((t.name || '?').charAt(0)) + '</div>';
+  var owners = (t.owners && t.owners.length)
+    ? t.owners.map(function (o) { return '<span class="owner-chip">' + esc(o.name || o.id) + '</span>'; }).join('')
+    : '<span class="owner-chip none">담당자 미지정</span>';
+  var link = t.link ? '<a class="ext-link" href="' + esc(t.link) + '" target="_blank" rel="noopener noreferrer">' + LINK_ICON + esc(linkLabel(t.link)) + '</a>' : '';
+  var head = '<div class="detail-head">' + thumb +
+    '<div class="detail-info"><h2>' + esc(t.name) + '</h2>' +
+      '<div class="row">' + owners + '</div>' +
+      '<div class="row"><span class="status" data-s="' + esc(t.status) + '">' + esc(t.status) + '</span>' + link + '</div>' +
+      '<div class="dates"><span><b>생성일</b>' + fmtDate(t.createdAt) + '</span><span><b>최근 수정일</b>' + fmtDate(t.updatedAt) + '</span></div>' +
+    '</div>' +
+    (canEdit() ? '<button type="button" class="edit-btn" id="detail-edit" title="IP 정보 수정" aria-label="IP 정보 수정">' + EDIT_ICON + '</button>' : '') +
+  '</div>';
+
+  // 스테퍼
+  var steps = STAGES.map(function (s, i) {
+    var done = isStageDone(s.key), open = isStageOpen(s.key);
+    var cls = 'step ' + (done ? 'done' : open ? 'open' : 'locked') + (s.key === detail.stage ? ' active' : '');
+    var dot = done ? CHECK_ICON : open ? String(i + 1) : LOCK_ICON;
+    var sub = done ? '완료' : open ? '진행 중' : '잠김';
+    return '<button type="button" class="' + cls + '" data-stage="' + s.key + '"' + (open ? '' : ' aria-disabled="true"') + '>' +
+      '<span class="dot">' + dot + '</span><span>' + esc(s.label) + '<span class="sub">' + sub + '</span></span></button>';
+  }).join('');
+
+  body.innerHTML = back + head + '<div class="stepper">' + steps + '</div>' + renderStage();
+  $('#detail-back').addEventListener('click', function () { if (!detail.dirty || confirm('저장하지 않은 변경 사항이 있습니다. 이동할까요?')) { detail.dirty = false; goPage('titles'); } });
+  var editBtn = $('#detail-edit'); if (editBtn) editBtn.addEventListener('click', function () { openIpModal(t, null); });
+  $all('.stepper .step').forEach(function (b) { b.addEventListener('click', function () { switchStage(b.dataset.stage); }); });
+  bindStageForm();
+}
+
+function renderStage() {
+  var idx = stageIndex(detail.stage), s = STAGES[idx];
+  var rec = detail.data.stages[s.key] || null;
+  var done = isStageDone(s.key), open = isStageOpen(s.key), write = canEdit();
+  var badge = done ? '<span class="stage-badge done">완료</span>' : open ? '<span class="stage-badge open">진행 중</span>' : '<span class="stage-badge locked">잠김</span>';
+  var headHtml = '<div class="stage-head"><div><h3>' + esc(s.short) + ' · ' + esc(s.label) + badge + '</h3><p>' + esc(s.desc) + '</p></div></div>';
+
+  if (!open) {
+    var prev = STAGES[idx - 1];
+    return '<div class="stage no-ref"><div class="stage-main">' + headHtml +
+      '<div class="locked-state">' + LOCK_ICON + '<strong>아직 열리지 않은 단계입니다</strong>' +
+      '<span>‘' + esc(prev.label) + '’ 단계를 완료하면 이 단계가 열립니다.</span>' +
+      '<button type="button" class="btn btn-sm" data-go-stage="' + prev.key + '">' + esc(prev.short) + ' · ' + esc(prev.label) + '로 이동</button></div></div></div>';
+  }
+
+  // 폼: 저장 기록이 없으면 seed 로 이전 단계 내용을 초안으로 채움
+  var fieldsHtml = s.fields.map(function (f) {
+    var val = rec && rec.fields ? (rec.fields[f.k] || '') : '';
+    var seeded = '';
+    if (!rec && f.seed && write) { var sv = f.seed.build(detail.data); if (sv) { val = sv; seeded = STAGES[stageIndex(f.seed.from)].short; } }
+    var id = 'sf-' + f.k, dis = write ? '' : ' disabled';
+    var label = '<label for="' + id + '">' + esc(f.label) + (f.req ? ' <span class="req">*</span>' : '') +
+      (seeded ? '<span class="seed-hint">' + FLOW_ICON + esc(seeded) + '에서 가져옴 · 수정 가능</span>' : '') + '</label>';
+    var ctl = f.type === 'input'
+      ? '<input class="input" id="' + id + '" data-k="' + f.k + '" value="' + esc(val) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>'
+      : '<textarea class="input' + (f.mono ? ' mono' : '') + '" id="' + id + '" data-k="' + f.k + '" rows="' + (f.rows || 5) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>' + esc(val) + '</textarea>';
+    return '<div class="field" data-field="' + f.k + '">' + label + ctl + '</div>';
+  }).join('');
+
+  // 하단 동작: 임시 저장 / 단계 완료(→ 다음 단계) · 완료된 단계는 '저장'
+  var meta = rec ? '최근 저장 ' + fmtDateTime(rec.updatedAt) + (rec.updatedBy && rec.updatedBy.name ? ' · ' + esc(rec.updatedBy.name) : '') : '아직 저장된 내용이 없습니다.';
+  var next = STAGES[idx + 1];
+  var actions;
+  if (!write) {
+    actions = '<span class="readonly-note">' + LOCK_ICON + 'Viewer 권한은 조회만 할 수 있습니다.</span>';
+  } else if (done) {
+    actions = '<div class="btns"><button type="button" class="btn btn-sm btn-primary" id="stage-save">저장</button>' +
+      (next ? '<button type="button" class="btn btn-sm" data-go-stage="' + next.key + '">' + esc(next.label) + ARROW_ICON + '</button>' : '') + '</div>';
+  } else {
+    actions = '<div class="btns"><button type="button" class="btn btn-sm" id="stage-save">임시 저장</button>' +
+      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete">' + (next ? '단계 완료 · ' + esc(next.label) + '로' : '작성 완료 · QA 로 이동') + ARROW_ICON + '</button></div>';
+  }
+  var form = '<form class="stage-form" id="stage-form" novalidate>' + fieldsHtml +
+    '<div id="stage-error" class="form-error hidden"></div>' +
+    '<div class="stage-actions"><span class="meta">' + meta + '</span>' + actions + '</div></form>';
+
+  var ref = idx > 0 ? renderRefPanel(idx) : '';
+  return '<div class="stage' + (ref ? '' : ' no-ref') + '"><div class="stage-main">' + headHtml + form + '</div>' + ref + '</div>';
+}
+
+/* 오른쪽 참고 패널: 바로 앞 단계는 펼치고, 그 앞 단계들은 접어서 보여줍니다 */
+function renderRefPanel(idx) {
+  var items = [];
+  for (var i = idx - 1; i >= 0; i--) {
+    var s = STAGES[i], rec = detail.data.stages[s.key];
+    var fields = s.fields.map(function (f) {
+      var v = rec && rec.fields ? (rec.fields[f.k] || '') : '';
+      return '<div class="ref-field"><b>' + esc(f.label) + '</b>' + (v ? '<div>' + esc(v) + '</div>' : '<div class="none">비어 있음</div>') + '</div>';
+    }).join('');
+    items.push('<details class="ref-item"' + (i === idx - 1 ? ' open' : '') + '><summary><span class="n">' + (i + 1) + '</span>' + esc(s.label) +
+      '<span class="go" data-go-stage="' + s.key + '">열기 ›</span></summary><div class="ref-body">' + fields + '</div></details>');
+  }
+  return '<aside class="ref-panel"><h4>' + BOOK_ICON + '이전 단계 참고</h4><p class="ref-desc">앞 단계에서 작성한 내용입니다. 이 단계 작성에 이어서 활용하세요.</p>' + items.join('') + '</aside>';
+}
+
+function bindStageForm() {
+  $all('[data-go-stage]').forEach(function (el) {
+    el.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); switchStage(el.dataset.goStage); });
+  });
+  var form = $('#stage-form'); if (!form) return;
+  form.addEventListener('input', function (e) {
+    detail.dirty = true;
+    var f = e.target.closest('.field'); if (f) f.classList.remove('invalid');
+  });
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
+  var save = $('#stage-save'); if (save) save.addEventListener('click', function () { saveStage(false, save); });
+  var complete = $('#stage-complete'); if (complete) complete.addEventListener('click', function () { saveStage(true, complete); });
+}
+
+function saveStage(complete, btn) {
+  var s = stageDef(detail.stage); if (!s || !detail.data) return;
+  var fields = {};
+  $all('#stage-form [data-k]').forEach(function (el) { fields[el.dataset.k] = el.value; });
+  var err = $('#stage-error');
+  clearInvalid('#stage-form'); setError(err, '');
+  if (complete) {
+    var missing = s.fields.filter(function (f) { return f.req && !String(fields[f.k] || '').trim(); }).map(function (f) { return f.k; });
+    if (missing.length) {
+      markInvalid('#stage-form', missing);
+      setError(err, '필수 문항 작성이 필요합니다. (' + missing.map(function (k) { return s.fields.filter(function (f) { return f.k === k; })[0].label; }).join(', ') + ')');
+      var first = $('#stage-form [data-field="' + missing[0] + '"] .input'); if (first) first.focus();
+      return;
+    }
+  }
+  busy(btn, true, complete ? '완료 처리 중…' : '저장 중…');
+  var id = detail.id;
+  callApi('titles', { action: 'saveStage', id: id, stage: s.key, fields: fields, complete: complete }).then(function (res) {
+    busy(btn, false);
+    if (detail.id !== id) return;
+    if (!res || !res.ok) {
+      if (res && res.fields && res.fields.length) markInvalid('#stage-form', res.fields);
+      setError(err, (res && res.error) || '저장에 실패했습니다.');
+      return;
+    }
+    detail.data = { title: res.data.title, stages: res.data.stages || {} };
+    detail.dirty = false;
+    // 목록 캐시의 카드(진행 사항 · 수정일)도 갱신
+    state.titles = state.titles.map(function (t) { return t.id === id ? res.data.title : t; });
+    if (state.loaded) renderLists();
+    var next = STAGES[stageIndex(s.key) + 1];
+    if (complete) {
+      toast(next ? '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.' : '모든 단계를 완료했습니다. 진행 사항이 QA 로 변경되었습니다.');
+      if (next) { detail.stage = next.key; history.replaceState(null, '', '#title/' + id + '/' + next.key); }
+    } else {
+      toast('저장했습니다.');
+    }
+    renderDetail();
+    if (complete) { var card = $('#page-detail'); if (card) card.scrollIntoView({ block: 'start' }); }
+  }).catch(function (ex) { busy(btn, false); setError($('#stage-error'), ex.message); });
+}
+
+function fmtDateTime(ms) {
+  if (!ms) return '-';
+  var d = new Date(Number(ms)); if (isNaN(d.getTime())) return '-';
+  var p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return fmtDate(ms) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
 
 /* ───────────── 메인 앱 ───────────── */
 $('#nav').addEventListener('click', function (e) {
