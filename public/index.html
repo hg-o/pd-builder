@@ -307,7 +307,9 @@
   .status[data-s="전략 기획"] { background: #e0f2fe; color: #0369a1; }
   .status[data-s="각색 기획"] { background: #ede9fe; color: #6d28d9; }
   .status[data-s="프롬프트 작성"] { background: #fef3c7; color: #b45309; }
-  .status[data-s="QA"] { background: #fce7f3; color: #be185d; }
+  .status[data-s="시작 상황 작성"] { background: #ffedd5; color: #c2410c; }
+  .status[data-s="1차 QA"], .status[data-s="QA"] { background: #fce7f3; color: #be185d; }
+  .status[data-s="2차 QA"] { background: #fae8ff; color: #a21caf; }
   .status[data-s="byUs 정식 론칭"] { background: #d1fae5; color: #047857; }
   [data-theme="dark"] .status { filter: brightness(.9); }
 
@@ -346,7 +348,7 @@
 
   /* 스테퍼: 5단계가 순서대로 이어지는 진행 표시줄 */
   .stepper {
-    position: relative; display: grid; grid-template-columns: repeat(5, 1fr); margin: 0 0 24px; padding: 20px 8px 16px;
+    position: relative; display: grid; grid-template-columns: repeat(7, 1fr); margin: 0 0 24px; padding: 20px 8px 16px;
     border: 1px solid var(--border); border-radius: 14px; background: var(--surface);
   }
   .step {
@@ -723,7 +725,9 @@ var SERVICE_URL = 'https://pd-builder.vercel.app';
 var SESSION_KEY = 'byus_builder_session';
 var THEME_KEY = 'byus_builder_theme';
 var PAGES = { home: 'Home', schedule: 'Schedule Simulator', titles: 'Title', labs: 'Labs' };
-var TITLE_STATUSES = ['시작 전', '전략 기획', '각색 기획', '프롬프트 작성', 'QA', 'byUs 정식 론칭'];
+var TITLE_STATUSES = ['시작 전', '전략 기획', '각색 기획', '프롬프트 작성', '시작 상황 작성', '1차 QA', '2차 QA', 'byUs 정식 론칭'];
+var LEGACY_STATUS = { 'QA': '1차 QA' }; // 예전 값 호환 (서버도 같은 변환을 하지만 캐시된 응답을 위해 한 번 더)
+function normalizeStatus(v) { return LEGACY_STATUS[v] || v || ''; }
 var THUMB_SIZE = 320;
 
 var RULES = {
@@ -815,7 +819,7 @@ function route() {
 
 function goPage(key) {
   // 작품 상세: #title/<id>[/<stage>]
-  var m = /^title\/([^/]+)(?:\/([a-z]+))?$/.exec(key || '');
+  var m = /^title\/([^/]+)(?:\/([a-z0-9]+))?$/.exec(key || '');
   var navKey = m ? 'titles' : key;
   if (!m && !PAGES[key]) { key = 'home'; navKey = 'home'; }
   $all('#nav a').forEach(function (a) { a.classList.toggle('active', a.dataset.page === navKey); });
@@ -1028,7 +1032,7 @@ function titleCard(t) {
     '<div class="body">' +
       '<div class="name">' + esc(t.name) + '</div>' +
       '<div class="owners">' + owners + '</div>' +
-      '<div class="meta"><span class="status" data-s="' + esc(t.status) + '">' + esc(t.status) + '</span>' + extLink + '</div>' +
+      '<div class="meta"><span class="status" data-s="' + esc(normalizeStatus(t.status)) + '">' + esc(normalizeStatus(t.status)) + '</span>' + extLink + '</div>' +
       dates +
     '</div>' +
     editBtn +
@@ -1069,7 +1073,8 @@ function openIpModal(title, from) {
   // 진행 사항
   var sel = $('#ip-status');
   sel.innerHTML = TITLE_STATUSES.map(function (v) { return '<option value="' + esc(v) + '">' + esc(v) + '</option>'; }).join('');
-  sel.value = title ? title.status : TITLE_STATUSES[0];
+  sel.value = title ? normalizeStatus(title.status) : TITLE_STATUSES[0];
+  if (!sel.value) sel.value = TITLE_STATUSES[0];
 
   // IP명 · 링크
   $('#ip-name').value = title ? title.name : '';
@@ -1306,14 +1311,34 @@ var STAGES = [
       { k: 'constraints', label: '금지 · 제약 사항', type: 'text', rows: 5, ph: '절대 하지 말아야 할 행동, 답변 형식 제약',
         seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'rule'); } } }
     ] },
-  { key: 'opening', label: '시작 상황 작성', short: '5단계', doneStatus: 'QA',
-    desc: '유저가 처음 만나는 장면과 첫 메시지를 작성합니다. 이 단계를 완료하면 진행 사항이 QA 로 넘어갑니다.',
+  { key: 'opening', label: '시작 상황 작성', short: '5단계', doneStatus: '1차 QA',
+    desc: '유저가 처음 만나는 장면과 첫 메시지를 작성합니다. 이 단계를 완료하면 진행 사항이 1차 QA 로 넘어갑니다.',
     fields: [
       { k: 'situation', label: '시작 상황 설명', type: 'text', req: true, rows: 6, ph: '장소 · 시점 · 분위기, 유저와 캐릭터가 놓인 상황',
         seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'scenario'); } } },
       { k: 'first', label: '첫 메시지 (오프닝)', type: 'text', req: true, mono: true, rows: 8, ph: '캐릭터가 유저에게 건네는 첫 대사 · 지문' },
       { k: 'userRole', label: '유저 역할 · 관계 설정', type: 'text', rows: 4, ph: '유저가 맡는 인물, 캐릭터와의 관계와 호칭' },
       { k: 'branches', label: '진입 선택지 · 분기 (선택)', type: 'text', rows: 4, ph: '시작 시 제시할 선택지나 복수의 오프닝' }
+    ] },
+  { key: 'qa1', label: '1차 QA', short: '6단계', doneStatus: '2차 QA',
+    desc: '작성한 프롬프트와 시작 상황을 실제로 플레이하며 점검합니다. 발견한 이슈와 수정 내역을 남기고 판정을 내리면 2차 QA 로 넘어갑니다.',
+    fields: [
+      { k: 'scope', label: 'QA 범위 · 테스트 시나리오', type: 'text', req: true, rows: 5, ph: '어떤 흐름 · 분기 · 상황을 몇 턴씩 점검했는지',
+        seed: { from: 'adaptation', build: function (d) { return stageVal(d, 'adaptation', 'scenario'); } } },
+      { k: 'issues', label: '발견된 이슈', type: 'text', req: true, rows: 7, ph: '캐릭터 붕괴, 규칙 위반, 말투 이탈, 시작 상황 어색함 등. 재현 조건과 함께 적습니다.' },
+      { k: 'fixes', label: '수정 내역', type: 'text', rows: 5, ph: '이슈별로 프롬프트 · 시작 상황을 어떻게 고쳤는지' },
+      { k: 'verdict', label: '판정', type: 'select', req: true, options: ['통과', '조건부 통과 (수정 후 2차 QA)', '재작업 필요'] },
+      { k: 'memo', label: '비고', type: 'text', rows: 3, ph: 'QA 참여자, 테스트 환경, 기타 메모' }
+    ] },
+  { key: 'qa2', label: '2차 QA', short: '7단계', doneStatus: '2차 QA',
+    desc: '1차 QA 에서 고친 부분을 다시 확인하고 최종 판정을 내립니다. 완료 후 실제 론칭 시점에 진행 사항을 ‘byUs 정식 론칭’으로 바꿔 주세요.',
+    fields: [
+      { k: 'scope', label: 'QA 범위 · 재확인 항목', type: 'text', req: true, rows: 5, ph: '1차 QA 이슈가 해결됐는지 확인할 항목과 추가 점검 범위',
+        seed: { from: 'qa1', build: function (d) { var i = stageVal(d, 'qa1', 'issues'); return i ? '[1차 QA 이슈 재확인]\n' + i : ''; } } },
+      { k: 'issues', label: '발견된 이슈', type: 'text', req: true, rows: 7, ph: '남아 있거나 새로 발견된 이슈. 없으면 “없음”으로 적습니다.' },
+      { k: 'fixes', label: '수정 내역', type: 'text', rows: 5, ph: '2차 QA 후 수정한 내용' },
+      { k: 'verdict', label: '최종 판정', type: 'select', req: true, options: ['통과 (론칭 가능)', '조건부 통과', '재작업 필요'] },
+      { k: 'memo', label: '비고', type: 'text', rows: 3, ph: 'QA 참여자, 론칭 준비 메모' }
     ] }
 ];
 function stageIndex(key) { for (var i = 0; i < STAGES.length; i++) if (STAGES[i].key === key) return i; return -1; }
@@ -1385,7 +1410,7 @@ function renderDetail() {
   var head = '<div class="detail-head">' + thumb +
     '<div class="detail-info"><h2>' + esc(t.name) + '</h2>' +
       '<div class="row">' + owners + '</div>' +
-      '<div class="row"><span class="status" data-s="' + esc(t.status) + '">' + esc(t.status) + '</span>' + link + '</div>' +
+      '<div class="row"><span class="status" data-s="' + esc(normalizeStatus(t.status)) + '">' + esc(normalizeStatus(t.status)) + '</span>' + link + '</div>' +
       '<div class="dates"><span><b>생성일</b>' + fmtDate(t.createdAt) + '</span><span><b>최근 수정일</b>' + fmtDate(t.updatedAt) + '</span></div>' +
     '</div>' +
     (canEdit() ? '<button type="button" class="edit-btn" id="detail-edit" title="IP 정보 수정" aria-label="IP 정보 수정">' + EDIT_ICON + '</button>' : '') +
@@ -1431,9 +1456,15 @@ function renderStage() {
     var id = 'sf-' + f.k, dis = write ? '' : ' disabled';
     var label = '<label for="' + id + '">' + esc(f.label) + (f.req ? ' <span class="req">*</span>' : '') +
       (seeded ? '<span class="seed-hint">' + FLOW_ICON + esc(seeded) + '에서 가져옴 · 수정 가능</span>' : '') + '</label>';
-    var ctl = f.type === 'input'
-      ? '<input class="input" id="' + id + '" data-k="' + f.k + '" value="' + esc(val) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>'
-      : '<textarea class="input' + (f.mono ? ' mono' : '') + '" id="' + id + '" data-k="' + f.k + '" rows="' + (f.rows || 5) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>' + esc(val) + '</textarea>';
+    var ctl;
+    if (f.type === 'input') {
+      ctl = '<input class="input" id="' + id + '" data-k="' + f.k + '" value="' + esc(val) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>';
+    } else if (f.type === 'select') {
+      ctl = '<select class="input" id="' + id + '" data-k="' + f.k + '"' + dis + '><option value=""' + (val ? '' : ' selected') + '>선택하세요</option>' +
+        (f.options || []).map(function (o) { return '<option value="' + esc(o) + '"' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
+    } else {
+      ctl = '<textarea class="input' + (f.mono ? ' mono' : '') + '" id="' + id + '" data-k="' + f.k + '" rows="' + (f.rows || 5) + '" placeholder="' + esc(f.ph || '') + '"' + dis + '>' + esc(val) + '</textarea>';
+    }
     return '<div class="field" data-field="' + f.k + '">' + label + ctl + '</div>';
   }).join('');
 
@@ -1448,7 +1479,7 @@ function renderStage() {
       (next ? '<button type="button" class="btn btn-sm" data-go-stage="' + next.key + '">' + esc(next.label) + ARROW_ICON + '</button>' : '') + '</div>';
   } else {
     actions = '<div class="btns"><button type="button" class="btn btn-sm" id="stage-save">임시 저장</button>' +
-      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete">' + (next ? '단계 완료 · ' + esc(next.label) + '로' : '작성 완료 · QA 로 이동') + ARROW_ICON + '</button></div>';
+      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete">' + (next ? '단계 완료 · ' + esc(next.label) + '로' : '최종 완료') + ARROW_ICON + '</button></div>';
   }
   var form = '<form class="stage-form" id="stage-form" novalidate>' + fieldsHtml +
     '<div id="stage-error" class="form-error hidden"></div>' +
@@ -1519,7 +1550,7 @@ function saveStage(complete, btn) {
     if (state.loaded) renderLists();
     var next = STAGES[stageIndex(s.key) + 1];
     if (complete) {
-      toast(next ? '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.' : '모든 단계를 완료했습니다. 진행 사항이 QA 로 변경되었습니다.');
+      toast(next ? '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.' : '모든 단계를 완료했습니다. 론칭 시 진행 사항을 ‘byUs 정식 론칭’으로 바꿔 주세요.');
       if (next) { detail.stage = next.key; history.replaceState(null, '', '#title/' + id + '/' + next.key); }
     } else {
       toast('저장했습니다.');
