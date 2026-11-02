@@ -5,7 +5,7 @@
  *   'save'   → { id }                                  생성/수정 { id?, name, owners[], status, thumbnail }
  *   'delete' → { deleted: boolean }                    { id }
  *   'detail' → { title, stages }                       { id }  작품 상세(5단계 데이터 포함)
- *   'saveStage' → { title, stages }                    { id, stage, fields{}, complete? }  단계 임시 저장/완료
+ *   'saveStage' → { title, stages }                    { id, stage, fields{}, complete?, uncomplete? }  단계 저장 / 완료 / 완료 취소
  * 생성/수정/삭제/단계 저장은 Admin, Editor 만 가능. 조회는 승인된 모든 사용자.
  */
 const { authHandler, ok, fail } = require('../lib/http');
@@ -31,7 +31,7 @@ module.exports = authHandler(async (req, res, b, user) => {
   }
 
   if (action === 'saveStage') {
-    const result = await saveStage({ id: b.id, stage: b.stage, fields: b.fields, complete: b.complete }, user);
+    const result = await saveStage({ id: b.id, stage: b.stage, fields: b.fields, complete: b.complete, uncomplete: b.uncomplete }, user);
     return ok(res, result);
   }
 

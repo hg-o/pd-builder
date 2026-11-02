@@ -385,6 +385,9 @@
   .stage-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
   .stage-head h3 { margin: 0 0 6px; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .stage-head p { margin: 0; color: var(--text-2); font-size: 14px; line-height: 1.5; }
+  .stage-head .done-note { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 10px; border-radius: 8px; background: #d1fae5; color: #047857; font-size: 13px; font-weight: 500; }
+  .stage-head .done-note svg { width: 13px; height: 13px; flex: none; }
+  [data-theme="dark"] .stage-head .done-note { background: #0f2a20; color: #34d399; }
   .stage-badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
   .stage-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
   .stage-badge.done { background: #d1fae5; color: #047857; }
@@ -1330,8 +1333,8 @@ var STAGES = [
       { k: 'verdict', label: '판정', type: 'select', req: true, options: ['통과', '조건부 통과 (수정 후 2차 QA)', '재작업 필요'] },
       { k: 'memo', label: '비고', type: 'text', rows: 3, ph: 'QA 참여자, 테스트 환경, 기타 메모' }
     ] },
-  { key: 'qa2', label: '2차 QA', short: '7단계', doneStatus: '2차 QA',
-    desc: '1차 QA 에서 고친 부분을 다시 확인하고 최종 판정을 내립니다. 완료 후 실제 론칭 시점에 진행 사항을 ‘byUs 정식 론칭’으로 바꿔 주세요.',
+  { key: 'qa2', label: '2차 QA', short: '7단계', doneStatus: 'byUs 정식 론칭',
+    desc: '1차 QA 에서 고친 부분을 다시 확인하고 최종 판정을 내립니다. 이 단계를 완료하면 진행 사항이 ‘byUs 정식 론칭’으로 바뀝니다.',
     fields: [
       { k: 'scope', label: 'QA 범위 · 재확인 항목', type: 'text', req: true, rows: 5, ph: '1차 QA 이슈가 해결됐는지 확인할 항목과 추가 점검 범위',
         seed: { from: 'qa1', build: function (d) { var i = stageVal(d, 'qa1', 'issues'); return i ? '[1차 QA 이슈 재확인]\n' + i : ''; } } },
@@ -1438,7 +1441,8 @@ function renderStage() {
   var rec = detail.data.stages[s.key] || null;
   var done = isStageDone(s.key), open = isStageOpen(s.key), write = canEdit();
   var badge = done ? '<span class="stage-badge done">완료</span>' : open ? '<span class="stage-badge open">진행 중</span>' : '<span class="stage-badge locked">잠김</span>';
-  var headHtml = '<div class="stage-head"><div><h3>' + esc(s.short) + ' · ' + esc(s.label) + badge + '</h3><p>' + esc(s.desc) + '</p></div></div>';
+  var doneNote = done && write ? '<p class="done-note">' + CHECK_ICON + '완료된 단계입니다. 내용을 고친 뒤 [저장]하면 덮어쓰고, [완료 취소]로 다시 진행 중 상태로 되돌릴 수 있습니다.</p>' : '';
+  var headHtml = '<div class="stage-head"><div><h3>' + esc(s.short) + ' · ' + esc(s.label) + badge + '</h3><p>' + esc(s.desc) + '</p>' + doneNote + '</div></div>';
 
   if (!open) {
     var prev = STAGES[idx - 1];
@@ -1475,11 +1479,13 @@ function renderStage() {
   if (!write) {
     actions = '<span class="readonly-note">' + LOCK_ICON + 'Viewer 권한은 조회만 할 수 있습니다.</span>';
   } else if (done) {
-    actions = '<div class="btns"><button type="button" class="btn btn-sm btn-primary" id="stage-save">저장</button>' +
+    actions = '<div class="btns"><button type="button" class="btn btn-sm btn-danger" id="stage-uncomplete">완료 취소</button>' +
+      '<button type="button" class="btn btn-sm btn-primary" id="stage-save">저장</button>' +
       (next ? '<button type="button" class="btn btn-sm" data-go-stage="' + next.key + '">' + esc(next.label) + ARROW_ICON + '</button>' : '') + '</div>';
   } else {
     actions = '<div class="btns"><button type="button" class="btn btn-sm" id="stage-save">임시 저장</button>' +
-      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete">' + (next ? '단계 완료 · ' + esc(next.label) + '로' : '최종 완료') + ARROW_ICON + '</button></div>';
+      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete" title="진행 사항이 ‘' + esc(s.doneStatus) + '’(으)로 바뀝니다">' +
+        (next ? '단계 완료 · ' + esc(next.label) + '로' : '최종 완료 · ' + esc(s.doneStatus)) + ARROW_ICON + '</button></div>';
   }
   var form = '<form class="stage-form" id="stage-form" novalidate>' + fieldsHtml +
     '<div id="stage-error" class="form-error hidden"></div>' +
@@ -1514,16 +1520,31 @@ function bindStageForm() {
     var f = e.target.closest('.field'); if (f) f.classList.remove('invalid');
   });
   form.addEventListener('submit', function (e) { e.preventDefault(); });
-  var save = $('#stage-save'); if (save) save.addEventListener('click', function () { saveStage(false, save); });
-  var complete = $('#stage-complete'); if (complete) complete.addEventListener('click', function () { saveStage(true, complete); });
+  var save = $('#stage-save'); if (save) save.addEventListener('click', function () { saveStage('save', save); });
+  var complete = $('#stage-complete'); if (complete) complete.addEventListener('click', function () { saveStage('complete', complete); });
+  var uncomplete = $('#stage-uncomplete'); if (uncomplete) uncomplete.addEventListener('click', function () { saveStage('uncomplete', uncomplete); });
 }
 
-function saveStage(complete, btn) {
+/* 완료 취소 후 진행 사항이 어떻게 되는지 미리 계산 (서버 deriveStatus 와 같은 규칙) */
+function statusAfterUncomplete(key) {
+  var i = stageIndex(key);
+  return i === 0 ? TITLE_STATUSES[0] : STAGES[i - 1].doneStatus;
+}
+
+/* mode: 'save' 내용만 덮어쓰기 · 'complete' 단계 완료 · 'uncomplete' 완료 취소 */
+function saveStage(mode, btn) {
   var s = stageDef(detail.stage); if (!s || !detail.data) return;
+  var complete = mode === 'complete', uncomplete = mode === 'uncomplete';
   var fields = {};
   $all('#stage-form [data-k]').forEach(function (el) { fields[el.dataset.k] = el.value; });
   var err = $('#stage-error');
   clearInvalid('#stage-form'); setError(err, '');
+  if (uncomplete) {
+    var laterDone = STAGES.slice(stageIndex(s.key) + 1).filter(function (x) { return isStageDone(x.key); });
+    var msg = '‘' + s.label + '’ 단계 완료를 취소할까요?\n진행 사항이 ‘' + statusAfterUncomplete(s.key) + '’(으)로 바뀝니다.';
+    if (laterDone.length) msg += '\n이후 단계(' + laterDone.map(function (x) { return x.label; }).join(', ') + ')의 완료 표시도 함께 취소됩니다. 작성한 내용은 유지됩니다.';
+    if (!confirm(msg)) return;
+  }
   if (complete) {
     var missing = s.fields.filter(function (f) { return f.req && !String(fields[f.k] || '').trim(); }).map(function (f) { return f.k; });
     if (missing.length) {
@@ -1533,9 +1554,9 @@ function saveStage(complete, btn) {
       return;
     }
   }
-  busy(btn, true, complete ? '완료 처리 중…' : '저장 중…');
+  busy(btn, true, complete ? '완료 처리 중…' : uncomplete ? '취소 중…' : '저장 중…');
   var id = detail.id;
-  callApi('titles', { action: 'saveStage', id: id, stage: s.key, fields: fields, complete: complete }).then(function (res) {
+  callApi('titles', { action: 'saveStage', id: id, stage: s.key, fields: fields, complete: complete, uncomplete: uncomplete }).then(function (res) {
     busy(btn, false);
     if (detail.id !== id) return;
     if (!res || !res.ok) {
@@ -1549,9 +1570,12 @@ function saveStage(complete, btn) {
     state.titles = state.titles.map(function (t) { return t.id === id ? res.data.title : t; });
     if (state.loaded) renderLists();
     var next = STAGES[stageIndex(s.key) + 1];
+    var newStatus = normalizeStatus(res.data.title && res.data.title.status);
     if (complete) {
-      toast(next ? '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.' : '모든 단계를 완료했습니다. 론칭 시 진행 사항을 ‘byUs 정식 론칭’으로 바꿔 주세요.');
+      toast((next ? '‘' + s.label + '’ 단계를 완료했습니다. 다음 단계로 이동합니다.' : '모든 단계를 완료했습니다.') + ' 진행 사항: ' + newStatus);
       if (next) { detail.stage = next.key; history.replaceState(null, '', '#title/' + id + '/' + next.key); }
+    } else if (uncomplete) {
+      toast('‘' + s.label + '’ 단계 완료를 취소했습니다. 진행 사항: ' + newStatus);
     } else {
       toast('저장했습니다.');
     }
