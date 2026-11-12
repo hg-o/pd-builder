@@ -39,22 +39,24 @@
 위계는 **IP → 스토리** 입니다. 스토리는 반드시 어떤 IP 에 속하고, 스토리마다 주인공 캐릭터 하나를 제작합니다.
 
 ```
-IP (title) ─┬─ IP 단계      : 1 작품 기본 정보 → 2 콘텐츠 전략 기획 (마지막 항목 '스토리 구성') → 3 스토리 제작(요약)
+IP (title) ─┬─ IP 단계      : 1 IP 기본 정보 → 2 IP 데이터 분석 (결과지 첨부) → 3 콘텐츠 전략 기획 (마지막 항목 '스토리 구성') → 4 스토리 제작(요약)
             └─ 스토리 (1개 이상) ─ 스토리 단계 : 1 프롬프트 작성 → 2 시작 설정 → 3 1차 QA → 4 2차 QA → 5 배포
 ```
 
-- 주소: IP 상세 `#title/<id>[/<basic|strategy|stories>]`, 스토리 상세 `#title/<id>/story/<storyId>[/<prompt|opening|qa1|qa2|release>]`
+- 주소: IP 상세 `#title/<id>[/<basic|analysis|strategy|stories>]`, 스토리 상세 `#title/<id>/story/<storyId>[/<prompt|opening|qa1|qa2|release>]`
 - 카드 본문을 누르면 IP 상세로 들어가고, 카드 하단에는 스토리 요약 칩(주인공 이름 · 상태, 3개까지 + 나머지 개수)이 표시됩니다.
 
 ### IP 단계
 
 | 순서 | 단계 (키) | 주요 항목 (★ 필수) |
 | --- | --- | --- |
-| 1 | 작품 기본 정보 (`basic`) | 장르★ · 원작 작가(블록) · 연재처 · 줄거리 요약★ · 주요 등장인물★(블록) · 유의점 |
-| 2 | 콘텐츠 전략 기획 (`strategy`) | 타깃 독자★ · 핵심 매력 포인트★ · 콘텐츠 방향·포맷★ · 레퍼런스 · 리스크 · **스토리 구성★** |
-| 3 | 스토리 제작 | 생성된 스토리 카드 목록 (주인공 이름 · 성별 · 상태 · 5단계 진행 막대). 전략 기획을 완료해야 열립니다. |
+| 1 | IP 기본 정보 (`basic`) | 장르★ · 원작 작가(블록) · 연재처 · 줄거리 요약★ · 주요 등장인물★(블록) · 유의점 |
+| 2 | IP 데이터 분석 (`analysis`) | **1. 타겟 분석** — 오픈 케플러 질문(기본 정보로 초안 생성) · **결과지 첨부★**(파일 업로드) · 분석 결과 요약·시사점 |
+| 3 | 콘텐츠 전략 기획 (`strategy`) | 타깃 독자★(← 분석 요약) · 핵심 매력 포인트★ · 콘텐츠 방향·포맷★ · 레퍼런스 · 리스크 · **스토리 구성★** |
+| 4 | 스토리 제작 | 생성된 스토리 카드 목록 (주인공 이름 · 성별 · 상태 · 5단계 진행 막대). 전략 기획을 완료해야 열립니다. |
 
 - **원작 작가 · 주요 등장인물**(기본 정보의 블록 추가형 항목): `[+ 원작 작가]`를 누르면 종류(`웹소설 · 웹툰`)와 닉네임(40자 이내)을 입력하는 폼이 열리고, 항목의 [저장]으로 목록에 추가됩니다. `[+ 등장인물 추가]`는 이름(40자 이내)과 설명(10,000자 이내)을 입력합니다. 추가한 항목은 연필 아이콘으로 수정, × 로 삭제할 수 있으며, 작성 중인 폼이 열려 있으면 단계 [저장]/[완료]가 막힙니다. 값은 `basic.fields.author` 에 `[{ type, name }]`, `basic.fields.characters` 에 `[{ name, desc }]` JSON 으로 저장되고 서버가 항목 단위로 검증합니다. 예전 자유 텍스트 값은 화면에서 블록으로 변환해 보여 줍니다(작가: 종류 미지정 1건, 인물: 줄마다 `이름 — 설명`). 등장인물은 스토리 프롬프트 초안과 참고 패널에 `이름 — 설명` 줄로 들어갑니다.
+- **IP 데이터 분석 · 결과지 첨부**: 안내 블록의 **[오픈 케플러 열기]**(https://openkepler.navercorp.com/)로 이동해 '오픈 케플러 질문' 항목의 문안으로 질문하고, 결과지를 **[파일 업로드]**(또는 끌어다 놓기)로 첨부합니다. 허용 형식 `pdf · csv · xls · xlsx · doc · docx · hwp · hwpx · ppt · pptx · txt`, 파일당 3MB 이하(Vercel 요청 본문 한도), 항목당 20개. 업로드한 파일은 단계 저장과 별개로 **즉시** Google Drive 폴더(https://drive.google.com/drive/folders/1-xJ2lTEsXqqW-b2Jg68e4YWeZIhbV64r) 아래 `"<IP명> [<titleId>]"` 하위 폴더에 저장되고, 목록에서 미리보기(Drive 뷰어) · 다운로드 · 삭제(Drive 휴지통 이동)를 할 수 있습니다. 미리보기 · 다운로드는 Drive 폴더에 접근 권한이 있는 계정으로 열립니다. 결과지가 1개 이상 있어야 단계를 완료할 수 있고, Viewer 는 목록 · 미리보기 · 다운로드만 가능합니다. IP 를 삭제하면 첨부 파일도 휴지통으로 이동합니다.
 - **스토리 구성**(전략 기획의 마지막 항목): 이 IP 에 몇 개의 스토리를 만들지(1개 이상), 각 스토리 주인공의 이름(24자 이내)과 성별(`여성 · 남성 · 알 수 없음 · 그 외`)을 정합니다. `strategy.fields.stories` 에 `[{ id?, name, gender }]` JSON 으로 저장됩니다.
 - **스토리 생성·동기화**: 전략 기획을 **완료**하거나, 완료된 상태에서 **저장**할 때마다 스토리 구성과 실제 스토리 엔티티를 맞춥니다. 새 행은 스토리를 생성하고(생성 전 확인창), 기존 행은 이름·성별을 갱신하며, 지운 행은 스토리와 단계 데이터를 삭제합니다(이미 생성된 스토리를 지울 때 확인창). 완료 전에는 초안일 뿐이며 스토리가 만들어지지 않습니다.
 - 스토리 이름·성별은 이 항목에서만 수정합니다. 스토리 화면에는 안내 링크만 있습니다.
@@ -76,18 +78,19 @@ IP (title) ─┬─ IP 단계      : 1 작품 기본 정보 → 2 콘텐츠 전
 ### 상태 계산
 
 - **스토리 상태**: 앞에서부터 처음 미완료 단계의 이름(`프롬프트 작성 · 시작 설정 · 1차 QA · 2차 QA · 배포`), 모두 완료면 `배포 완료`.
-- **IP 진행 사항**: `시작 전`(기본 정보 미완료) → `전략 기획`(전략 기획 미완료) → `스토리 제작`(스토리 제작 중) → `byUs 정식 론칭`(스토리가 1개 이상 있고 모두 배포 완료). IP 단계나 스토리 단계를 완료/완료 취소할 때마다 다시 계산해 덮어씁니다. IP 수정 모달에서 수동으로 바꾼 값은 다음 완료/취소 때 덮어써집니다.
+- **IP 진행 사항**: `시작 전`(기본 정보 미완료) → `데이터 분석`(데이터 분석 미완료) → `전략 기획`(전략 기획 미완료) → `스토리 제작`(스토리 제작 중) → `byUs 정식 론칭`(스토리가 1개 이상 있고 모두 배포 완료). IP 단계나 스토리 단계를 완료/완료 취소할 때마다 다시 계산해 덮어씁니다. IP 수정 모달에서 수동으로 바꾼 값은 다음 완료/취소 때 덮어써집니다.
 - 예전 상태값(`QA`, `1차 QA`, `2차 QA`, `각색 기획`, `프롬프트 작성`, `시작 상황 작성`)은 읽을 때 `스토리 제작` 으로 변환됩니다.
 
 ### 공통 동작
 
-- **순차 진행**: 스테퍼에서 완료(체크) · 진행 중(번호) · 잠김(자물쇠)을 구분합니다. 바로 앞 단계를 **[단계 완료]** 해야 다음 단계가 열리고, 잠긴 단계를 누르면 어느 단계를 끝내야 하는지 안내만 표시됩니다. 서버도 같은 규칙으로 검사합니다.
+- **순차 진행**: 스테퍼에서 완료(체크) · 진행 중(번호) · 잠김(자물쇠)을 구분합니다. 바로 앞 단계를 **[단계 완료]** 해야 다음 단계가 열리고, 잠긴 단계를 누르면 어느 단계를 끝내야 하는지 안내만 표시됩니다. 서버도 같은 규칙으로 검사합니다. 이미 완료한 단계는 (중간에 새 단계가 추가되어도) 계속 열어 볼 수 있습니다 — 예: 기존 IP 는 `IP 데이터 분석`이 비어 있어도 완료된 전략 기획을 볼 수 있지만, 진행 사항은 `데이터 분석`으로 표시되며 분석을 완료해야 원래 상태로 돌아갑니다.
 - **상단 경로 표시**: `Story Builder › Title › {IP명}` (스토리 화면은 `› {스토리명}` 추가) 의 각 구간을 누르면 해당 위치로 이동합니다. `Story Builder` 는 Home, `Title` 은 Title 목록, `{IP명}` 은 IP 상세(기본 단계)로 갑니다. 저장하지 않은 변경 사항이 있으면 이동 전에 확인합니다.
 - **임시 저장 / 단계 완료 / 완료 취소**: 하단 버튼 줄 왼쪽에 **[임시 저장]**(완료된 단계는 **[저장]**)이 따로 있고, 오른쪽에 단계 완료 · 완료 취소 · 다음 단계 버튼이 있습니다. 임시 저장은 필수 항목 없이도 가능하고, 단계 완료는 필수 항목을 검사한 뒤 완료 처리하고 다음 단계로 이동합니다. 완료된 단계는 **[저장]** 으로 내용을 덮어쓸 수 있고, **[완료 취소]** 를 누르면 진행 중 상태로 돌아갑니다. 완료를 취소하면 그 뒤 단계들의 완료 표시도 함께 풀리지만 작성한 내용은 그대로 남습니다.
-- **이전 단계 연동**: 다음 단계를 처음 열면 일부 항목이 이전 내용으로 미리 채워지고 `…에서 가져옴 · 수정 가능` 배지가 붙습니다. 스토리 프롬프트 ← IP 기본 정보(장르·줄거리·등장인물·유의점) + 전략(방향·매력) + 주인공 이름·성별을 제목 붙여 합친 초안, 금지 사항 ← 전략의 리스크, 1차 QA 범위 ← 시작 상황, 2차 QA 재확인 항목 ← 1차 QA 이슈.
+- **이전 단계 연동**: 다음 단계를 처음 열면 일부 항목이 이전 내용으로 미리 채워지고 `…에서 가져옴 · 수정 가능` 배지가 붙습니다. 오픈 케플러 질문 ← IP 기본 정보(IP명 · 장르 · 줄거리 앞 두 문장), 전략 기획의 타깃 독자 ← 데이터 분석의 결과 요약, 스토리 프롬프트 ← IP 기본 정보(장르·줄거리·등장인물·유의점) + 전략(방향·매력) + 주인공 이름·성별을 제목 붙여 합친 초안, 금지 사항 ← 전략의 리스크, 1차 QA 범위 ← 시작 상황, 2차 QA 재확인 항목 ← 1차 QA 이슈.
 - **권한**: Viewer 는 모든 단계를 읽기 전용으로만 봅니다(입력 비활성, 저장 버튼 없음). Admin·Editor 만 저장·완료할 수 있습니다.
-- **저장 구조**: IP 단계 `stage:<titleId>:<단계키>`, 스토리 목록 `stories:<titleId>`(ZSET), 스토리 `story:<storyId>`(HASH: name · gender · order · status · done), 스토리 단계 `sstage:<storyId>:<단계키>`. 단계 레코드는 `{ fields, done, updatedAt, updatedBy, completedAt }` JSON, 항목당 10,000자 제한. IP 를 삭제하면 스토리와 단계 데이터도 함께 지워집니다. 단계 정의(필드 키 · 필수 항목)는 `public/index.html` 의 `STAGES` / `STORY_STAGES` 와 `lib/store.js` 의 `STAGE_DEFS` / `STORY_STAGE_DEFS` 두 곳에 있으므로 함께 수정해야 합니다.
-- **API** (`POST /api/titles`): `detail { id }` → `{ title, stages, stories }` · `storyDetail { id, storyId }` → `{ title, stages, story, storyStages, stories }` · `saveStage { id, stage, fields, complete?, uncomplete? }` → `{ title, stages, stories }` · `saveStoryStage { id, storyId, stage, fields, complete?, uncomplete? }` → `{ title, stages, story, storyStages, stories }`. `list` 응답의 각 IP 에는 `stories` 요약(id · name · gender · status)이 포함됩니다.
+- **저장 구조**: IP 단계 `stage:<titleId>:<단계키>`, 스토리 목록 `stories:<titleId>`(ZSET), 스토리 `story:<storyId>`(HASH: name · gender · order · status · done), 스토리 단계 `sstage:<storyId>:<단계키>`, 첨부 파일 목록 `files:<titleId>:<단계키>:<항목키>`(JSON 배열, 파일 본체는 Drive). 단계 레코드는 `{ fields, done, updatedAt, updatedBy, completedAt }` JSON, 항목당 10,000자 제한. IP 를 삭제하면 스토리와 단계 데이터도 함께 지워집니다. 단계 정의(필드 키 · 필수 항목)는 `public/index.html` 의 `STAGES` / `STORY_STAGES` 와 `lib/store.js` 의 `STAGE_DEFS` / `STORY_STAGE_DEFS` 두 곳에 있으므로 함께 수정해야 합니다.
+- **API** (`POST /api/titles`): `detail { id }` → `{ title, stages, stories }` · `storyDetail { id, storyId }` → `{ title, stages, story, storyStages, stories }` · `saveStage { id, stage, fields, complete?, uncomplete? }` → `{ title, stages, stories }` · `saveStoryStage { id, storyId, stage, fields, complete?, uncomplete? }` → `{ title, stages, story, storyStages, stories }`. `list` 응답의 각 IP 에는 `stories` 요약(id · name · gender · status)이 포함됩니다. `detail` / `storyDetail` / `saveStage` / `saveStoryStage` 응답에는 `files`(`{ '<단계>.<항목>': [ { id, driveId, name, mime, size, ext, url, downloadUrl, uploadedAt, uploadedBy } ] }`)도 포함됩니다.
+- **첨부 파일 API** (`POST /api/files`, Admin·Editor): `upload { id, stage, field, name, mime, data(base64) }` → `{ key, files }` · `delete { id, stage, field, fileId }` → `{ key, files }`. Vercel 함수가 Apps Script 웹 앱(`APPS_SCRIPT_FILES_URL`, 인증은 `SYNC_SECRET`)을 서버 간 호출해 Drive 에 저장·삭제합니다(`lib/drive.js` ↔ `apps-script/Code.gs` 의 `filesApi`). 회사 정책상 서비스 계정을 쓸 수 없어 이 경로를 씁니다.
 - IP 데이터는 Redis(`title:*`, `titles`)에만 저장되며 시트와 동기화되지 않습니다. Apps Script 웹 앱(백업 경로)에서는 IP 관리 기능을 쓸 수 없습니다.
 
 ## 폴더 구조
@@ -100,13 +103,15 @@ IP (title) ─┬─ IP 단계      : 1 작품 기본 정보 → 2 콘텐츠 전
 │   ├── login.js            # POST /api/login     { id, password }
 │   ├── status.js           # POST /api/status    { id }
 │   ├── logout.js           # POST /api/logout    세션 폐기
-│   ├── titles.js           # POST /api/titles    { action: list | save | delete } (Bearer 토큰 필요)
+│   ├── titles.js           # POST /api/titles    { action: list | save | delete | detail | storyDetail | saveStage | saveStoryStage } (Bearer 토큰 필요)
+│   ├── files.js            # POST /api/files     { action: upload | delete }  IP 데이터 분석 결과지 첨부 (Drive 저장)
 │   └── sync.js             # POST /api/sync      Apps Script 전용 (x-sync-secret 헤더)
 ├── lib/
-│   ├── store.js            # Upstash Redis 저장소: 사용자·세션·IP + 시트 동기화 로직
+│   ├── store.js            # Upstash Redis 저장소: 사용자·세션·IP·단계·스토리·첨부 메타 + 시트 동기화 로직
+│   ├── drive.js            # Apps Script 웹 앱 경유 Google Drive 업로드 · 휴지통 이동
 │   └── http.js             # 응답 형식, 본문 파싱, 검증 규칙
 ├── apps-script/
-│   ├── Code.gs             # syncWithVercel / installSyncTrigger + 웹 앱 백업 API
+│   ├── Code.gs             # syncWithVercel / installSyncTrigger + 웹 앱 백업 API + filesApi(Drive 저장)
 │   ├── Index.html          # public/index.html 과 동일한 사본
 │   └── appsscript.json
 ├── package.json            # 의존성: @upstash/redis
@@ -134,6 +139,7 @@ Vercel 프로젝트 → Settings → Environment Variables (Production / Preview
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash REST Token |
 | `SYNC_SECRET` | 긴 임의 문자열 (로컬 `.env` 에 생성해 둔 값 사용) |
 | `HASH_PASSWORDS` | `false` |
+| `APPS_SCRIPT_FILES_URL` | Apps Script 웹 앱 URL (`https://script.google.com/macros/s/…/exec`) — 첨부 파일을 Drive 에 저장할 때 호출 (아래 3-5 참고) |
 
 저장 후 **Deployments → 최신 배포 → Redeploy** 를 눌러야 함수가 새 값을 읽습니다.
 
@@ -145,6 +151,7 @@ Vercel 프로젝트 → Settings → Environment Variables (Production / Preview
    - `SYNC_SECRET` = Vercel 에 넣은 것과 같은 값
 3. 편집기에서 함수 `syncWithVercel` 을 한 번 **실행** → 권한 승인(외부 URL 연결, 트리거) → 실행 로그에 `sync ok` 가 보이면 정상. 이때 시트의 기존 행(관리자 등)이 Redis 로 들어가 Vercel 사이트에서 바로 로그인됩니다.
 4. 함수 `installSyncTrigger` 를 한 번 **실행** → 1분 주기 트리거 설치 완료 (왼쪽 시계 아이콘에서 확인)
+5. **첨부 파일(Drive) 저장용 웹 앱 배포**: 배포 → 새 배포 → 유형 **웹 앱**, 실행 계정 **나**, 액세스 **모든 사용자** → 배포. 처음 배포하거나 `Code.gs` 를 바꾼 뒤에는 Drive 권한 승인 창이 뜨며, 이후 코드 변경 시 **배포 관리 → 새 버전** 으로 다시 배포해야 반영됩니다. 배포 URL(`…/exec`)을 Vercel 환경 변수 `APPS_SCRIPT_FILES_URL` 에 넣고 Redeploy 하세요. 저장 폴더는 `Code.gs` 의 `DRIVE_FOLDER_ID`(기본값: 지정된 공유 폴더)이며 스크립트 속성 `DRIVE_FOLDER_ID` 로 바꿀 수 있습니다. 배포 계정이 그 폴더에 편집 권한이 있어야 합니다.
 
 ### 4. GitHub + Vercel
 

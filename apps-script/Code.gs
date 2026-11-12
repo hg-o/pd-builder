@@ -109,13 +109,84 @@ function doPost(e) {
   var result;
   try {
     var body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    result = api(body.action, body.payload);
+    result = (body.action === 'uploadFile' || body.action === 'trashFiles')
+      ? filesApi(body)                     // Vercel 서버가 호출하는 Drive 파일 저장 API (secret 필요)
+      : api(body.action, body.payload);   // 백업 경로 웹 앱 API
   } catch (err) {
     result = fail('요청을 처리하지 못했습니다. ' + err.message);
   }
   return ContentService
     .createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ───────────────────────────── Drive 파일 저장 (Vercel → Apps Script) ─────────────────────────────
+//
+// IP 데이터 분석 단계의 결과지 첨부 파일을 Google Drive 폴더에 저장합니다.
+//  - Vercel 의 /api/files 가 { action: 'uploadFile' | 'trashFiles', secret, … } 를 POST 로 보냅니다.
+//  - secret 은 스크립트 속성 SYNC_SECRET 과 같아야 합니다 (Vercel 환경 변수 SYNC_SECRET 과 동일 값).
+//  - 저장 위치: DRIVE_FOLDER_ID 폴더 아래 IP 별 하위 폴더 "<IP명> [<titleId>]"
+//  - 이 웹 앱은 '나(배포 계정)로 실행' 이어야 하며, 처음 배포할 때 Drive 접근 권한을 승인해야 합니다.
+//    코드를 바꾼 뒤에는 배포 → 배포 관리 → 새 버전으로 다시 배포해야 반영됩니다.
+
+var DRIVE_FOLDER_ID = '1-xJ2lTEsXqqW-b2Jg68e4YWeZIhbV64r'; // https://drive.google.com/drive/folders/1-xJ2lTEsXqqW-b2Jg68e4YWeZIhbV64r
+var FILE_MAX_BYTES = 3 * 1024 * 1024;
+
+function filesApi(body) {
+  var props = PropertiesService.getScriptProperties();
+  var secret = str(props.getProperty('SYNC_SECRET'));
+  if (!secret || str(body.secret) !== secret) return fail('인증에 실패했습니다.');
+  if (body.action === 'uploadFile') return uploadFileToDrive(body);
+  if (body.action === 'trashFiles') return trashDriveFiles(body.ids);
+  return fail('알 수 없는 요청입니다: ' + body.action);
+}
+
+function rootFolder() {
+  var id = str(PropertiesService.getScriptProperties().getProperty('DRIVE_FOLDER_ID')) || DRIVE_FOLDER_ID;
+  return DriveApp.getFolderById(id);
+}
+
+/** IP 별 하위 폴더 "<IP명> [<titleId>]" — titleId 로 찾고 없으면 만듭니다. (IP 이름이 바뀌어도 같은 폴더를 씁니다) */
+function titleFolder(titleId, titleName) {
+  var root = rootFolder();
+  var tid = str(titleId);
+  if (!tid) return root;
+  var it = root.getFolders();
+  while (it.hasNext()) {
+    var f = it.next();
+    if (f.getName().slice(-(tid.length + 2)) === '[' + tid + ']') return f;
+  }
+  var name = (str(titleName) || 'IP').replace(/[\\/:*?"<>|]/g, '_').slice(0, 60) + ' [' + tid + ']';
+  return root.createFolder(name);
+}
+
+function uploadFileToDrive(body) {
+  var name = str(body.name).replace(/[\\/:*?"<>|]/g, '_');
+  var data = str(body.data);
+  if (!name || !data) return fail('파일 이름 또는 내용이 없습니다.');
+  var bytes = Utilities.base64Decode(data);
+  if (bytes.length > FILE_MAX_BYTES) return fail('파일은 ' + Math.round(FILE_MAX_BYTES / 1024 / 1024) + 'MB 이하여야 합니다.');
+  var mime = str(body.mime) || 'application/octet-stream';
+  var folder = titleFolder(body.titleId, body.titleName);
+  var file = folder.createFile(Utilities.newBlob(bytes, mime, name));
+  return ok({
+    id: file.getId(),
+    name: file.getName(),
+    mime: file.getMimeType(),
+    size: file.getSize(),
+    url: file.getUrl(),
+    downloadUrl: 'https://drive.google.com/uc?export=download&id=' + file.getId(),
+    folderUrl: folder.getUrl()
+  });
+}
+
+function trashDriveFiles(ids) {
+  var list = Array.isArray(ids) ? ids : [];
+  var n = 0;
+  list.forEach(function (id) {
+    try { DriveApp.getFileById(str(id)).setTrashed(true); n++; } catch (e) { /* 이미 삭제됨 등 — 무시 */ }
+  });
+  return ok({ trashed: n });
 }
 
 /**

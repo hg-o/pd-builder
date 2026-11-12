@@ -310,6 +310,7 @@
   .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   /* IP 진행 사항 */
   .status[data-s="시작 전"] { background: #f3f4f6; color: #6b7280; }
+  .status[data-s="데이터 분석"] { background: #ccfbf1; color: #0f766e; }
   .status[data-s="전략 기획"] { background: #e0f2fe; color: #0369a1; }
   .status[data-s="스토리 제작"] { background: #ede9fe; color: #6d28d9; }
   .status[data-s="byUs 정식 론칭"] { background: #d1fae5; color: #047857; }
@@ -544,6 +545,55 @@
   .blk-foot { display: flex; }
   .field.invalid .blocks { border-color: var(--danger); background: var(--danger-bg); }
   @media (max-width: 640px) { .blk-form .row { grid-template-columns: minmax(0, 1fr); } .blk-item.author .blk-main { flex-direction: column; align-items: flex-start; gap: 6px; } }
+
+  /* 단계 안의 소제목 · 안내 블록 (IP 데이터 분석) */
+  .stage-section { margin: 4px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); font-size: 17px; font-weight: 700; color: var(--text); }
+  .stage-form .stage-section:not(:first-child) { margin-top: 26px; }
+  .guide { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-bottom: 18px; border-radius: 10px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; }
+  .guide > svg { width: 20px; height: 20px; flex: none; margin-top: 2px; color: #2563eb; }
+  .guide-body { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; min-width: 0; }
+  .guide-body p { margin: 0; font-size: 15px; line-height: 1.5; }
+  .guide-body .btn { background: var(--surface); }
+  .guide-body .btn svg { width: 14px; height: 14px; }
+  [data-theme="dark"] .guide { background: #172554; border-color: #1e3a8a; color: #bfdbfe; }
+  [data-theme="dark"] .guide > svg { color: #93c5fd; }
+
+  /* 첨부 파일 목록 (업로드 · 미리보기 · 다운로드 · 삭제) */
+  .files { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .files-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--text-2); }
+  .files-head b { color: var(--text); }
+  .files-head a { color: var(--text-3); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+  .files-head a:hover { color: var(--text); text-decoration: underline; }
+  .files-head a svg { width: 13px; height: 13px; }
+  .files-list { display: flex; flex-direction: column; gap: 8px; }
+  .files-list:empty { display: none; }
+  .file-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); }
+  .file-ext { flex: none; width: 44px; height: 44px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 800; letter-spacing: .02em; color: #fff; background: #64748b; text-transform: uppercase; }
+  .file-ext[data-ext="pdf"] { background: #dc2626; }
+  .file-ext[data-ext="xlsx"], .file-ext[data-ext="xls"], .file-ext[data-ext="csv"] { background: #16a34a; }
+  .file-ext[data-ext="doc"], .file-ext[data-ext="docx"] { background: #2563eb; }
+  .file-ext[data-ext="hwp"], .file-ext[data-ext="hwpx"] { background: #0891b2; }
+  .file-ext[data-ext="ppt"], .file-ext[data-ext="pptx"] { background: #ea580c; }
+  .file-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .file-name { font-size: 15px; font-weight: 600; color: var(--text); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-name:hover { text-decoration: underline; }
+  .file-meta { font-size: 13px; color: var(--text-3); }
+  .file-tools { display: flex; gap: 6px; flex: none; }
+  .file-tools a, .file-tools button { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-3); display: grid; place-items: center; text-decoration: none; }
+  .file-tools svg { width: 15px; height: 15px; }
+  .file-tools a:hover, .file-tools button:hover { color: var(--text); border-color: var(--text-3); }
+  .file-tools .file-del:hover { color: var(--danger); border-color: var(--danger); }
+  .files-empty { font-size: 13px; color: var(--text-3); padding: 4px 2px; }
+  .files-foot { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .files-foot .files-hint { font-size: 13px; color: var(--text-3); }
+  .files-progress { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px dashed var(--border); font-size: 14px; color: var(--text-2); }
+  .files-progress .spin { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .files-error { font-size: 13px; color: var(--danger); }
+  .files-error:empty { display: none; }
+  .files.drag { border-color: var(--accent); background: rgba(16, 185, 129, 0.06); }
+  .field.invalid .files { border-color: var(--danger); background: var(--danger-bg); }
+  @media (max-width: 640px) { .file-meta { white-space: normal; } .file-tools .file-view { display: none; } }
 
   .toast {
     position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #111827; color: #fff;
@@ -801,7 +851,7 @@
         <div id="titles-list"></div>
       </div>
 
-      <!-- 작품 상세: 기본 정보 → 전략 기획 → 각색 기획안 → 프롬프트 → 시작 상황 (순차 단계) -->
+      <!-- 작품 상세: IP 기본 정보 → IP 데이터 분석 → 콘텐츠 전략 기획 → 스토리 제작 (순차 단계) -->
       <div class="page-card hidden" id="page-detail">
         <div class="blobs"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
         <div id="detail-body"></div>
@@ -833,7 +883,7 @@ var SERVICE_URL = 'https://pd-builder.vercel.app';
 var SESSION_KEY = 'byus_builder_session';
 var THEME_KEY = 'byus_builder_theme';
 var PAGES = { home: 'Home', schedule: 'Schedule Simulator', titles: 'Title', labs: 'Labs' };
-var TITLE_STATUSES = ['시작 전', '전략 기획', '스토리 제작', 'byUs 정식 론칭'];
+var TITLE_STATUSES = ['시작 전', '데이터 분석', '전략 기획', '스토리 제작', 'byUs 정식 론칭'];
 var STORY_GENDERS = ['여성', '남성', '알 수 없음', '그 외'];
 // 예전 값 호환 (서버도 같은 변환을 하지만 캐시된 응답을 위해 한 번 더)
 var LEGACY_STATUS = { 'QA': '스토리 제작', '1차 QA': '스토리 제작', '2차 QA': '스토리 제작', '각색 기획': '스토리 제작', '프롬프트 작성': '스토리 제작', '시작 상황 작성': '스토리 제작' };
@@ -1390,7 +1440,7 @@ $('#ip-delete').addEventListener('click', function () {
 });
 
 /* ───────────── 작품 상세: IP 단계 + 스토리 단계 ─────────────
- * 위계: IP ─┬─ IP 단계   : 1 작품 기본 정보 → 2 콘텐츠 전략 기획 (마지막 항목 '스토리 구성': 주인공 이름·성별, 1개 이상)
+ * 위계: IP ─┬─ IP 단계   : 1 IP 기본 정보 → 2 IP 데이터 분석(결과지 첨부) → 3 콘텐츠 전략 기획 (마지막 항목 '스토리 구성': 주인공 이름·성별, 1개 이상)
  *           └─ 스토리(1개 이상, 각각 주인공 캐릭터) ─ 스토리 단계 : 프롬프트 → 시작 설정 → 1차 QA → 2차 QA → 배포
  *  - 앞 단계를 '완료'해야 다음 단계가 열립니다. 스토리 단계는 전략 기획이 완료되어야 열립니다.
  *  - 전략 기획을 완료(또는 완료 상태에서 저장)하면 '스토리 구성'대로 스토리가 생성·수정·삭제됩니다.
@@ -1400,9 +1450,23 @@ $('#ip-delete').addEventListener('click', function () {
  */
 function fieldOf(records, stage, k) { var s = records && records[stage]; return (s && s.fields && s.fields[k]) || ''; }
 
+/* IP 데이터 분석: 오픈 케플러 · 첨부 파일 설정 (서버 lib/drive.js 와 맞춤) */
+var KEPLER_URL = 'https://openkepler.navercorp.com/';
+var DRIVE_FOLDER_URL = 'https://drive.google.com/drive/folders/1-xJ2lTEsXqqW-b2Jg68e4YWeZIhbV64r';
+var FILE_EXTS = ['pdf', 'csv', 'xls', 'xlsx', 'doc', 'docx', 'hwp', 'hwpx', 'ppt', 'pptx', 'txt'];
+var FILE_MAX_MB = 3;
+function composeKeplerQuestion(d) {
+  var t = d.title || {}, b = (d.stages.basic || {}).fields || {};
+  if (!t.name) return '';
+  var syn = String(b.synopsis || '').trim().split(/(?<=[.!?。])\s+/).slice(0, 2).join(' ');
+  return '『' + t.name + '』' + (b.genre ? ' (' + b.genre + ')' : '') + ' 원작의 핵심 독자층을 분석해 주세요.\n' +
+    '- 성별 · 연령대 분포와 가장 큰 세그먼트\n- 이 작품 독자가 함께 많이 보는 작품 · 장르\n- 캐릭터챗(byUs) 이용 가능성이 높은 독자 특성과 근거' +
+    (syn ? '\n\n작품 개요: ' + syn : '');
+}
+
 var STAGES = [
-  { key: 'basic', label: '작품 기본 정보', short: '1단계',
-    desc: '원작의 핵심 정보를 정리합니다. 여기 적은 내용은 전략 기획과 모든 스토리의 프롬프트 초안에 참고 자료로 따라갑니다.',
+  { key: 'basic', label: 'IP 기본 정보', short: '1단계',
+    desc: '원작의 핵심 정보를 정리합니다. 여기 적은 내용은 데이터 분석 · 전략 기획과 모든 스토리의 프롬프트 초안에 참고 자료로 따라갑니다.',
     fields: [
       { k: 'genre', label: '장르', type: 'input', req: true, ph: '예: 로맨스 판타지, 현대 액션, 학원물' },
       { k: 'author', label: '원작 작가', type: 'blocks', kind: 'authors', hint: '[+ 원작 작가]로 웹소설 · 웹툰 작가를 한 명씩 추가합니다. 추가한 항목은 수정 · 삭제할 수 있습니다.' },
@@ -1411,10 +1475,23 @@ var STAGES = [
       { k: 'characters', label: '주요 등장인물', type: 'blocks', kind: 'characters', req: true, hint: '[+ 등장인물 추가]로 인물을 한 명씩 추가합니다. 설명에는 역할 · 성격 · 말투 · 관계를 적어 두면 스토리 프롬프트 초안에 그대로 들어갑니다.' },
       { k: 'notes', label: '원작 특이사항 · 유의점', type: 'text', rows: 4, ph: '연재 상태, 민감 소재, 활용 가능한 저작권 범위, 작가 요청 사항 등' }
     ] },
-  { key: 'strategy', label: '콘텐츠 전략 기획', short: '2단계',
+  { key: 'analysis', label: 'IP 데이터 분석', short: '2단계',
+    desc: '데이터로 IP 의 독자와 타깃을 확인합니다. 오픈 케플러에 질문한 결과지를 첨부하면, 요약한 시사점이 전략 기획의 타깃 독자 초안으로 이어집니다.',
+    fields: [
+      { k: 'sec1', type: 'heading', label: '1. 타겟 분석' },
+      { k: 'guide1', type: 'guide', text: '오픈 케플러에 아래 질문을 하고, 결과지를 내려받아 첨부하십시오.', link: { href: KEPLER_URL, label: '오픈 케플러 열기' } },
+      { k: 'targetQuestion', label: '오픈 케플러 질문', type: 'text', rows: 4, ph: '오픈 케플러에 실제로 질문한 문안',
+        seed: { from: 'basic', build: function (d) { return composeKeplerQuestion(d); } },
+        hint: 'IP 기본 정보로 만든 질문 초안입니다. 실제 질문한 문안으로 고쳐 두면 결과지를 해석할 때 도움이 됩니다.' },
+      { k: 'targetFiles', label: '결과지 첨부', type: 'files', req: true,
+        hint: '업로드한 파일은 바로 저장되며 Google Drive 폴더에 보관됩니다. 문서 파일(' + FILE_EXTS.join(', ') + ') · 파일당 ' + FILE_MAX_MB + 'MB 이하.' },
+      { k: 'targetSummary', label: '분석 결과 요약 · 시사점', type: 'text', rows: 5, ph: '핵심 독자층(성별 · 연령), 함께 보는 작품, 캐릭터챗으로 이어질 만한 세그먼트와 근거' }
+    ] },
+  { key: 'strategy', label: '콘텐츠 전략 기획', short: '3단계',
     desc: '누구에게, 어떤 매력으로, 어떤 형태의 콘텐츠를 만들지 결정하고, 마지막으로 이 IP 에 들어갈 스토리(주인공)를 구성합니다. 완료하면 구성한 스토리가 생성됩니다.',
     fields: [
-      { k: 'target', label: '타깃 독자', type: 'text', req: true, rows: 4, ph: '핵심 팬층과 확장 타깃, 이용 동기와 기대하는 경험' },
+      { k: 'target', label: '타깃 독자', type: 'text', req: true, rows: 4, ph: '핵심 팬층과 확장 타깃, 이용 동기와 기대하는 경험',
+        seed: { from: 'analysis', build: function (d) { return fieldOf(d.stages, 'analysis', 'targetSummary'); } } },
       { k: 'appeal', label: '핵심 매력 포인트 (소구점)', type: 'text', req: true, rows: 5, ph: '원작에서 가져올 핵심 감정선 · 관계 · 장면. 캐릭터챗에서 어떻게 살릴지' },
       { k: 'direction', label: '콘텐츠 방향 · 포맷', type: 'text', req: true, rows: 5, ph: '1:1 캐릭터챗 / 상황극 / 멀티 캐릭터 등, 플레이 길이, 전체 톤' },
       { k: 'reference', label: '레퍼런스', type: 'text', rows: 4, ph: '참고할 기존 작품 · 콘텐츠와 참고 이유' },
@@ -1422,7 +1499,7 @@ var STAGES = [
       { k: 'stories', label: '스토리 구성', type: 'stories', req: true, hint: '이 IP 에 몇 개의 스토리를 만들지, 각 스토리의 주인공 이름과 성별을 정합니다. 1개 이상 필요하며, 완료하면 스토리별 제작 화면이 생성됩니다.' }
     ] }
 ];
-var STORIES_STEP = { key: 'stories', label: '스토리 제작', short: '3단계' };
+var STORIES_STEP = { key: 'stories', label: '스토리 제작', short: '4단계' };
 
 var STORY_STAGES = [
   { key: 'prompt', label: '프롬프트 작성', short: '1단계',
@@ -1483,6 +1560,13 @@ function composeStoryPrompt(d) {
   if (b.notes) parts.push('## 유의점\n' + b.notes);
   return parts.length > 1 ? parts.join('\n\n') : '';
 }
+/* 한국어 조사: 받침 유무에 따라 '(으)로' — '기획' → '기획으로', '정보' → '정보로' (ㄹ 받침은 '로') */
+function withRo(word) {
+  var c = String(word || '').trim().slice(-1).charCodeAt(0);
+  if (c < 0xAC00 || c > 0xD7A3) return word + '로';
+  var jong = (c - 0xAC00) % 28;
+  return word + (jong === 0 || jong === 8 ? '로' : '으로');
+}
 function indexIn(defs, key) { for (var i = 0; i < defs.length; i++) if (defs[i].key === key) return i; return -1; }
 function defIn(defs, key) { return defs[indexIn(defs, key)] || null; }
 
@@ -1530,6 +1614,11 @@ var BOOK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 var USERS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
 var X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 var SAVE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
+var INFO_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+var EXT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+var UPLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
+var DOWNLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+var EYE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 var PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
 
 /* ── 상태 계산 ── */
@@ -1581,7 +1670,7 @@ function loadDetail(id) {
   return callApi('titles', { action: 'detail', id: id }).then(function (res) {
     if (detail.id !== id) return;
     if (!res || !res.ok) { detail.error = (res && res.error) || '작품 정보를 불러오지 못했습니다.'; renderDetail(); return; }
-    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [] };
+    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [], files: res.data.files || (detail.data && detail.data.files) || {} };
     detail.error = '';
     if (!detail.stage) detail.stage = defaultIpStage();
     renderDetail();
@@ -1592,7 +1681,7 @@ function loadStory(id, storyId) {
   return callApi('titles', { action: 'storyDetail', id: id, storyId: storyId }).then(function (res) {
     if (detail.id !== id || detail.storyId !== storyId) return;
     if (!res || !res.ok) { detail.storyError = (res && res.error) || '스토리 정보를 불러오지 못했습니다.'; renderDetail(); return; }
-    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [] };
+    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [], files: res.data.files || (detail.data && detail.data.files) || {} };
     detail.storyData = { story: res.data.story, storyStages: res.data.storyStages || {} };
     detail.storyError = '';
     if (!detail.stage) detail.stage = defaultIpStage();
@@ -1656,7 +1745,7 @@ function renderDetail() {
     (canEdit() ? '<button type="button" class="edit-btn" id="detail-edit" title="IP 정보 수정" aria-label="IP 정보 수정">' + EDIT_ICON + '</button>' : '') +
   '</div>';
 
-  // IP 스테퍼: 1 기본 정보 · 2 전략 기획 · 3 스토리 제작(요약 노드)
+  // IP 스테퍼: 1 기본 정보 · 2 데이터 분석 · 3 전략 기획 · 4 스토리 제작(요약 노드)
   var nodes = STAGES.map(function (s, i) {
     return stepNode(s, i, ipStageDone(s.key), ipStageOpen(s.key), s.key === detail.stage, null);
   });
@@ -1711,7 +1800,7 @@ function ipPanelCtx(key) {
     prevDef: STAGES[idx - 1] || null, nextDef: next,
     seedData: { title: detail.data.title, stages: detail.data.stages },
     refs: refs, write: canEdit(),
-    completeLabel: '단계 완료 · ' + next.label + '로'
+    completeLabel: "단계 완료 · " + withRo(next.label)
   };
 }
 
@@ -1762,14 +1851,15 @@ function storyPanelCtx(key) {
     lockedByIp: !strategyDone(),
     seedData: { title: detail.data.title, stages: detail.data.stages, story: detail.storyData.story, storyStages: detail.storyData.storyStages },
     refs: refs, write: canEdit(),
-    completeLabel: STORY_STAGES[idx + 1] ? '단계 완료 · ' + STORY_STAGES[idx + 1].label + '로' : '배포 완료'
+    completeLabel: STORY_STAGES[idx + 1] ? "단계 완료 · " + withRo(STORY_STAGES[idx + 1].label) : "배포 완료"
   };
 }
 
 function refItem(def, n, rec, open, goKey) {
-  var fields = def.fields.filter(function (f) { return f.type !== 'stories'; }).map(function (f) {
+  var fields = def.fields.filter(function (f) { return f.type !== 'stories' && f.type !== 'heading' && f.type !== 'guide'; }).map(function (f) {
     var v = rec && rec.fields ? (rec.fields[f.k] || '') : '';
     if (f.type === 'blocks') v = blocksText(f.kind, v);
+    if (f.type === 'files') v = filesOf(def.key, f.k).map(function (x) { return x.name; }).join('\n');
     return '<div class="ref-field"><b>' + esc(f.label) + '</b>' + (v ? '<div>' + esc(v) + '</div>' : '<div class="none">비어 있음</div>') + '</div>';
   }).join('');
   if (def.key === 'strategy' && rec && rec.fields && rec.fields.stories) {
@@ -1795,13 +1885,22 @@ function renderStagePanel(ctx) {
       lockBtn = '<a class="btn btn-sm" href="' + hashFor(detail.id, null, 'strategy') + '">콘텐츠 전략 기획으로 이동</a>';
     } else {
       lockText = '‘' + ctx.prevDef.label + '’ 단계를 완료하면 이 단계가 열립니다.';
-      lockBtn = '<button type="button" class="btn btn-sm" data-go-stage="' + ctx.prevDef.key + '">' + esc(ctx.prevDef.short) + ' · ' + esc(ctx.prevDef.label) + '로 이동</button>';
+      lockBtn = '<button type="button" class="btn btn-sm" data-go-stage="' + ctx.prevDef.key + '">' + esc(ctx.prevDef.short) + " · " + esc(withRo(ctx.prevDef.label)) + " 이동</button>";
     }
     return '<div class="stage no-ref"><div class="stage-main">' + headHtml +
       '<div class="locked-state">' + LOCK_ICON + '<strong>아직 열리지 않은 단계입니다</strong><span>' + esc(lockText) + '</span>' + lockBtn + '</div></div></div>';
   }
 
   var fieldsHtml = s.fields.map(function (f) {
+    if (f.type === 'heading') return '<h4 class="stage-section">' + esc(f.label) + '</h4>';
+    if (f.type === 'guide') {
+      return '<div class="guide">' + INFO_ICON + '<div class="guide-body"><p>' + esc(f.text) + '</p>' +
+        (f.link ? '<a class="btn btn-xs" href="' + esc(f.link.href) + '" target="_blank" rel="noopener">' + esc(f.link.label) + EXT_ICON + '</a>' : '') + '</div></div>';
+    }
+    if (f.type === 'files') {
+      return '<div class="field" data-field="' + f.k + '"><span class="label">' + esc(f.label) + (f.req ? ' <span class="req">*</span>' : '') + '</span>' +
+        renderFilesEditor(s.key, f, write) + (f.hint ? '<div class="hint">' + esc(f.hint) + '</div>' : '') + '</div>';
+    }
     var val = rec && rec.fields ? (rec.fields[f.k] || '') : '';
     var seeded = '';
     if (!rec && f.seed && write) { var sv = f.seed.build(ctx.seedData); if (sv) { val = sv; seeded = f.seed.from === 'IP' ? 'IP 단계' : (defIn(ctx.defs, f.seed.from) || {}).short || ''; } }
@@ -1911,7 +2010,7 @@ function bindStoriesEditor() {
   $all('[data-go-story]', ed).forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); goStory(a.dataset.goStory); }); });
 }
 
-/* ── 블록 추가형 편집기 (작품 기본 정보: 원작 작가 · 등장인물) ──
+/* ── 블록 추가형 편집기 (IP 기본 정보: 원작 작가 · 등장인물) ──
  *  [+ 추가] → 편집 폼(종류·닉네임 / 이름·설명) → 항목 [저장] 으로 목록에 확정. 항목마다 수정 · 삭제.
  *  항목 목록은 blocksState[k] 에 두고, 단계 [저장]/[완료] 때 JSON 문자열로 보냅니다. */
 function renderBlocksEditor(f, write) {
@@ -2032,10 +2131,133 @@ function bindBlocksEditors() {
   });
 }
 
+/* ── 첨부 파일 편집기 (IP 데이터 분석: 결과지) ──
+ *  파일은 단계 저장과 별개로 업로드 즉시 /api/files 로 보내 Google Drive 에 저장되고, 목록은 detail.data.files['<단계>.<항목>'] 에 둡니다.
+ *  Viewer 는 목록 · 미리보기 · 다운로드만, Admin/Editor 는 업로드 · 삭제까지. */
+function filesOf(stage, k) { return (detail.data && detail.data.files && detail.data.files[stage + '.' + k]) || []; }
+function fmtBytes(n) {
+  n = Number(n) || 0;
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
+  return (Math.round(n / 1024 / 1024 * 10) / 10) + ' MB';
+}
+function fileExt(name) { var m = /\.([A-Za-z0-9]+)$/.exec(name || ''); return m ? m[1].toLowerCase() : ''; }
+function renderFilesEditor(stage, f, write) {
+  var list = filesOf(stage, f.k);
+  return '<div class="files" id="files-' + f.k + '" data-stage="' + esc(stage) + '" data-k="' + f.k + '">' +
+    '<div class="files-head"><span>첨부 파일 <b class="files-count">' + list.length + '</b>개</span>' +
+      '<a href="' + esc(DRIVE_FOLDER_URL) + '" target="_blank" rel="noopener" title="업로드한 파일이 저장되는 Google Drive 폴더">Drive 폴더 열기' + EXT_ICON + '</a></div>' +
+    '<div class="files-list">' + list.map(function (x) { return fileRow(x, write); }).join('') + '</div>' +
+    '<div class="files-progress hidden"><span class="spin"></span><span class="files-progress-text"></span></div>' +
+    '<div class="files-empty' + (list.length ? ' hidden' : '') + '">' + (write ? '아직 첨부한 결과지가 없습니다. [파일 업로드]로 추가하거나 파일을 여기에 끌어다 놓으세요.' : '첨부된 파일이 없습니다.') + '</div>' +
+    '<div class="files-error"></div>' +
+    (write ? '<div class="files-foot"><button type="button" class="btn btn-xs files-add">' + UPLOAD_ICON + '파일 업로드</button>' +
+      '<input type="file" class="files-input hidden" multiple accept="' + FILE_EXTS.map(function (e) { return '.' + e; }).join(',') + '">' +
+      '<span class="files-hint">' + FILE_EXTS.join(' · ') + ' · 파일당 ' + FILE_MAX_MB + 'MB 이하</span></div>' : '') +
+  '</div>';
+}
+function fileRow(x, write) {
+  var by = x.uploadedBy && x.uploadedBy.name ? ' · ' + esc(x.uploadedBy.name) : '';
+  var ext = x.ext || fileExt(x.name);
+  return '<div class="file-row" data-fid="' + esc(x.id) + '">' +
+    '<span class="file-ext" data-ext="' + esc(ext) + '">' + esc(ext || 'file') + '</span>' +
+    '<div class="file-main"><a class="file-name" href="' + esc(x.url) + '" target="_blank" rel="noopener" title="' + esc(x.name) + '">' + esc(x.name) + '</a>' +
+      '<span class="file-meta">' + fmtBytes(x.size) + ' · ' + fmtDateTime(x.uploadedAt) + by + '</span></div>' +
+    '<div class="file-tools">' +
+      '<a class="file-view" href="' + esc(x.url) + '" target="_blank" rel="noopener" title="미리보기 (Google Drive)" aria-label="미리보기">' + EYE_ICON + '</a>' +
+      '<a class="file-down" href="' + esc(x.downloadUrl) + '" target="_blank" rel="noopener" title="다운로드" aria-label="다운로드">' + DOWNLOAD_ICON + '</a>' +
+      (write ? '<button type="button" class="file-del" title="삭제" aria-label="삭제">' + X_ICON + '</button>' : '') +
+    '</div></div>';
+}
+function filesRefresh(box) {
+  var stage = box.dataset.stage, k = box.dataset.k, list = filesOf(stage, k), write = !!$('.files-add', box);
+  $('.files-list', box).innerHTML = list.map(function (x) { return fileRow(x, write); }).join('');
+  $('.files-count', box).textContent = list.length;
+  $('.files-empty', box).classList.toggle('hidden', list.length > 0);
+  var field = box.closest('.field'); if (field && list.length) field.classList.remove('invalid');
+}
+function filesSetProgress(box, text) {
+  var p = $('.files-progress', box);
+  p.classList.toggle('hidden', !text);
+  $('.files-progress-text', box).textContent = text || '';
+  var add = $('.files-add', box); if (add) add.disabled = !!text;
+}
+function readFileBase64(file) {
+  return new Promise(function (resolve, reject) {
+    var r = new FileReader();
+    r.onload = function () { var s = String(r.result || ''); resolve(s.slice(s.indexOf(',') + 1)); };
+    r.onerror = function () { reject(new Error('파일을 읽지 못했습니다: ' + file.name)); };
+    r.readAsDataURL(file);
+  });
+}
+function uploadFiles(box, fileList) {
+  var files = Array.prototype.slice.call(fileList || []); if (!files.length) return;
+  var stage = box.dataset.stage, k = box.dataset.k, id = detail.id, err = $('.files-error', box);
+  err.textContent = '';
+  var rejected = [];
+  var accepted = files.filter(function (f) {
+    var ext = fileExt(f.name);
+    if (FILE_EXTS.indexOf(ext) === -1) { rejected.push(f.name + ' (지원하지 않는 형식)'); return false; }
+    if (f.size > FILE_MAX_MB * 1024 * 1024) { rejected.push(f.name + ' (' + FILE_MAX_MB + 'MB 초과)'); return false; }
+    return true;
+  });
+  var failed = [], doneCount = 0, total = accepted.length;
+  function next(i) {
+    if (i >= accepted.length) {
+      filesSetProgress(box, '');
+      var msgs = rejected.concat(failed);
+      if (msgs.length) err.textContent = '업로드하지 못한 파일: ' + msgs.join(', ');
+      if (doneCount) toast('파일 ' + doneCount + '개를 첨부했습니다.');
+      return;
+    }
+    var f = accepted[i];
+    filesSetProgress(box, '업로드 중… (' + (i + 1) + '/' + total + ') ' + f.name);
+    readFileBase64(f).then(function (b64) {
+      return callApi('files', { action: 'upload', id: id, stage: stage, field: k, name: f.name, mime: f.type || '', data: b64 });
+    }).then(function (res) {
+      if (detail.id !== id) return;
+      if (!res || !res.ok) { failed.push(f.name + (res && res.error ? ' (' + res.error + ')' : '')); return; }
+      detail.data.files = detail.data.files || {};
+      detail.data.files[res.data.key || (stage + '.' + k)] = res.data.files || [];
+      doneCount++;
+      filesRefresh(box);
+    }).catch(function (ex) { failed.push(f.name + ' (' + ex.message + ')'); }).then(function () { next(i + 1); });
+  }
+  if (!accepted.length) { err.textContent = '업로드하지 못한 파일: ' + rejected.join(', '); return; }
+  next(0);
+}
+function deleteFile(box, fid) {
+  var stage = box.dataset.stage, k = box.dataset.k, id = detail.id;
+  var x = filesOf(stage, k).filter(function (y) { return y.id === fid; })[0]; if (!x) return;
+  if (!confirm('‘' + x.name + '’ 파일을 삭제할까요?\nGoogle Drive 에서도 휴지통으로 이동합니다.')) return;
+  var err = $('.files-error', box); err.textContent = '';
+  filesSetProgress(box, '삭제 중… ' + x.name);
+  callApi('files', { action: 'delete', id: id, stage: stage, field: k, fileId: fid }).then(function (res) {
+    filesSetProgress(box, '');
+    if (detail.id !== id) return;
+    if (!res || !res.ok) { err.textContent = (res && res.error) || '삭제에 실패했습니다.'; return; }
+    detail.data.files[res.data.key || (stage + '.' + k)] = res.data.files || [];
+    filesRefresh(box); toast('파일을 삭제했습니다.');
+  }).catch(function (ex) { filesSetProgress(box, ''); err.textContent = ex.message; });
+}
+function bindFilesEditors() {
+  $all('#stage-form .files').forEach(function (box) {
+    var add = $('.files-add', box), input = $('.files-input', box);
+    if (!add || !input) return; // Viewer: 조회 전용
+    add.addEventListener('click', function () { input.click(); });
+    input.addEventListener('change', function () { uploadFiles(box, input.files); input.value = ''; });
+    box.addEventListener('click', function (e) { var del = e.target.closest('.file-del'); if (del) deleteFile(box, del.closest('.file-row').dataset.fid); });
+    ['dragenter', 'dragover'].forEach(function (ev) { box.addEventListener(ev, function (e) { e.preventDefault(); box.classList.add('drag'); }); });
+    ['dragleave', 'drop'].forEach(function (ev) { box.addEventListener(ev, function (e) { e.preventDefault(); box.classList.remove('drag'); }); });
+    box.addEventListener('drop', function (e) { if (e.dataTransfer && e.dataTransfer.files) uploadFiles(box, e.dataTransfer.files); });
+  });
+}
+
 /* ── 폼 바인딩 · 저장 ── */
 function bindStageForm() {
   bindStoriesEditor();
   bindBlocksEditors();
+  bindFilesEditors();
   var form = $('#stage-form'); if (!form) return;
   form.addEventListener('input', function (e) {
     if (e.target.closest('.blk-form')) return; // 블록 항목 편집 중 입력은 항목 [저장] 때 반영
@@ -2051,6 +2273,7 @@ function bindStageForm() {
 function collectFields(def) {
   var fields = {};
   def.fields.forEach(function (f) {
+    if (f.type === 'heading' || f.type === 'guide' || f.type === 'files') return; // 값이 없는 항목 (첨부는 업로드 즉시 서버에 저장됨)
     if (f.type === 'stories') { fields[f.k] = JSON.stringify(collectStoriesPlan()); return; }
     if (f.type === 'blocks') { fields[f.k] = JSON.stringify(blocksState[f.k] || []); return; }
     var el = $('#stage-form [data-k="' + f.k + '"]'); fields[f.k] = el ? el.value : '';
@@ -2088,13 +2311,16 @@ function saveStage(mode, btn) {
       if (!f.req) return false;
       if (f.type === 'stories') { var plan = collectStoriesPlan(); return !plan.length || plan.some(function (p) { return !p.name || !p.gender; }); }
       if (f.type === 'blocks') return !(blocksState[f.k] || []).length;
+      if (f.type === 'files') return !filesOf(s.key, f.k).length;
       return !String(fields[f.k] || '').trim();
     }).map(function (f) { return f.k; });
     if (missing.length && (complete || missing.indexOf('stories') !== -1)) {
       markInvalid('#stage-form', missing);
       setError(err, missing.indexOf('stories') !== -1 && missing.length === 1
         ? '스토리를 1개 이상 구성하고, 각 스토리의 주인공 이름과 성별을 모두 채워 주세요.'
-        : '필수 문항 작성이 필요합니다. (' + missing.map(function (k) { return defField(s, k).label; }).join(', ') + ')');
+        : missing.length === 1 && defField(s, missing[0]).type === 'files'
+          ? '‘' + defField(s, missing[0]).label + '’에 결과지 파일을 1개 이상 첨부해야 단계를 완료할 수 있습니다.'
+          : '필수 문항 작성이 필요합니다. (' + missing.map(function (k) { return defField(s, k).label; }).join(', ') + ')');
       var first = $('#stage-form [data-field="' + missing[0] + '"] .input'); if (first) first.focus();
       return;
     }
@@ -2117,7 +2343,7 @@ function saveStage(mode, btn) {
       setError(err, (res && res.error) || '저장에 실패했습니다.');
       return;
     }
-    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [] };
+    detail.data = { title: res.data.title, stages: res.data.stages || {}, stories: res.data.stories || [], files: res.data.files || (detail.data && detail.data.files) || {} };
     if (ctx.kind === 'story') detail.storyData = { story: res.data.story, storyStages: res.data.storyStages || {} };
     detail.dirty = false;
     syncListCache(res.data.title, res.data.stories);
@@ -2153,7 +2379,7 @@ function renderStoriesPanel() {
   if (!strategyDone()) {
     return '<div class="stage no-ref"><div class="stage-main">' + head +
       '<div class="locked-state">' + LOCK_ICON + '<strong>아직 스토리가 생성되지 않았습니다</strong><span>‘콘텐츠 전략 기획’ 단계에서 스토리를 구성하고 완료하면 여기에 스토리가 생성됩니다.</span>' +
-      '<button type="button" class="btn btn-sm" data-go-stage="strategy">2단계 · 콘텐츠 전략 기획으로 이동</button></div></div></div>';
+      '<button type="button" class="btn btn-sm" data-go-stage="strategy">' + esc(defIn(STAGES, 'strategy').short) + ' · 콘텐츠 전략 기획으로 이동</button></div></div></div>';
   }
   var list = detail.data.stories;
   var cards = list.map(function (s) {
