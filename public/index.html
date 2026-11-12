@@ -226,9 +226,14 @@
     background: var(--surface); border-bottom: 1px solid var(--border);
   }
   .crumb { display: flex; align-items: center; gap: 14px; font-size: 25px; color: var(--text-3); min-width: 0; }
-  .crumb > span { white-space: nowrap; }
+  .crumb > span, .crumb > a { white-space: nowrap; }
+  .crumb a { color: inherit; text-decoration: none; border-radius: 6px; padding: 2px 4px; margin: -2px -4px; }
+  .crumb a:hover { color: var(--text); background: var(--surface-2); }
   .crumb .cur { color: var(--text-2); }
-  .crumb #crumb-extra { overflow: hidden; text-overflow: ellipsis; max-width: 360px; }
+  .crumb .cur.leaf { color: var(--text); font-weight: 600; }
+  .crumb #crumb-extra { display: inline-flex; align-items: center; gap: 14px; overflow: hidden; max-width: 520px; }
+  .crumb #crumb-extra > a, .crumb #crumb-extra > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
+  .crumb #crumb-extra > svg { flex: none; }
   .top-actions { flex: none; }
   .crumb svg { width: 18px; height: 18px; }
   .top-actions { display: flex; align-items: center; gap: 22px; }
@@ -421,6 +426,10 @@
   .stage-actions .meta { font-size: 14px; color: var(--text-3); }
   .stage-actions .btns { display: flex; gap: 10px; margin-left: auto; }
   .stage-actions .btn svg { width: 16px; height: 16px; }
+  .stage-actions .save-side { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-left: 1px solid var(--border); }
+  .stage-actions .save-side .btn { gap: 6px; border-style: dashed; }
+  .stage-actions .save-side .save-hint { font-size: 13px; color: var(--text-3); white-space: nowrap; }
+  @media (max-width: 640px) { .stage-actions .save-side { border-left: 0; padding-left: 0; } .stage-actions .save-hint { display: none; } }
   .ref-panel { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-2); }
   .ref-panel h4 { margin: 0 0 2px; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--text-2); }
   .ref-panel h4 svg { width: 16px; height: 16px; }
@@ -551,7 +560,7 @@
     .sidebar { display: none; }
     .topbar { padding: 0 16px; height: 64px; }
     .crumb { font-size: 19px; }
-    .crumb > span:first-child, .crumb > svg { display: none; } /* 좁은 화면에서는 현재 메뉴명만 */
+    .crumb > a:first-child, .crumb > svg:not(#crumb-extra-sep) { display: none; } /* 좁은 화면에서는 현재 메뉴명만 */
     .crumb .cur { white-space: nowrap; }
     .top-actions { gap: 12px; }
     .user-chip { height: 48px; padding: 0 14px 0 10px; gap: 8px; }
@@ -742,10 +751,10 @@
 
   <div class="main">
     <header class="topbar">
-      <div class="crumb">
-        <span>Story Builder</span>
+      <div class="crumb" id="crumb">
+        <a href="#home" data-crumb-page="home" title="Home 으로 이동">Story Builder</a>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        <span class="cur" id="crumb-current">Home</span>
+        <a class="cur" id="crumb-current" href="#home" data-crumb-page="home">Home</a>
         <svg class="hidden" id="crumb-extra-sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         <span class="cur hidden" id="crumb-extra"></span>
       </div>
@@ -926,7 +935,10 @@ function goPage(key) {
   if (!m && !PAGES[key]) { key = 'home'; navKey = 'home'; }
   $all('#nav a').forEach(function (a) { a.classList.toggle('active', a.dataset.page === navKey); });
   $('#crumb-current').textContent = PAGES[navKey];
-  setCrumbExtra(m ? '…' : '');
+  $('#crumb-current').href = '#' + navKey;
+  $('#crumb-current').dataset.crumbPage = navKey;
+  $('#crumb-current').classList.toggle('leaf', !m);
+  setCrumbExtra(m ? [{ text: '…' }] : null);
   hide($('#page-home')); hide($('#page-titles')); hide($('#page-detail')); hide($('#page-generic'));
   if (m) { show($('#page-detail')); openDetail(m[1], m[2] || null, m[3] || ''); }
   else if (key === 'home') show($('#page-home'));
@@ -935,11 +947,29 @@ function goPage(key) {
   if (!m) detail.id = null; // 상세를 벗어나면 캐시 해제 (다시 들어오면 새로 불러옴)
   if (location.hash !== '#' + key) history.replaceState(null, '', '#' + key);
 }
-function setCrumbExtra(text) {
-  $('#crumb-extra').textContent = text || '';
-  $('#crumb-extra').classList.toggle('hidden', !text);
-  $('#crumb-extra-sep').classList.toggle('hidden', !text);
+/* 상단 경로 표시의 추가 구간. parts: [{ text, hash? }] — hash 가 있으면 눌러서 이동할 수 있고, 마지막 구간은 현재 위치로 강조 */
+var CRUMB_SEP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+function setCrumbExtra(parts) {
+  var box = $('#crumb-extra');
+  var has = parts && parts.length;
+  box.innerHTML = has ? parts.map(function (p, i) {
+    var last = i === parts.length - 1;
+    var cls = last ? ' class="cur leaf"' : '';
+    var seg = p.hash && !last
+      ? '<a href="' + esc(p.hash) + '" data-crumb-hash="' + esc(p.hash) + '" title="' + esc(p.text) + ' 으로 이동">' + esc(p.text) + '</a>'
+      : '<span' + cls + ' title="' + esc(p.text) + '">' + esc(p.text) + '</span>';
+    return (i ? CRUMB_SEP : '') + seg;
+  }).join('') : '';
+  box.classList.toggle('hidden', !has);
+  $('#crumb-extra-sep').classList.toggle('hidden', !has);
 }
+$('#crumb').addEventListener('click', function (e) {
+  var a = e.target.closest('a[data-crumb-page], a[data-crumb-hash]'); if (!a) return;
+  e.preventDefault();
+  if (typeof confirmLeave === 'function' && !confirmLeave()) return;
+  if (window.detail) detail.dirty = false;
+  goPage(a.dataset.crumbPage || a.dataset.crumbHash.replace(/^#/, ''));
+});
 
 /* ───────────── 로그인 ───────────── */
 $('#login-form').addEventListener('submit', function (e) {
@@ -1499,6 +1529,7 @@ var FLOW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 var BOOK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
 var USERS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
 var X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+var SAVE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
 var PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
 
 /* ── 상태 계산 ── */
@@ -1607,7 +1638,7 @@ function renderDetail() {
 
   if (detail.storyId) { renderStoryView(body, back, t); return; }
 
-  setCrumbExtra(t.name);
+  setCrumbExtra([{ text: t.name, hash: hashFor(t.id, null, "") }]);
   var thumb = t.thumbnail ? '<div class="detail-thumb"><img src="' + t.thumbnail + '" alt=""></div>'
                           : '<div class="detail-thumb">' + esc((t.name || '?').charAt(0)) + '</div>';
   var owners = (t.owners && t.owners.length)
@@ -1687,10 +1718,10 @@ function ipPanelCtx(key) {
 /* ── 스토리 화면 ── */
 function renderStoryView(body, back, t) {
   var sd = detail.storyData;
-  if (detail.storyError) { setCrumbExtra(t.name); body.innerHTML = back + '<div class="empty-state">' + esc(detail.storyError) + '</div>'; bindBack(); return; }
-  if (!sd) { setCrumbExtra(t.name); body.innerHTML = back + '<div class="loading">불러오는 중…</div>'; bindBack(); return; }
+  if (detail.storyError) { setCrumbExtra([{ text: t.name, hash: hashFor(t.id, null, "") }, { text: "스토리" }]); body.innerHTML = back + '<div class="empty-state">' + esc(detail.storyError) + '</div>'; bindBack(); return; }
+  if (!sd) { setCrumbExtra([{ text: t.name, hash: hashFor(t.id, null, "") }, { text: "스토리" }]); body.innerHTML = back + '<div class="loading">불러오는 중…</div>'; bindBack(); return; }
   var st = sd.story;
-  setCrumbExtra(t.name + ' › ' + st.name);
+  setCrumbExtra([{ text: t.name, hash: hashFor(t.id, null, "") }, { text: st.name }]);
 
   var thumb = t.thumbnail ? '<div class="detail-thumb"><img src="' + t.thumbnail + '" alt=""></div>'
                           : '<div class="detail-thumb">' + esc((st.name || '?').charAt(0)) + '</div>';
@@ -1800,12 +1831,14 @@ function renderStagePanel(ctx) {
   if (!write) {
     actions = '<span class="readonly-note">' + LOCK_ICON + 'Viewer 권한은 조회만 할 수 있습니다.</span>';
   } else if (done) {
-    actions = '<div class="btns"><button type="button" class="btn btn-sm btn-danger" id="stage-uncomplete">완료 취소</button>' +
-      '<button type="button" class="btn btn-sm btn-primary" id="stage-save">저장</button>' +
-      (next ? '<button type="button" class="btn btn-sm" data-go-stage="' + next.key + '">' + esc(next.label) + ARROW_ICON + '</button>' : '') + '</div>';
+    // 완료된 단계: 왼쪽에 [저장](덮어쓰기)을 따로 두고, 오른쪽에 완료 취소 · 다음 단계
+    actions = '<div class="save-side"><button type="button" class="btn btn-sm" id="stage-save">' + SAVE_ICON + '저장</button><span class="save-hint">내용을 덮어씁니다</span></div>' +
+      '<div class="btns"><button type="button" class="btn btn-sm btn-danger" id="stage-uncomplete">완료 취소</button>' +
+      (next ? '<button type="button" class="btn btn-sm btn-primary" data-go-stage="' + next.key + '">' + esc(next.label) + ARROW_ICON + '</button>' : '') + '</div>';
   } else {
-    actions = '<div class="btns"><button type="button" class="btn btn-sm" id="stage-save">임시 저장</button>' +
-      '<button type="button" class="btn btn-sm btn-primary" id="stage-complete">' + esc(ctx.completeLabel) + ARROW_ICON + '</button></div>';
+    // 진행 중 단계: 왼쪽에 [임시 저장]을 따로 두고, 오른쪽에 단계 완료
+    actions = '<div class="save-side"><button type="button" class="btn btn-sm" id="stage-save">' + SAVE_ICON + '임시 저장</button><span class="save-hint">필수 항목 없이도 저장됩니다</span></div>' +
+      '<div class="btns"><button type="button" class="btn btn-sm btn-primary" id="stage-complete">' + esc(ctx.completeLabel) + ARROW_ICON + '</button></div>';
   }
   var form = '<form class="stage-form" id="stage-form" novalidate>' + fieldsHtml +
     '<div id="stage-error" class="form-error hidden"></div>' +
